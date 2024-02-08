@@ -1,0 +1,8 @@
+.site-title::after {
+	background-image: url("../../prooffrog.png");
+	width: 46px;
+	height: 40px;
+	content: "";
+	background-size: cover;
+	margin-left: 10px;
+}
