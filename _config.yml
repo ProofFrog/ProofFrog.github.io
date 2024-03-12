@@ -6,3 +6,6 @@ url: https://just-the-docs.github.io
 
 aux_links:
   ProofFrog Hub: https://github.com/ProofFrog
+
+plugins:
+  - jekyll-katex

@@ -1,19 +1,20 @@
 ---
 title: Proof Frog
 layout: home
+nav_order: 1
 ---
 
-ProofFrog is a tool for verifying game-hopping proofs.
+ProofFrog is a work-in-progress tool for verifying cryptographic game-hopping proofs. All security properties in ProofFrog are written via pairs of indistinguishable games.
 
 # Installation
 
-ProofFrog is implemented in python and can be installed using `pip`:
+ProofFrog is implemented in Python and can be installed using `pip`:
 
 `pip install proof_frog`
 
 The `proof_frog` CLI will then be available on your PATH.
 
-Examples of proof_frog files can be found in the [examples git repository](https://github.com/ProofFrog/examples).
+A list of examples is given in [Examples]({% link examples.md %}) page.
 
 For example:
 
