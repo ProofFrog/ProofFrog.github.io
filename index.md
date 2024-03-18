@@ -26,3 +26,7 @@ proof_frog prove 'examples/Proofs/SymEnc/OTUC=>OTS.proof'
 # Development
 
 See the [GitHub repo](https://github.com/ProofFrog/ProofFrog) for source code and development information.
+
+# Thesis
+
+For a very in-depth description of the inner-workings of ProofFrog, see [the accompanying thesis](/assets/Ross_Evans_Masters_Thesis.pdf).
