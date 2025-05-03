@@ -1,6 +1,7 @@
 ---
 title: Design Philosophy
 layout: default
+nav_order: 2
 ---
 
 # Design Philosophy

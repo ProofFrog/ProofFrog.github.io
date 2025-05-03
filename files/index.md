@@ -3,6 +3,7 @@ title: Files
 layout: default
 has_children: true
 has_toc: false
+nav_order: 5
 ---
 
 ProofFrog has four types of files: [Primitive Files]({% link files/primitive.md %}), [Scheme Files]({% link files/scheme.md %}), [Game Files]({% link files/game.md %}) and [Proof Files]({% link files/proof.md %}).

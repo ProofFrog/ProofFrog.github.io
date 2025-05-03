@@ -1,9 +1,10 @@
 ---
-title: HACS Exercise
+title: HACS 20024 Exercise
 layout: default
+nav_order: 6
 ---
 
-# HACS Exercises
+# HACS 2024 Exercises
 
 In [Lúcás C. Meier's blog post](https://cronokirby.com/posts/2022/05/state-separable-proofs-for-the-curious-cryptographer/) on state separable proofs, he presents a section on hybrid arguments for state separable proofs. One can encode this proof in EasyCrypt.
 
