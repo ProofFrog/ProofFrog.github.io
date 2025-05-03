@@ -30,3 +30,5 @@ See the [GitHub repo](https://github.com/ProofFrog/ProofFrog) for source code an
 # Thesis
 
 For a very in-depth description of the inner-workings of ProofFrog, see [the accompanying thesis](https://uwspace.uwaterloo.ca/bitstream/handle/10012/20441/Evans_Ross.pdf).
+
+A paper describing ProofFrog is available at [https://eprint.iacr.org/2025/418](https://eprint.iacr.org/2025/418).
