@@ -64,7 +64,7 @@ The proof file can be found [here](https://github.com/ProofFrog/examples/blob/ma
 
 This proves [Claim 15.5](https://joyofcryptography.com/pdf/book.pdf#page=273)
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/OTS%3D%3ECPA.proof).
+The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/OTSimpliesCPA.proof).
 
 ## Hybrid Encryption is CPA secure
 
