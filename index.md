@@ -22,6 +22,7 @@ ProofFrog is implemented in Python (3.11+) and can be installed using `pip`:
 
 ```txt
 pip install proof_frog
+git clone https://github.com/ProofFrog/examples        # optionally download examples
 ```
 
 See the [getting started page]({% link getting-started.md %}) for detailed installation options, the web interface, and CLI usage, or the [guide to writing proofs in ProofFrog]({% link guide.md %}).

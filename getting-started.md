@@ -18,6 +18,12 @@ source .venv/bin/activate
 pip install proof_frog
 ```
 
+After installing ProofFrog via pip, you may want to download the examples repository:
+
+```txt
+git clone https://github.com/ProofFrog/examples
+```
+
 ### From source
 
 ```txt
