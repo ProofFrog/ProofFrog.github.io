@@ -6,7 +6,7 @@ nav_order: 3
 
 # Engine Functionality
 
-A diagram for Proof Frog's engine functionality in full is presented below.
+A diagram for ProofFrog's engine functionality in full is presented below.
 
 ![ProofFrog Functionality Diagram](/assets/diagram.png)
 
