@@ -4,31 +4,38 @@ layout: home
 nav_order: 1
 ---
 
-ProofFrog is a work-in-progress tool for verifying cryptographic game-hopping proofs. All security properties in ProofFrog are written via pairs of indistinguishable games.
+<p align="center">
+  <img src="prooffrog.png" alt="ProofFrog logo" width="120"/>
+</p>
 
-# Installation
+# ProofFrog
 
-ProofFrog is implemented in Python and can be installed using `pip`:
+**A tool for checking transitions in cryptographic game-hopping proofs.**
 
-`pip install proof_frog`
+ProofFrog checks the validity of transitions in cryptographic game-hopping proofs. Proofs are written in FrogLang, a domain-specific language for defining primitives, schemes, security games, and proof scripts. The engine checks each hop by manipulating abstract syntax trees into a canonical form, with some help from Z3 and SymPy.
 
-The `proof_frog` CLI will then be available on your PATH.
+ProofFrog can be used via a command-line interface, a browser-based editor, or an MCP server for integration with AI coding assistants.
 
-A list of examples is given in [Examples]({% link examples.md %}) page.
+## Getting Started
 
-For example:
+ProofFrog is implemented in Python (3.11+) and can be installed using `pip`:
 
 ```txt
-git clone git@github.com:ProofFrog/examples.git
-proof_frog prove 'examples/Proofs/SymEnc/OTUC=>OTS.proof'
+pip install proof_frog
 ```
 
-# Development
+See the [getting started page]({% link getting-started.md %}) for detailed installation options, the web interface, and CLI usage, or the [guide to writing proofs in ProofFrog]({% link guide.md %}).
 
-See the [GitHub repo](https://github.com/ProofFrog/ProofFrog) for source code and development information.
+A list of examples is given on the [Examples]({% link examples.md %}) page.
 
-# Thesis
+## Development
 
-For a very in-depth description of the inner-workings of ProofFrog, see [the accompanying thesis](https://uwspace.uwaterloo.ca/bitstream/handle/10012/20441/Evans_Ross.pdf).
+See the [GitHub repo](https://github.com/ProofFrog/ProofFrog) for source code and development information. ProofFrog is released under the MIT License.
 
-A paper describing ProofFrog is available at [https://eprint.iacr.org/2025/418](https://eprint.iacr.org/2025/418).
+## Publications
+
+ProofFrog was created by Ross Evans and Douglas Stebila, building on the pygamehop tool created by Douglas Stebila and Matthew McKague. For more information about ProofFrog's design, see [Ross Evans' master's thesis](https://uwspace.uwaterloo.ca/bitstream/handle/10012/20441/Evans_Ross.pdf) and [eprint 2025/418](https://eprint.iacr.org/2025/418).
+
+<img src="https://github.com/ProofFrog/ProofFrog/blob/main/media/NSERC.jpg?raw=true" alt="NSERC logo" width="750"/>
+
+We acknowledge the support of the Natural Sciences and Engineering Research Council of Canada (NSERC).
