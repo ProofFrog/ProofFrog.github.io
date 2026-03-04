@@ -12,8 +12,8 @@ Each scheme file provides one scheme which "extends" from a primitive.
 A scheme must define the same fields as the primitive it extends, and provide definitions for each primitive method signature.
 An example of a scheme for a symmetric encryption scheme composed from two other symmeteric encryption schemes is shown below.
 
-```
-import 'examples/Primitives/SymEnc.primitive';
+```prooffrog
+import 'Primitives/SymEnc.primitive';
 
 Scheme DoubleSymEnc(SymEnc S, SymEnc T) extends SymEnc {
     requires S.Ciphertext == T.Message;

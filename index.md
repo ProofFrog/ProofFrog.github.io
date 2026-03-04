@@ -18,7 +18,7 @@ A list of examples is given in [Examples]({% link examples.md %}) page.
 
 For example:
 
-```
+```txt
 git clone git@github.com:ProofFrog/examples.git
 proof_frog prove 'examples/Proofs/SymEnc/OTUC=>OTS.proof'
 ```

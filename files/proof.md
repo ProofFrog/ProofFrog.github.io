@@ -16,10 +16,10 @@ Each game in the sequence is checked to be either interchangeable with the next 
 Indistinguishability only occurs if the author writes a reduction to utilize a previously specified indistinguishability assumption.
 An example proof file is shown below, which ProofFrog can verify to show that CPA$ security for a symmetric encryption scheme implies CPA security.
 
-```
-import 'examples/Primitives/SymEnc.primitive';
-import 'examples/Games/SymEnc/CPA.game';
-import 'examples/Games/SymEnc/CPA$.game';
+```prooffrog
+import 'Primitives/SymEnc.primitive';
+import 'Games/SymEnc/CPA.game';
+import 'Games/SymEnc/CPA$.game';
 
 Reduction R1(SymEnc E) compose CPA$(E) against CPA(E).Adversary {
     E.Ciphertext Eavesdrop(E.Message mL, E.Message mR) {

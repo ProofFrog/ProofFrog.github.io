@@ -1,5 +1,5 @@
 ---
-title: HACS 20024 Exercise
+title: HACS 2024 Exercise
 layout: default
 nav_order: 6
 ---

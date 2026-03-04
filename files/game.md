@@ -14,8 +14,8 @@ Finally, each game has the option to specify an `Initialize` method which is ass
 `Initialize` also has the ability to return information to the adversary that they may use during the attack (for example, adversaries should be provided the public key when attacking public key encryption).
 An example of a game file defining CPA security for symmetric encryption schemes is provided below.
 
-```
-import 'examples/Primitives/SymEnc.primitive';
+```prooffrog
+import 'Primitives/SymEnc.primitive';
 
 Game Left(SymEnc E) {
     E.Key k;

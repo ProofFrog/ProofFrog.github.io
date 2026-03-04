@@ -12,7 +12,7 @@ A primitive file allows a user to describe the sets and functions that are assoc
 A primitive contains constant fields and method signatures.
 An example of a primitive for an abstract symmetric encryption scheme is shown below.
 
-```
+```prooffrog
 Primitive SymEnc(Set MessageSpace, Set CiphertextSpace, Set KeySpace) {
     Set Message = MessageSpace;
     Set Ciphertext = CiphertextSpace;
