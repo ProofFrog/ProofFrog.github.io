@@ -1,25 +1,37 @@
 ---
 title: Design
 layout: default
-nav_order: 3
+nav_order: 5
 ---
 
-# Design
+# Design of ProofFrog
 
 ## Philosophy
 
-ProofFrog takes a novel approach in that it focuses purely on high-level manipulations of games as abstract syntax trees (ASTs) instead of working at the level of logical formulae.
-Treating games as ASTs allows us to leverage techniques from compiler design
-and static analysis to prove output equivalence of games; thereby allowing us to demonstrate the validity of hops in a game sequence.
-The main technique used in our engine is to take pairs of game ASTs and perform a variety of transformations in an attempt to coerce each AST into a canonical form.
-If each pair of ASTs in a game hop can be made equivalent, then our proof engine can assert the validity of the hop.
-ProofFrog also targets ease of use: although it implements a domain-specific language that a user must learn, the language has an imperative C-like syntax that should be comfortable for the average cryptographer.
-Furthermore, it performs transformations to the ASTs with little user guidance which makes writing a proof in many cases as simple as just specifying the hops.
-Finally, the proof syntax attempts to closely mimic that of a typical pen-and-paper proof.
+Cryptographic proofs provide theoretical guarantees on the security of constructions, but human fallibility means that even expert-reviewed proofs may hide flaws or errors.
+Proof assistants are software tools built for formally verifying each step in a proof, and have the potential to prevent erroneous proofs from being published and insecure constructions from being implemented.
+Unfortunately, existing tooling for verifying cryptographic proofs has found limited adoption in the cryptographic community, in part due to concerns with ease of use.
+
+ProofFrog is a tool for verifying transitions in cryptographic game-hopping proofs.
+It focuses on stating and justifying the validity of a sequence of games: verifying that the starting and ending games correctly match the security definition, and checking each hop as either an *interchangeability-based hop* (where the two adjacent games have zero distinguishing advantage, demonstrated by code equivalence) or a *reduction-based hop* (where the two adjacent games have bounded distinguishing advantage, justified by exhibiting a reduction to an assumed security property).
+The accumulation of bounded advantages and the assessment of the final security bound remain tasks for the proof's author.
+
+To check interchangeability of two games, ProofFrog manipulates abstract syntax trees (ASTs) of games to arrive at a canonical form, instead of working at the level of logical formulae.
+Treating games as ASTs allows us to leverage techniques from compiler design and static analysis to prove output equivalence of games, thereby demonstrating the validity of hops in a game sequence.
+The main technique used in our engine is to take pairs of game ASTs and perform a variety of transformations in an attempt to coerce the two ASTs into canonical forms, which can then be compared.
+These transformations are performed on the AST with little user guidance, which makes writing a proof in many cases as simple as just specifying which reductions are being leveraged.
+
+ProofFrog also targets ease of use: although it implements a domain-specific language that a user must learn, the language has an imperative C or Java-like syntax that should be comfortable for the average cryptographer.
+The proof syntax is intentionally designed for improved readability by closely mimicking that of a typical pen-and-paper proof.
+ProofFrog is aimed at an introductory audience: while its expressivity and scope are smaller than existing tools such as EasyCrypt and CryptoVerif, it prioritizes ease of use and has been able to verify game hop sequences from a wide swath of textbook-level proofs.
+
+It is important to note that ProofFrog's engine does not have any formal guarantees: the soundness of its transformations has not been verified.
 
 ## Engine Functionality
 
-A diagram for ProofFrog's engine functionality in full is presented below.
+Information about ProofFrog's engine can be found in [Ross Evans' master's thesis](https://uwspace.uwaterloo.ca/bitstream/handle/10012/20441/Evans_Ross.pdf) and [eprint 2025/418](https://eprint.iacr.org/2025/418).
+
+A diagram summarizing ProofFrog's engine functionality is presented below.
 
 ![ProofFrog Functionality Diagram](/assets/diagram.png)
 
