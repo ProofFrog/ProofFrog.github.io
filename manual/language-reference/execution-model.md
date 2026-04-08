@@ -32,7 +32,7 @@ One execution of a game `G` with an adversary `A` proceeds in three stages:
 
 1. **Field initialization.** All state fields are set up. Fields declared with an explicit initializer (`Type x = expr;`) are assigned the value of `expr`. Fields declared without an initializer (`Type x;`) are left in an undefined state until the first assignment.
 
-2. **`Initialize` call.** If the game defines an `Initialize` method, it is called exactly once before the adversary sees any oracle. This is where games typically perform setup: sampling cryptographic keys, setting counters, preparing tables. In most games `Initialize` has return type `Void`, but in phased games it may return a value that is delivered to the adversary.
+2. **`Initialize` call.** If the game defines an `Initialize` method, it is called exactly once before the adversary sees any oracle. This is where games typically perform setup: sampling cryptographic keys, setting counters, preparing tables. In most games `Initialize` has return type `Void`. The first phase of a phased game (see below) is also always `Void`; only the `Initialize` methods of *subsequent* phases may return a value that is delivered to the adversary as part of the phase transition.
 
 3. **Oracle interaction phase.** The adversary calls the game's oracles freely, in any order, any number of times. Each call executes the oracle's body, which may read and write state fields, sample fresh randomness, and return a value. The adversary observes only the return values.
 
@@ -122,6 +122,8 @@ BitString<n> x <-uniq[S] BitString<n>;
 
 samples uniformly from `BitString<n> \ S`, where `S` is a set expression. Semantically this is rejection sampling: draw from `BitString<n>`, repeat if the result is already in `S`. The result is guaranteed to be fresh with respect to `S`. This is used when a nonce or challenge must be distinct from previously used values.
 
+**Sampling into a map entry.** The statement `M[k] <- BitString<n>;` samples a fresh value into the entry of map `M` at key `k`. This is the imperative analogue of the random-function lazy evaluation described next: a `Map` together with `M[k] <-` sampling on the first query to each key implements exactly the same lazily-evaluated truly random function semantics that `Function<D, R>` makes a primitive type.
+
 **Random functions (the random oracle model).** The statement
 
 ```prooffrog
@@ -154,9 +156,10 @@ The result is a flat, self-contained game body with no remaining calls to scheme
 
 ### Game composed with a reduction
 
-`compose` produces a new game from a security game and a reduction. For example:
+`compose` produces a new game from a security game and a reduction. The composition syntax appears as a *game step* inside the `games:` block of a `.proof` file (it is not a free-standing expression you can write elsewhere). For example, a single line in a `games:` block might read:
 
 ```prooffrog
+// inside a games: block of a .proof file
 Security(G).Real compose R(G, T) against Security(T).Adversary;
 ```
 

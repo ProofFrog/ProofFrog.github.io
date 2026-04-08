@@ -10,7 +10,7 @@ nav_order: 3
 
 ## Overview
 
-A `.primitive` file defines an *abstract cryptographic interface*: the named sets and method signatures that characterize a cryptographic operation, with no implementations. Primitives capture what a scheme *is* — its types and its calling contract — but say nothing about how it works internally. Concrete instantiations are provided by schemes (covered on the Schemes page). For the full type system available in primitives, see the [Basics]({% link manual/language-reference/basics.md %}) page. For an explanation of how oracle calls made to primitive methods behave at runtime during game evaluation, see the Execution Model page.
+A `.primitive` file defines an *abstract cryptographic interface*: the named sets and method signatures that characterize a cryptographic operation, with no implementations. Primitives capture what a scheme *is* — its types and its calling contract — but say nothing about how it works internally. Concrete instantiations are provided by schemes (covered on the Schemes page). For the full type system available in primitives, see the [Basics]({% link manual/language-reference/basics.md %}) page. For an explanation of how oracle calls made to primitive methods behave at runtime during game evaluation, see the [Execution Model]({% link manual/language-reference/execution-model.md %}) page.
 
 ---
 
@@ -53,7 +53,13 @@ Here `lambda` is the seed length and `stretch` is the additional output length.
 Primitive SymEnc(Set MessageSpace, Set CiphertextSpace, Set KeySpace) { ... }
 ```
 
-Multiple parameters of either kind may be combined in a single comma-separated list. Schemes and games that instantiate the primitive supply concrete arguments in the same order.
+**`Group name`** — a finite cyclic group parameter, used by primitives that operate over a group (e.g., a Diffie–Hellman key-exchange or ElGamal-style construction). Once a `Group G` parameter is in scope, the primitive can refer to `G.order`, `G.generator`, and `G.identity`, and to the element type `GroupElem<G>`. See [Basics]({% link manual/language-reference/basics.md %}) for the full group accessor list.
+
+```prooffrog
+Primitive DH(Group G) { ... }
+```
+
+Multiple parameters of any of these kinds may be combined in a single comma-separated list. Schemes and games that instantiate the primitive supply concrete arguments in the same order.
 
 ---
 

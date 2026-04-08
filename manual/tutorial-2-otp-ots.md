@@ -85,6 +85,8 @@ Type checking...
 Type checking passed.
 ```
 
+<!-- TODO screenshot: Check button output for SymEnc.primitive -->
+
 {: .note }
 **CLI alternative.** From the `examples/joy/` directory:
 ```bash
@@ -199,6 +201,9 @@ Expected output:
 Type checking...
 Type checking passed.
 ```
+
+<!-- TODO screenshot: Check button output for OneTimeSecrecy.game -->
+
 
 ### What if it fails: mismatched oracle signatures
 
@@ -347,6 +352,9 @@ Expected output:
 Type checking...
 Type checking passed.
 ```
+
+<!-- TODO screenshot: Check button output for OTP.scheme -->
+
 
 ### What if it fails
 

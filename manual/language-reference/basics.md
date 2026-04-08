@@ -231,7 +231,7 @@ Function<D, R> H <- Function<D, R>;
 
 Instantiates a fresh random function. Each distinct input independently maps to a uniform random output in `R`; repeated queries on the same input return the same value. This is the standard way to model a random oracle.
 
-**Non-determinism by default.** Scheme method calls such as `F.evaluate(k, x)` are **non-deterministic by default**: each invocation may return a different value even with the same arguments, unless the primitive method is declared with the `deterministic` modifier. The engine is conservative and will not assume two calls with the same inputs produce the same result unless determinism is annotated. For more on how the engine uses this annotation, see the Execution Model page (coming soon).
+**Non-determinism by default.** Scheme method calls such as `F.evaluate(k, x)` are **non-deterministic by default**: each invocation may return a different value even with the same arguments, unless the primitive method is declared with the `deterministic` modifier. The engine is conservative and will not assume two calls with the same inputs produce the same result unless determinism is annotated. For more on how the engine uses this annotation, see the [Execution Model]({% link manual/language-reference/execution-model.md %}) page.
 
 ---
 
