@@ -33,7 +33,7 @@ Scheme Name(parameters) extends PrimitiveName {
 }
 ```
 
-`extends PrimitiveName` links the scheme to the primitive it implements. The scheme must provide a method body for every method declared in that primitive. The `requires` clause and field assignments are optional, and method bodies use the same statement forms described on the Basics page.
+`extends PrimitiveName` links the scheme to the primitive it implements. The scheme must provide a method body for every method declared in that primitive. The `requires` clause and field assignments are optional, and method bodies use the same statement forms described on the [Basics]({% link manual/language-reference/basics.md %}) page.
 
 Imports use paths relative to the directory of the importing file.
 

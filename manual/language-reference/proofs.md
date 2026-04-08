@@ -67,7 +67,7 @@ The region above `proof:` (after any `import` statements) holds:
 - **`Reduction` definitions** — adapters that translate between the theorem game's adversary interface and an assumed security game's interface. Detailed in the Reductions section below.
 - **Intermediate `Game` definitions** — explicit game definitions that appear as steps in the `games:` sequence but are not already defined in an imported `.game` file.
 
-Helpers are only meaningful when referenced from the `games:` block. They do not affect the `let:`, `assume:`, or `theorem:` sections. Intermediate games are documented in the games file-type reference; reductions are documented later on this page.
+Helpers are only meaningful when referenced from the `games:` block. They do not affect the `let:`, `assume:`, or `theorem:` sections. Intermediate games are documented in the [Games]({% link manual/language-reference/games.md %}) file-type reference; reductions are documented later on this page.
 
 ---
 
@@ -108,7 +108,7 @@ let:
 
 Once `E = OTP(lambda)` is in `let:`, every subsequent reference to `E` — including `OneTimeSecrecy(E).Real`, `E.Key`, and so on — is resolved through that binding. Names introduced in `let:` are in scope for the entire proof block.
 
-For a full description of FrogLang types, see the Basics language reference page.
+For a full description of FrogLang types, see the [Basics]({% link manual/language-reference/basics.md %}) language reference page.
 
 ---
 
@@ -149,7 +149,7 @@ lemma:
 The engine verifies the referenced proof file (recursively), checks that all of its `assume:` entries are satisfied by the current proof's own assumptions, and then treats the lemma's theorem as an additional assumption. This allows large proofs to be decomposed into smaller verified pieces.
 
 {: .important }
-**`--skip-lemmas` flag.** During iterative proof development, lemma verification can be slow. Pass `--skip-lemmas` to `proof_frog prove` to bypass lemma verification and treat lemma theorems as unverified assumptions. See the CLI reference page for details.
+**`--skip-lemmas` flag.** During iterative proof development, lemma verification can be slow. Pass `--skip-lemmas` to `proof_frog prove` to bypass lemma verification and treat lemma theorems as unverified assumptions. See the [CLI reference]({% link manual/cli-reference.md %}) page for details.
 
 ---
 
