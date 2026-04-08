@@ -11,6 +11,13 @@ plugins:
   - jekyll-katex
   - jekyll-redirect-from
 
+sass:
+  quiet_deps: true
+  silence_deprecations:
+    - color-functions
+    - global-builtin
+    - import
+
 callouts:
   highlight:
     color: yellow
