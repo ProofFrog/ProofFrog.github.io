@@ -65,13 +65,13 @@ Add a `//` at the start so it becomes:
 // OneTimeSecrecy(E).Random against OneTimeSecrecy(E).Adversary;
 ```
 
-Click **Prove** again. This time the output turns red and reports something like:
+Click **Prove** again. This time the status badge in the output panel turns red and shows **✗ Failed**, while the body text reports something like:
 
 ```
 Proof Succeeded, but is incomplete: first and last steps use the same side (Real)
 ```
 
-ProofFrog is telling you that both endpoints of the game sequence are on the `Real` side of the security property, which means the proof never actually reaches the `Random` side — the chain is broken.
+ProofFrog is telling you that both endpoints of the game sequence are on the `Real` side of the security property, which means the proof never actually reaches the `Random` side — the chain is broken. (The word "Succeeded" in the message means that all individual hops the engine *did* check passed; "incomplete" is the engine's term for a game sequence that does not connect the two sides of the theorem. The red **✗ Failed** badge is the signal that something is wrong, not the body text.)
 
 <!-- TODO screenshot: red diagnostic -->
 
