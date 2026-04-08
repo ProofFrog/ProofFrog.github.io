@@ -47,7 +47,7 @@ Use your distribution's package manager:
   ```
 - **Fedora:**
   ```bash
-  sudo dnf install python3
+  sudo dnf install python3 python3-pip
   ```
 - **Arch Linux:**
   ```bash
@@ -81,6 +81,12 @@ python3 -m venv .venv
   .venv\Scripts\Activate.ps1
   ```
 
+{: .warning }
+On a fresh Windows install, PowerShell's default execution policy blocks running `.ps1` scripts. To allow it, run the following once in PowerShell — this only needs to be done once per user account and does not require administrator privileges:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
 Once activated, your prompt will show the name of the environment (e.g., `(.venv)`). You will need to activate the virtual environment each time you open a new terminal before using ProofFrog.
 
 **Step 3.** Install ProofFrog:
@@ -100,7 +106,7 @@ To confirm that ProofFrog installed correctly, run:
 proof_frog version
 ```
 
-You should see a version number printed to the terminal, such as `proof_frog 0.x.y`.
+You should see a version number printed to the terminal, such as `ProofFrog 0.4.0` or `ProofFrog 0.4.0.dev0` on development builds.
 
 ### Troubleshooting: "command not found"
 
@@ -137,6 +143,7 @@ If you want to contribute to ProofFrog or work with the latest development versi
 ```bash
 git clone https://github.com/ProofFrog/ProofFrog
 cd ProofFrog
+git submodule update --init
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
