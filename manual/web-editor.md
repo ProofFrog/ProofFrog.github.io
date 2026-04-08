@@ -69,4 +69,4 @@ Each toolbar validation button has a CLI equivalent:
 
 ## Limitations of the web editor
 
-The CLI exposes four engine-introspection commands that have no web-editor equivalent: `step-detail`, `inlined-game` (the CLI variant, with no modal-dialog dependency), `canonicalization-trace`, and `step-after-transform`. These are diagnostic tools for tool authors and are covered on the engine internals page. The web editor is also constrained to a single working directory chosen at startup, with file access denied outside it and to dot-files.
+The CLI exposes four engine-introspection commands that have no web-editor equivalent: `step-detail`, `inlined-game` (the CLI variant, with no modal-dialog dependency), `canonicalization-trace`, and `step-after-transform`. These are diagnostic tools for tool authors and are covered on the [Engine Internals]({% link researchers/engine-internals.md %}) page. The web editor is also constrained to a single working directory chosen at startup, with file access denied outside it and to dot-files.

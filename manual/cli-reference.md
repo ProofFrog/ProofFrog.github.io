@@ -245,4 +245,4 @@ python -m proof_frog web /path/to/my/proofs
 
 ## Advanced Commands
 
-ProofFrog also includes several engine-introspection commands (`step-detail`, `inlined-game`, `canonicalization-trace`, `step-after-transform`, `lsp`, `mcp`) that expose internal engine state and protocol servers. These are intended for researchers and tool authors who need low-level access to the proof engine. They are documented separately in the researcher-facing engine-internals page (not yet published).
+ProofFrog also includes several engine-introspection commands (`step-detail`, `inlined-game`, `canonicalization-trace`, `step-after-transform`, `lsp`, `mcp`) that expose internal engine state and protocol servers. These are intended for researchers and tool authors who need low-level access to the proof engine. They are documented separately in the researcher-facing [Engine Internals]({% link researchers/engine-internals.md %}) page.

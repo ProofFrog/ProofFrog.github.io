@@ -35,7 +35,7 @@ To give the server a useful set of examples to draw on, clone the examples repos
 git clone https://github.com/ProofFrog/examples
 ```
 
-The engine-internals documentation (not yet published as a separate page) covers the server architecture in more detail. For now, the source is in `proof_frog/mcp_server.py` in the ProofFrog repository.
+The [Engine Internals]({% link researchers/engine-internals.md %}) page covers the server architecture in more detail. The source is in `proof_frog/mcp_server.py` in the ProofFrog repository.
 
 ### Configuring Claude Code
 

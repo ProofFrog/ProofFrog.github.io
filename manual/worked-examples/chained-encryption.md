@@ -143,7 +143,7 @@ The structure is therefore:
 - Lines 2 and 3: assumption hop (E1.Real to E1.Random, justified by `OneTimeSecrecy(E1)`).
 - Lines 3 and 4: engine-verified interchangeability (transition from R1/E1.Random to R2/E2.Real).
 
-For the full structural reference, see the [Proofs language reference]({% link manual/language-reference/proofs.md %}). The Transformations page (coming soon) explains the canonicalization steps the engine uses to verify code equivalence.
+For the full structural reference, see the [Proofs language reference]({% link manual/language-reference/proofs.md %}). The [Transformations]({% link manual/transformations.md %}) page explains the canonicalization steps the engine uses to verify code equivalence.
 
 ---
 
@@ -221,4 +221,4 @@ In the web editor, open `Proofs/Ch2/ChainedEncryptionSecure.proof` and click the
 
 ## 8. Next
 
-The next worked example, `manual/worked-examples/kemdem-cpa.md` (coming soon), is the graduation piece: a KEM-DEM hybrid encryption construction proved CPA-secure. It uses two independent primitives (a KEM and a symmetric cipher), two reductions that operate in opposite directions of the game sequence, and a lemma invocation. After seeing ChainedEncryption you have all the conceptual tools needed to read it; the KEM-DEM example shows how those tools combine at a scale closer to what real-world proof engineering looks like.
+The next worked example, [KEM-DEM CPA]({% link manual/worked-examples/kemdem-cpa.md %}), is the graduation piece: a KEM-DEM hybrid encryption construction proved CPA-secure. It uses two independent primitives (a KEM and a symmetric cipher), two reductions that operate in opposite directions of the game sequence, and a lemma invocation. After seeing ChainedEncryption you have all the conceptual tools needed to read it; the KEM-DEM example shows how those tools combine at a scale closer to what real-world proof engineering looks like.

@@ -512,8 +512,7 @@ G_after against Adversary;                                    // interchangeabil
 Real-proof pointer: used in `examples/Proofs/Group/OTDDHImpliesOTCDH.proof`.
 
 {: .important }
-Using a helper game adds to the trust base -- see the Soundness page (in the For
-Researchers area, not yet available).
+Using a helper game adds to the trust base -- see the [Soundness]({% link researchers/soundness.md %}) page in the For Researchers area.
 
 ---
 

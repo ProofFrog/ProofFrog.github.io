@@ -523,8 +523,8 @@ This is precisely the reasoning in Joy of Cryptography Example 2.5.4. The `deter
 
 Congratulations — you have written a complete game-hopping proof from scratch. OTP is the simplest possible case: one primitive, one scheme, one game pair, one hop, no assumptions. Most real proofs are more complex. Three directions to explore next:
 
-- **Reductions and the four-step pattern.** When a scheme relies on an underlying primitive (like a PRF or a hash function), the proof uses *reductions* to hop via an assumption rather than an equivalence. See the Chained Encryption worked example (coming soon).
+- **Reductions and the four-step pattern.** When a scheme relies on an underlying primitive (like a PRF or a hash function), the proof uses *reductions* to hop via an assumption rather than an equivalence. See the [Chained Encryption]({% link manual/worked-examples/chained-encryption.md %}) worked example.
 
 - **The rest of the language.** Everything else FrogLang offers — tuples, maps, arrays, random functions, injective annotations, induction — is documented in the [Language Reference]({% link manual/language-reference/index.md %}).
 
-- **What `prove` does under the hood.** The engine's canonicalization pipeline, the Z3/SymPy integration, and the equivalence-checking algorithm are described in Transformations (coming soon).
+- **What `prove` does under the hood.** The engine's canonicalization pipeline, the Z3/SymPy integration, and the equivalence-checking algorithm are described in [Transformations]({% link manual/transformations.md %}).

@@ -7,7 +7,7 @@ nav_order: 80
 
 # Editor Plugins
 
-ProofFrog ships a plugin for Visual Studio Code that provides rich editing support for FrogLang files. The plugin connects to an LSP server bundled with ProofFrog (`proof_frog lsp`); any other editor that supports the Language Server Protocol can be wired up to the same server without a dedicated plugin. Additional first-party plugins may be added in the future. See the Engine Internals page (not yet available) for details on the LSP protocol, the language IDs, and the workspace configuration the server expects.
+ProofFrog ships a plugin for Visual Studio Code that provides rich editing support for FrogLang files. The plugin connects to an LSP server bundled with ProofFrog (`proof_frog lsp`); any other editor that supports the Language Server Protocol can be wired up to the same server without a dedicated plugin. Additional first-party plugins may be added in the future. See the [Engine Internals]({% link researchers/engine-internals.md %}) page for details on the LSP protocol, the language IDs, and the workspace configuration the server expects.
 
 ---
 
@@ -73,16 +73,16 @@ The features described below are implemented in the LSP server (`proof_frog/lsp/
 
 ## (Future) Emacs
 
-ProofFrog does not yet ship a dedicated Emacs plugin. The LSP server (`proof_frog lsp`) can be used directly with `eglot` or `lsp-mode` for syntax highlighting, diagnostics, and the basic LSP feature set. You would configure the server command as `python3 -m proof_frog lsp` (or the equivalent path for your environment) and associate it with the `.primitive`, `.scheme`, `.game`, and `.proof` extensions. See the Engine Internals page (not yet available) for LSP protocol details.
+ProofFrog does not yet ship a dedicated Emacs plugin. The LSP server (`proof_frog lsp`) can be used directly with `eglot` or `lsp-mode` for syntax highlighting, diagnostics, and the basic LSP feature set. You would configure the server command as `python3 -m proof_frog lsp` (or the equivalent path for your environment) and associate it with the `.primitive`, `.scheme`, `.game`, and `.proof` extensions. See the [Engine Internals]({% link researchers/engine-internals.md %}) page for LSP protocol details.
 
 ---
 
 ## (Future) JetBrains
 
-ProofFrog does not yet ship a dedicated JetBrains plugin. JetBrains IDEs support generic LSP integration via the LSP4IJ plugin (for IDEs running on the 2023.2 platform or later). You can configure it to launch `python3 -m proof_frog lsp` as the server process for the four FrogLang file extensions. Feature availability will vary depending on the IDE and plugin version. See the Engine Internals page (not yet available) for LSP protocol details.
+ProofFrog does not yet ship a dedicated JetBrains plugin. JetBrains IDEs support generic LSP integration via the LSP4IJ plugin (for IDEs running on the 2023.2 platform or later). You can configure it to launch `python3 -m proof_frog lsp` as the server process for the four FrogLang file extensions. Feature availability will vary depending on the IDE and plugin version. See the [Engine Internals]({% link researchers/engine-internals.md %}) page for LSP protocol details.
 
 ---
 
 ## Adding a new editor
 
-Any editor that supports the Language Server Protocol can be connected to ProofFrog's LSP server. The server is started with `proof_frog lsp` (or `python3 -m proof_frog lsp`) and communicates over stdio using the standard JSON-RPC wire protocol. It uses full document synchronisation (`TextDocumentSyncKind.Full`). The language ID for all four file types is `prooffrog`. The server expects the working directory to match the directory from which the proof files are being edited, so that import paths resolve correctly. See the Engine Internals page (not yet available) for a full description of the protocol surface, the supported LSP methods, and the custom notifications (`prooffrog/verificationDone`, `prooffrog/proofSteps`) used by the proof hops tree view.
+Any editor that supports the Language Server Protocol can be connected to ProofFrog's LSP server. The server is started with `proof_frog lsp` (or `python3 -m proof_frog lsp`) and communicates over stdio using the standard JSON-RPC wire protocol. It uses full document synchronisation (`TextDocumentSyncKind.Full`). The language ID for all four file types is `prooffrog`. The server expects the working directory to match the directory from which the proof files are being edited, so that import paths resolve correctly. See the [Engine Internals]({% link researchers/engine-internals.md %}) page for a full description of the protocol surface, the supported LSP methods, and the custom notifications (`prooffrog/verificationDone`, `prooffrog/proofSteps`) used by the proof hops tree view.

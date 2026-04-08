@@ -137,7 +137,7 @@ If you do not have git installed, you can download the examples as a ZIP file fr
 
 ## First run
 
-You are ready for Tutorial Part 1 (coming soon).
+You are ready for [Tutorial Part 1: Hello Frog]({% link manual/tutorial-1-hello-frog.md %}).
 
 ## Install from source
 

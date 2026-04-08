@@ -24,8 +24,7 @@ A separate concern is **trust limits**: even when the engine validates a proof, 
 confident should you be in the validation? That question is about soundness -- does the
 engine's acceptance of a proof actually guarantee what the proof claims? The answer
 involves the formal semantics of FrogLang, the correctness of the canonicalization
-pipeline, and the scope of the reduction paradigm itself. That story lives in the
-For Researchers area at researchers/soundness.md (not yet published). Both kinds of
+pipeline, and the scope of the reduction paradigm itself. That story lives in the For Researchers area at [Soundness]({% link researchers/soundness.md %}). Both kinds of
 limits are real and important. They are documented separately because they require
 different mental models: a capability limit is a practical obstacle to finishing a proof;
 a trust limit is a question about what a finished proof means.
@@ -118,8 +117,7 @@ canonicalization.
 sides of the hop list them in the same order.
 
 **Forward note.** A future version of the canonicalization pipeline is expected to
-extend commutative normalization to Boolean operators. Check the Transformations
-documentation (not yet published) for updates.
+extend commutative normalization to Boolean operators. Check the [Transformations]({% link manual/transformations.md %}) page for updates.
 
 ### Field declaration ordering
 
@@ -237,9 +235,7 @@ ProofFrog is well matched to a recognizable class of proofs:
   the PRG assumption to game G3, then G3 is identical to the right side by inspection,"
   the engine is likely to validate each of those steps.
 
-See the [Worked Examples]({% link manual/worked-examples/index.md %}) section of the
-manual for annotated proof walkthroughs, and the [Examples Gallery]({% link examples.md
-%}) for a browsable index of all proof files in the distribution.
+See the [Worked Examples]({% link manual/worked-examples/index.md %}) section of the manual for annotated proof walkthroughs, and the [Examples Gallery]({% link examples.md %}) for a browsable index of all proof files in the distribution.
 
 ---
 
