@@ -1,1 +1,45 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+<style>
+  img.lightbox { cursor: zoom-in; }
+  .lightbox-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; cursor: zoom-out;
+    opacity: 0; transition: opacity 0.15s ease;
+  }
+  .lightbox-overlay.visible { opacity: 1; }
+  .lightbox-overlay img {
+    max-width: 95vw; max-height: 95vh;
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var overlay = null;
+    function close() {
+      if (!overlay) return;
+      overlay.classList.remove('visible');
+      var o = overlay; overlay = null;
+      setTimeout(function () { if (o.parentNode) o.parentNode.removeChild(o); }, 150);
+      document.removeEventListener('keydown', onKey);
+    }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.querySelectorAll('img.lightbox').forEach(function (img) {
+      img.addEventListener('click', function () {
+        overlay = document.createElement('div');
+        overlay.className = 'lightbox-overlay';
+        var big = document.createElement('img');
+        big.src = img.currentSrc || img.src;
+        big.alt = img.alt;
+        overlay.appendChild(big);
+        overlay.addEventListener('click', close);
+        document.body.appendChild(overlay);
+        requestAnimationFrame(function () { overlay.classList.add('visible'); });
+        document.addEventListener('keydown', onKey);
+      });
+    });
+  });
+</script>
