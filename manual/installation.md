@@ -1,6 +1,6 @@
 ---
 title: Installation
-layout: default
+layout: linear
 parent: Manual
 nav_order: 1
 redirect_from:
@@ -9,8 +9,12 @@ redirect_from:
 ---
 
 # Installation
+{: .no_toc }
 
 This page walks you through installing ProofFrog on your computer, verifying the installation, and obtaining the example files. No prior command-line experience is assumed.
+
+- TOC
+{:toc}
 
 ## Prerequisites
 
@@ -29,7 +33,9 @@ You should see output like `Python 3.11.9` or `Python 3.12.3`. Any version 3.11 
 The recommended approach is to use [Homebrew](https://brew.sh/). If you have Homebrew installed, run:
 
 ```bash
-brew install python@3.11
+brew install python3
+# If you want to install a specific version of Python:
+# brew install python@3.11
 ```
 
 Alternatively, download the macOS installer from [python.org/downloads](https://www.python.org/downloads/) and follow the prompts. After installing, open a new terminal window and run `python3 --version` to confirm.
@@ -59,7 +65,7 @@ Use your distribution's package manager:
 
 After installing, run `python3 --version` to confirm.
 
-## Install with pip
+## Install ProofFrog with pip
 
 The recommended way to install ProofFrog is from [PyPI](https://pypi.org/project/proof-frog/) using `pip`. It is best practice to install it inside a **virtual environment**, which keeps ProofFrog and its dependencies isolated from other Python projects on your system.
 
@@ -84,13 +90,17 @@ python3 -m venv .venv
   .venv\Scripts\Activate.ps1
   ```
 
+> On a fresh Windows install, PowerShell's default execution policy blocks running `.ps1` scripts. To allow it, run the following once in PowerShell — this only needs to be done once per user account and does not require administrator privileges:
+>
+> ~~~powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ~~~
 {: .warning }
-On a fresh Windows install, PowerShell's default execution policy blocks running `.ps1` scripts. To allow it, run the following once in PowerShell — this only needs to be done once per user account and does not require administrator privileges:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
 
-Once activated, your prompt will show the name of the environment (e.g., `(.venv)`). You will need to activate the virtual environment each time you open a new terminal before using ProofFrog.
+Once activated, your prompt will show the name of the environment (e.g., `(.venv)`).
+
+{: .important }
+**You must activate the virtual environment every time you open a new terminal before using ProofFrog.** If you see `command not found: proof_frog` later on, this is almost always the reason — just re-run the activation command above for your shell.
 
 **Step 3.** Install ProofFrog:
 
@@ -101,7 +111,7 @@ pip install proof_frog
 {: .note }
 The virtual environment ensures that ProofFrog's dependencies do not conflict with other Python packages you have installed, and makes it straightforward to uninstall ProofFrog completely by simply deleting the `.venv` directory.
 
-## Verify
+## Verify your ProofFrog installation
 
 To confirm that ProofFrog installed correctly, run:
 
@@ -137,9 +147,9 @@ If you do not have git installed, you can download the examples as a ZIP file fr
 
 ## First run
 
-You are ready for [Tutorial Part 1: Hello Frog]({% link manual/tutorial-1-hello-frog.md %}).
+You are ready for [Tutorial Part 1: Hello Frog]({% link manual/tutorial/hello-frog.md %}).
 
-## Install from source
+## For developers and advanced users: installing from source
 
 If you want to contribute to ProofFrog or work with the latest development version, install from source:
 

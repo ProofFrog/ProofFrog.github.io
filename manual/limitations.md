@@ -117,7 +117,7 @@ canonicalization.
 sides of the hop list them in the same order.
 
 **Forward note.** A future version of the canonicalization pipeline is expected to
-extend commutative normalization to Boolean operators. Check the [Transformations]({% link manual/transformations.md %}) page for updates.
+extend commutative normalization to Boolean operators. Check the [Canonicalization]({% link manual/canonicalization.md %}) page for updates.
 
 ### Field declaration ordering
 
@@ -206,7 +206,7 @@ rewrite requires reasoning jointly about how two different oracle methods intera
 through shared state across phases, the engine may not find the equivalence even when it
 is valid.
 
-**Probabilistic reasoning beyond the algebraic identities listed in Transformations.**
+**Probabilistic reasoning beyond the algebraic identities listed in [Canonicalization]({% link manual/canonicalization.md %}).**
 The engine knows that XOR with a uniform value produces a uniform value, that unique
 sampling gives independent uniform outputs, and that random functions on fresh inputs
 give uniform outputs. Beyond these specific patterns, general probabilistic arguments --

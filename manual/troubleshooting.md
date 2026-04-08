@@ -403,7 +403,8 @@ game or reduction.
 
 If none of the limitations above apply and the diff still looks semantically
 equivalent, there may be an engine bug or an unimplemented transformation.
-The Transformations and Limitations pages (forthcoming in the Researchers
-section) will document the full canonicalization pipeline and its current gaps.
-In the meantime, consult the ProofFrog issue tracker or contact the
+The [Canonicalization]({% link manual/canonicalization.md %}) and
+[Limitations]({% link manual/limitations.md %}) pages document the full
+canonicalization pipeline and its current gaps. If the gap you are seeing is
+not covered there, consult the ProofFrog issue tracker or contact the
 maintainers.

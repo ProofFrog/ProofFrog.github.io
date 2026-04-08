@@ -1,0 +1,44 @@
+{%- comment -%}
+  Renders previous/next navigation for the linear reading path of the manual.
+  Used by _layouts/linear.html. Sequence is defined in _data/linear_sequence.yml.
+  Finds the current page by matching page.path against entries in the sequence,
+  then resolves neighbors to real page objects so we get URLs and titles for free.
+{%- endcomment -%}
+{%- assign seq = site.data.linear_sequence -%}
+{%- assign current_index = -1 -%}
+{%- for entry in seq -%}
+  {%- if entry == page.path -%}
+    {%- assign current_index = forloop.index0 -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if current_index >= 0 -%}
+  {%- assign prev_index = current_index | minus: 1 -%}
+  {%- assign next_index = current_index | plus: 1 -%}
+  {%- assign last_index = seq.size | minus: 1 -%}
+  {%- assign prev_path = "" -%}
+  {%- assign next_path = "" -%}
+  {%- for entry in seq -%}
+    {%- if forloop.index0 == prev_index -%}{%- assign prev_path = entry -%}{%- endif -%}
+    {%- if forloop.index0 == next_index -%}{%- assign next_path = entry -%}{%- endif -%}
+  {%- endfor -%}
+  {%- assign prev_page = site.pages | where: "path", prev_path | first -%}
+  {%- assign next_page = site.pages | where: "path", next_path | first -%}
+  <nav class="prev-next-nav" aria-label="Reading sequence navigation">
+    <div class="prev-next-nav__prev">
+      {%- if current_index > 0 and prev_page -%}
+        <a href="{{ prev_page.url | relative_url }}">
+          <span class="prev-next-nav__label">&larr; Previous</span>
+          <span class="prev-next-nav__title">{{ prev_page.title }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+    <div class="prev-next-nav__next">
+      {%- if current_index < last_index and next_page -%}
+        <a href="{{ next_page.url | relative_url }}">
+          <span class="prev-next-nav__label">Next &rarr;</span>
+          <span class="prev-next-nav__title">{{ next_page.title }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+  </nav>
+{%- endif -%}

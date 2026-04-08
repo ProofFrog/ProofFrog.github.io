@@ -13,6 +13,9 @@ ProofFrog includes a browser-based editor that gives you a graphical environment
 
 ## Launching
 
+{: .important }
+**Activate your Python virtual environment first.** In every new terminal, run `source .venv/bin/activate` (macOS/Linux bash/zsh), `source .venv/bin/activate.fish` (fish), or `.venv\Scripts\Activate.ps1` (Windows PowerShell) before invoking `proof_frog`. See [Installation]({% link manual/installation.md %}).
+
 ```bash
 proof_frog web [directory]
 ```
@@ -63,7 +66,7 @@ Each toolbar validation button has a CLI equivalent:
 
 **Describe** ([`proof_frog describe`]({% link manual/cli-reference.md %}#describe)) calls `/api/describe` on the active file and shows a concise interface summary (type parameters, oracle names and signatures). Useful for confirming what a primitive or game exposes before writing a proof.
 
-**Inlined Game** opens a dialog where you type a game-step expression (such as `Security.Left compose Reduction(params) against Adversary`). The editor evaluates it against the current proof's `let:` and `assume:` context by calling `/api/inlined-game` and displays the resulting inlined-and-canonicalized game. This is the primary tool for understanding why a proof hop is or is not valid: you can experiment with step expressions and immediately see the canonical form without modifying the proof file. See the Transformations page for a conceptual explanation of inlining and canonicalization.
+**Inlined Game** opens a dialog where you type a game-step expression (such as `Security.Left compose Reduction(params) against Adversary`). The editor evaluates it against the current proof's `let:` and `assume:` context by calling `/api/inlined-game` and displays the resulting inlined-and-canonicalized game. This is the primary tool for understanding why a proof hop is or is not valid: you can experiment with step expressions and immediately see the canonical form without modifying the proof file. See the [Canonicalization]({% link manual/canonicalization.md %}) page for a conceptual explanation of inlining and canonicalization.
 
 ---
 

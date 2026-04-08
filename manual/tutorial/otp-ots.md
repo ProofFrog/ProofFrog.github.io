@@ -1,13 +1,17 @@
 ---
-title: Tutorial Part 2 — OTP has one-time secrecy
-layout: default
-parent: Manual
-nav_order: 3
+title: Part 2 — OTP has one-time secrecy
+layout: linear
+parent: Tutorial
+grand_parent: Manual
+nav_order: 2
 ---
 
 # Tutorial Part 2 — OTP has one-time secrecy
 
 In Tutorial Part 1 you ran an existing proof that OTP has one-time secrecy, broke it on purpose, and fixed it again. Now you will write that exact proof from scratch — all four files of it. By the end of this tutorial you will have defined a cryptographic primitive, a security game, a concrete scheme, and a game-hopping proof file, and you will have seen each one type-check or prove green as you finish it. We follow Joy of Cryptography §2.5 closely; if you have Rosulek's textbook handy, keep it open. Everything you write here is already in the `examples/joy/` directory, so you can always peek at the finished version if you get stuck.
+
+{: .important }
+**Activate your virtual environment first.** Before running any `proof_frog` command in a fresh terminal, activate the Python virtual environment you created during [installation]({% link manual/installation.md %}): `source .venv/bin/activate` on macOS/Linux (bash/zsh), `source .venv/bin/activate.fish` on fish, or `.venv\Scripts\Activate.ps1` on Windows PowerShell. Your prompt should show `(.venv)` once it is active.
 
 ---
 
@@ -527,4 +531,4 @@ Congratulations — you have written a complete game-hopping proof from scratch.
 
 - **The rest of the language.** Everything else FrogLang offers — tuples, maps, arrays, random functions, injective annotations, induction — is documented in the [Language Reference]({% link manual/language-reference/index.md %}).
 
-- **What `prove` does under the hood.** The engine's canonicalization pipeline, the Z3/SymPy integration, and the equivalence-checking algorithm are described in [Transformations]({% link manual/transformations.md %}).
+- **What `prove` does under the hood.** The engine's canonicalization pipeline, the Z3/SymPy integration, and the equivalence-checking algorithm are described in [Transformations]({% link manual/canonicalization.md %}).

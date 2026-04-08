@@ -1,9 +1,11 @@
 ---
 title: "Output: Proof"
-parent: Vibe-coding a proof
-grand_parent: HACS 2026 Updates
 layout: default
+parent: Vibe-coding a proof
 nav_order: 3
+redirect_from:
+  - /hacs-2026/vibe/proof
+  - /hacs-2026/vibe/proof.html
 ---
 
 # Output proof: FunkyPRGSymEncOTS.proof

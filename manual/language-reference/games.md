@@ -192,7 +192,7 @@ Not every `.game` file defines a cryptographic security property. The `examples/
 - **`RandomTargetGuessing`** (`RandomTargetGuessing.game`): guessing a random target is no easier than guessing any fixed value.
 - **`ROMProgramming`** (`ROMProgramming.game`): facts about programming random oracles.
 
-Helper games are structurally identical to security-property games — they are pairs of games with `export as` — but they appear in a proof's `assume:` block rather than the `theorem:` block. They can be assumed freely because they hold unconditionally or statistically, not by reduction to a computational hardness assumption. For the full catalog of available helper games and when to use each, see the Transformations page.
+Helper games are structurally identical to security-property games — they are pairs of games with `export as` — but they appear in a proof's `assume:` block rather than the `theorem:` block. They can be assumed freely because they hold unconditionally or statistically, not by reduction to a computational hardness assumption. For the full catalog of available helper games and when to use each, see the [Canonicalization]({% link manual/canonicalization.md %}) page.
 
 ---
 

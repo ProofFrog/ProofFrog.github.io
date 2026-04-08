@@ -1,6 +1,6 @@
 ---
 title: KEM-DEM CPA
-layout: default
+layout: linear
 parent: Worked Examples
 grand_parent: Manual
 nav_order: 2
@@ -419,6 +419,9 @@ The proof also includes explicit intermediate game definitions (`Game0`, `Game1`
 ---
 
 ## 10. Verifying
+
+{: .important }
+**Activate your Python virtual environment first** if it is not already active in this terminal: `source .venv/bin/activate` on macOS/Linux (bash/zsh), `source .venv/bin/activate.fish` on fish, or `.venv\Scripts\Activate.ps1` on Windows PowerShell. See [Installation]({% link manual/installation.md %}).
 
 From the repository root:
 

@@ -17,9 +17,9 @@ Papers, theses, and event material related to ProofFrog. For curated case studie
 
 ## Talks and workshops
 
-- **HACS 2024** — High Assurance Cryptographic Software workshop. See [HACS 2024 page]({% link hacs-2024.md %}) for slides and notes.
-- **CAPS 2025** — Computer-Aided Proofs of Security workshop. See [CAPS 2025 page]({% link caps-2025.md %}).
-- **HACS 2026** — High Assurance Cryptographic Software workshop, including a vibe-coding demo with Claude Code. See [HACS 2026 page]({% link hacs-2026/index.md %}) and the [vibe-coding writeup]({% link researchers/vibe-coding.md %}).
+- **HACS 2024** — High Assurance Cryptographic Software workshop. See [HACS 2024 page]({% link researchers/presentations/hacs-2024.md %}) for slides and notes.
+- **CAPS 2025** — Computer-Aided Proofs of Security workshop. See [CAPS 2025 page]({% link researchers/presentations/caps-2025.md %}).
+- **HACS 2026** — High Assurance Cryptographic Software workshop, including a vibe-coding demo with Claude Code. See [HACS 2026 page]({% link researchers/presentations/hacs-2026/index.md %}) and the [vibe-coding writeup]({% link researchers/vibe-coding.md %}).
 
 ## How to cite ProofFrog
 

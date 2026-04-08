@@ -1,8 +1,11 @@
 ---
 title: Web interface
-parent: HACS 2026 Updates
 layout: default
+parent: HACS 2026 Updates
 nav_order: 2
+redirect_from:
+  - /hacs-2026/web
+  - /hacs-2026/web.html
 ---
 
 # Web interface
@@ -21,4 +24,4 @@ This starts a local web server (default port 5173) and opens the editor in your 
 
 The web interface is a work in progress, and there are many features we would like to add.
 
-![ProofFrog web interface](../../assets/screenshot-web.png)
+![ProofFrog web interface]({{ '/assets/screenshot-web.png' | relative_url }})

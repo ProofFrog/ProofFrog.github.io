@@ -1,6 +1,6 @@
 ---
 title: Worked Examples
-layout: default
+layout: linear
 parent: Manual
 nav_order: 20
 has_children: true
@@ -11,7 +11,7 @@ permalink: /manual/worked-examples/
 
 Walkthroughs of complete ProofFrog proofs from the `examples/` directory, organized by complexity. Each example introduces ideas that the next one builds on.
 
-If you have just finished [Tutorial Part 2]({% link manual/tutorial-2-otp-ots.md %}), start at the top.
+If you have just finished [Tutorial Part 2]({% link manual/tutorial/otp-ots.md %}), start at the top.
 
 ## Examples
 

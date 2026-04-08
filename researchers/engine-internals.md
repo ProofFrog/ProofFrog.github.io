@@ -11,7 +11,7 @@ This page is written for researchers who want to contribute to ProofFrog, unders
 its canonicalization pipeline at the module level, use the engine-introspection CLI
 commands to diagnose failing proof hops, write a new editor plugin against the LSP
 server, or script ProofFrog from an MCP client. It complements the user-facing
-[Transformations]({% link manual/transformations.md %}) page, which describes *what*
+[Canonicalization]({% link manual/canonicalization.md %}) page, which describes *what*
 the engine does from a proof-author's perspective; this page describes *how* it does
 it.
 
@@ -142,7 +142,7 @@ regenerate it with `make parser` after changing a grammar.
 ## The transformation pipeline
 
 For the user-facing model of what these transforms achieve, see the
-[Transformations]({% link manual/transformations.md %}) page.
+[Canonicalization]({% link manual/canonicalization.md %}) page.
 
 ### Pipeline assembly
 

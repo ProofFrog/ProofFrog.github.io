@@ -140,7 +140,7 @@ deterministic injective BitString<blen> evaluate(BitString<lambda> seed, BitStri
 
 Both claims must hold: the method is deterministic (same inputs give the same output) and injective (distinct inputs give distinct outputs). The PRP primitive uses both, since a pseudorandom permutation is a keyed bijection.
 
-For details on exactly which engine transforms are unlocked by each modifier, see the Transformations page.
+For details on exactly which engine transforms are unlocked by each modifier, see the [Canonicalization]({% link manual/canonicalization.md %}) page.
 
 ### Matching-modifier rule
 

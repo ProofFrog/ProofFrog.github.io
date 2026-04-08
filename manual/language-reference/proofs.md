@@ -345,4 +345,4 @@ The engine reports each hop as `ok` or failing and prints the step type (`equiva
 3. Write one reduction and add its corresponding four-step pattern to `games:`.
 4. Run `proof_frog prove` after each addition. Address failures one hop at a time before adding more steps.
 
-For a guided walkthrough of writing a complete proof from scratch, see Tutorial Part 2 ({% link manual/tutorial-2-otp-ots.md %}).
+For a guided walkthrough of writing a complete proof from scratch, see Tutorial Part 2 ({% link manual/tutorial/otp-ots.md %}).

@@ -1,9 +1,14 @@
 ---
 title: HACS 2026 Updates
 layout: default
-nav_order: 8
+parent: Presentations
 has_children: true
+nav_order: 3
 has_toc: false
+redirect_from:
+  - /hacs-2026
+  - /hacs-2026/
+  - /hacs-2026/index.html
 ---
 
 # HACS 2026 Updates
@@ -11,4 +16,3 @@ has_toc: false
 - [Vibe coding a proof](vibe/index.html)
 
 - [Web interface](web.html)
-

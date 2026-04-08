@@ -1,10 +1,14 @@
 ---
 title: Vibe-coding a proof
-parent: HACS 2026 Updates
 layout: default
-nav_order: 1
+parent: HACS 2026 Updates
 has_children: true
 has_toc: false
+nav_order: 1
+redirect_from:
+  - /hacs-2026/vibe
+  - /hacs-2026/vibe/
+  - /hacs-2026/vibe/index.html
 ---
 
 # Vibe-coding a proof

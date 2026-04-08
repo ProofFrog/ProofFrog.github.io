@@ -1,6 +1,6 @@
 ---
 title: Chained Encryption
-layout: default
+layout: linear
 parent: Worked Examples
 grand_parent: Manual
 nav_order: 1
@@ -143,7 +143,7 @@ The structure is therefore:
 - Lines 2 and 3: assumption hop (E1.Real to E1.Random, justified by `OneTimeSecrecy(E1)`).
 - Lines 3 and 4: engine-verified interchangeability (transition from R1/E1.Random to R2/E2.Real).
 
-For the full structural reference, see the [Proofs language reference]({% link manual/language-reference/proofs.md %}). The [Transformations]({% link manual/transformations.md %}) page explains the canonicalization steps the engine uses to verify code equivalence.
+For the full structural reference, see the [Proofs language reference]({% link manual/language-reference/proofs.md %}). The [Canonicalization]({% link manual/canonicalization.md %}) page explains the canonicalization steps the engine uses to verify code equivalence.
 
 ---
 
@@ -185,6 +185,9 @@ When the `E1` challenger is in Real mode, the body of `R1 compose OneTimeSecrecy
 ---
 
 ## 7. Verifying
+
+{: .important }
+**Activate your Python virtual environment first** if it is not already active in this terminal: `source .venv/bin/activate` on macOS/Linux (bash/zsh), `source .venv/bin/activate.fish` on fish, or `.venv\Scripts\Activate.ps1` on Windows PowerShell. See [Installation]({% link manual/installation.md %}).
 
 From the `examples/joy/` directory (or the repository root), run:
 

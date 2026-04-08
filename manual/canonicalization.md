@@ -1,11 +1,11 @@
 ---
-title: Transformations
+title: Canonicalization
 layout: default
 parent: Manual
 nav_order: 40
 ---
 
-# Transformations
+# Canonicalization
 
 This page explains what the ProofFrog engine does between receiving a `.proof` file and
 producing a green (valid) or red (failed) result for each hop. It is written for a
@@ -39,7 +39,7 @@ not discover or invent new algebraic moves. For a map of what the engine cannot 
 
 ## What the engine simplifies automatically
 
-The subsections below describe the main categories of transformation the engine applies.
+The subsections below describe the main categories of canonicalization transforms the engine applies.
 For each category a minimal before/after snippet illustrates the transform firing, a
 real-proof pointer gives an example from the distribution, and a callout lists common
 reasons the transform might not fire.

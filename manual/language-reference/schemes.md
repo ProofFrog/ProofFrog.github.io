@@ -144,7 +144,7 @@ Scheme Example(Int lambda) extends SomePrimitive {
 }
 ```
 
-During proof verification, `this` references are automatically rewritten to the scheme's instance name (for example, `S.Helper(...)` when the scheme is instantiated as `S` in a proof), so the inliner can resolve the call correctly. You do not need to handle this rewriting manually; it is performed transparently by the engine. The Transformations page describes the inlining process in more detail.
+During proof verification, `this` references are automatically rewritten to the scheme's instance name (for example, `S.Helper(...)` when the scheme is instantiated as `S` in a proof), so the inliner can resolve the call correctly. You do not need to handle this rewriting manually; it is performed transparently by the engine. The [Canonicalization]({% link manual/canonicalization.md %}) page describes the inlining process in more detail.
 
 ---
 

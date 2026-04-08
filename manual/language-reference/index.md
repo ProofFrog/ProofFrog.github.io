@@ -18,7 +18,7 @@ FrogLang has four file types — primitives, schemes, games, and proofs — and 
 - [Execution Model]({% link manual/language-reference/execution-model.md %}) covers the operational layer — what it means for an adversary to interact with a game, how state persists, what interchangeability means formally, and how composition works.
 - The four file-type pages below cover what is specific to each kind of file.
 
-If you are not yet comfortable writing a small proof from scratch, work through [Tutorial Part 2]({% link manual/tutorial-2-otp-ots.md %}) first and come back here for lookups.
+If you are not yet comfortable writing a small proof from scratch, work through [Tutorial Part 2]({% link manual/tutorial/otp-ots.md %}) first and come back here for lookups.
 
 ## Cheat sheet
 

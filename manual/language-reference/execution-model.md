@@ -98,7 +98,7 @@ The `deterministic` annotation enables the engine to:
 
 The `injective` annotation allows the engine to see through encoding wrappers when deciding whether two random function inputs are structurally distinct.
 
-Both annotations are *semantic claims*. The typechecker enforces that when a scheme extends a primitive, the scheme's implementation of each method carries exactly the same `deterministic`/`injective` modifiers as the primitive declared. The engine uses these claims to enable certain canonicalization transforms — see the Transformations page for details.
+Both annotations are *semantic claims*. The typechecker enforces that when a scheme extends a primitive, the scheme's implementation of each method carries exactly the same `deterministic`/`injective` modifiers as the primitive declared. The engine uses these claims to enable certain canonicalization transforms — see the [Canonicalization]({% link manual/canonicalization.md %}) page for details.
 
 ---
 
@@ -152,7 +152,7 @@ Games are parameterized over primitives. For example, `Game Left(SymEnc E)` acce
 
 During proof verification, the engine **inlines** these calls: each call `E.Enc(k, m)` in the game's body is replaced by the body of `OTP.Enc`, with formal parameters substituted for actual arguments. Local variables in the inlined body are renamed to avoid collisions. Inlining repeats in a fixed-point loop until all calls have been expanded (recursion is not allowed in FrogLang, so this always terminates).
 
-The result is a flat, self-contained game body with no remaining calls to scheme methods. This flat form is what the engine canonicalizes and compares. For the full details of the canonicalization pipeline, see the Transformations page.
+The result is a flat, self-contained game body with no remaining calls to scheme methods. This flat form is what the engine canonicalizes and compares. For the full details of the canonicalization pipeline, see the [Canonicalization]({% link manual/canonicalization.md %}) page.
 
 ### Game composed with a reduction
 
@@ -186,13 +186,13 @@ The probability distributions over adversary outputs are identical. This means n
 
 The ProofFrog engine verifies interchangeability by canonicalizing both games and comparing their canonical forms. Canonicalization is a deterministic, semantics-preserving rewrite pipeline: inlining, algebraic simplification (XOR cancellation, group identities), dead code elimination, sampling normalization (sample merge, sample split, uniform + XOR simplification), and others. If the two canonical forms are structurally identical (up to variable renaming), the games are interchangeable. If the canonical forms differ only in the conditions of `if` statements, the engine uses an SMT solver (Z3) to check logical equivalence of those conditions.
 
-For the full list of transforms and the rules governing when each fires, see the Transformations page.
+For the full list of transforms and the rules governing when each fires, see the [Canonicalization]({% link manual/canonicalization.md %}) page.
 
 ---
 
 ## What is not on this page
 
-- **Algebraic identities and other semantic equivalences** — XOR cancellation, group element identities, sample merge and split, uniform masking, and other transforms the engine applies during canonicalization are described on the Transformations page.
+- **Algebraic identities and other semantic equivalences** — XOR cancellation, group element identities, sample merge and split, uniform masking, and other transforms the engine applies during canonicalization are described on the [Canonicalization]({% link manual/canonicalization.md %}) page.
 
 - **File-type rules** — what is syntactically and semantically legal in each kind of file (`.primitive`, `.scheme`, `.game`, `.proof`) is covered on the Primitives, Schemes, Games, and Proofs pages respectively.
 

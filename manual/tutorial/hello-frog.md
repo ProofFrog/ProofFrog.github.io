@@ -1,8 +1,9 @@
 ---
-title: Tutorial Part 1 — Hello Frog
-layout: default
-parent: Manual
-nav_order: 2
+title: Part 1 — Hello Frog
+layout: linear
+parent: Tutorial
+grand_parent: Manual
+nav_order: 1
 ---
 
 # Tutorial Part 1 — Hello Frog
@@ -27,6 +28,9 @@ This creates an `examples/` directory containing primitives, schemes, games, and
 If you do not have git, GitHub's **Code** button on the [examples repository page](https://github.com/ProofFrog/examples) also offers **Download ZIP**.
 
 ## Launch the web editor
+
+{: .important }
+**Activate your virtual environment first.** If you followed the [installation instructions]({% link manual/installation.md %}), ProofFrog is installed inside a Python virtual environment and you need to activate it in every new terminal before running `proof_frog`. On macOS/Linux with bash or zsh, that is `source .venv/bin/activate`; on fish, `source .venv/bin/activate.fish`; on Windows PowerShell, `.venv\Scripts\Activate.ps1`. Your prompt should show `(.venv)` once it is active.
 
 Start the web editor pointed at the `joy` example set:
 
@@ -85,4 +89,4 @@ ProofFrog checked that each adjacent pair of games in the `games:` sequence is i
 
 ## Next
 
-[Tutorial Part 2: OTP has one-time secrecy]({% link manual/tutorial-2-otp-ots.md %}) — write the same proof from scratch.
+[Tutorial Part 2: OTP has one-time secrecy]({% link manual/tutorial/otp-ots.md %}) — write the same proof from scratch.

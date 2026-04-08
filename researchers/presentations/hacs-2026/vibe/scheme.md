@@ -1,9 +1,11 @@
 ---
 title: "Output: Scheme"
-parent: Vibe-coding a proof
-grand_parent: HACS 2026 Updates
 layout: default
+parent: Vibe-coding a proof
 nav_order: 2
+redirect_from:
+  - /hacs-2026/vibe/scheme
+  - /hacs-2026/vibe/scheme.html
 ---
 
 # Output scheme: FunkyPRGSymEnc.scheme

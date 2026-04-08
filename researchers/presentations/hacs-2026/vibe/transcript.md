@@ -1,9 +1,11 @@
 ---
 title: Claude Code Transcript
-parent: Vibe-coding a proof
-grand_parent: HACS 2026 Updates
 layout: default
+parent: Vibe-coding a proof
 nav_order: 4
+redirect_from:
+  - /hacs-2026/vibe/transcript
+  - /hacs-2026/vibe/transcript.html
 ---
 
 <meta http-equiv="refresh" content="0; url=transcript/index.html">

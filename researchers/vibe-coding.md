@@ -9,7 +9,7 @@ nav_order: 4
 
 ## Read this first
 
-**Vibe-coding** is using an LLM-based coding assistant to draft, debug, and iterate on ProofFrog proofs. This page is in the For Researchers section because it is a research-and-experimentation tool, not a recommended workflow for students learning provable security. If you are new to game-hopping proofs, learn to write them by hand first: start with [Tutorial Part 1]({% link manual/tutorial-1-hello-frog.md %}), work through the [language reference]({% link manual/language-reference/index.md %}), and then try writing a proof on your own. Come back to this page once you have a baseline intuition for what a valid reduction looks like.
+**Vibe-coding** is using an LLM-based coding assistant to draft, debug, and iterate on ProofFrog proofs. This page is in the For Researchers section because it is a research-and-experimentation tool, not a recommended workflow for students learning provable security. If you are new to game-hopping proofs, learn to write them by hand first: start with [Tutorial Part 1]({% link manual/tutorial/hello-frog.md %}), work through the [language reference]({% link manual/language-reference/index.md %}), and then try writing a proof on your own. Come back to this page once you have a baseline intuition for what a valid reduction looks like.
 
 The rest of this page covers: how to configure the ProofFrog MCP server and Claude Code, what kinds of tasks the LLM handles well, where it fails, and what vibe-coding does and does not change about the soundness of a proof. Pointers to the original HACS 2026 demo artifacts appear at the end.
 
@@ -68,7 +68,7 @@ curl -O https://raw.githubusercontent.com/ProofFrog/ProofFrog/refs/heads/main/CL
 curl -O https://raw.githubusercontent.com/ProofFrog/ProofFrog/refs/heads/main/CLAUDE_MCP.md
 ```
 
-See the [HACS 2026 vibe-coding demo]({% link hacs-2026/vibe/index.md %}) for the full step-by-step configuration guide used at the workshop.
+See the [HACS 2026 vibe-coding demo]({% link researchers/presentations/hacs-2026/vibe/index.md %}) for the full step-by-step configuration guide used at the workshop.
 
 ### What the MCP server exposes
 
@@ -91,7 +91,7 @@ The server provides the following tools. The authoritative description is in `CL
 
 ## What works well
 
-The HACS 2026 demo (see the [session transcript]({% link hacs-2026/vibe/transcript.md %})) produced a working scheme and proof in roughly five minutes of wall time. That is a useful data point, but the task was chosen to be representative of examples already in the repository -- not an adversarial stress test. With that context, here is what works reliably.
+The HACS 2026 demo (see the [session transcript]({% link researchers/presentations/hacs-2026/vibe/transcript.md %})) produced a working scheme and proof in roughly five minutes of wall time. That is a useful data point, but the task was chosen to be representative of examples already in the repository -- not an adversarial stress test. With that context, here is what works reliably.
 
 **Drafting primitives, schemes, and games from a natural-language specification.** A plain-English description of a scheme -- "encrypt by XOR with a keystream derived from a PRG applied to the key XOR'd with a fresh nonce" -- can produce a usable first draft in one request. The LLM knows the FrogLang syntax well enough (from `CLAUDE.md` and the examples it can list via `list_files`) to get the types, method signatures, and import paths approximately right. Expect to correct minor issues (wrong field name, off-by-one slice boundary) but not to rewrite from scratch.
 
@@ -109,7 +109,7 @@ The HACS 2026 demo (see the [session transcript]({% link hacs-2026/vibe/transcri
 
 **Without iteration, the model drifts out of scope.** In a single long prompt with no intermediate engine feedback, the LLM may introduce primitives it was not asked for, invent security definitions that do not match the one specified, or write a proof structure that does not correspond to the game sequence described. Short requests with tight scope -- one game, one reduction at a time -- produce better results than large upfront requests.
 
-**Hallucinated helper games.** The LLM may confidently cite `Games/Misc/BitStringSampling.game` or similar file paths for helper assumptions that do not exist in the current repository. Before accepting a proof that imports an unusual game file, verify the file is present using `list_files`. See the [Transformations]({% link manual/transformations.md %}) page for the current catalogue of helper games and statistical assumptions.
+**Hallucinated helper games.** The LLM may confidently cite `Games/Misc/BitStringSampling.game` or similar file paths for helper assumptions that do not exist in the current repository. Before accepting a proof that imports an unusual game file, verify the file is present using `list_files`. See the [Canonicalization]({% link manual/canonicalization.md %}) page for the current catalogue of helper games and statistical assumptions.
 
 **The LLM will occasionally invoke the engine, see a failure, and announce success anyway.** This is the most dangerous failure mode. The model may misread the `hop_results` list from `prove`, report the wrong step as passing, or summarize a partial success as a full one. Always check the raw engine output the model is quoting. If you are running the session yourself, verify the final state by calling `prove` directly and reading `success` from the response, not from the model's summary of it.
 
@@ -123,9 +123,9 @@ Vibe-coding does not lower the trust requirements on a proof. An LLM-generated p
 
 ## Pointers
 
-- [HACS 2026 vibe-coding demo]({% link hacs-2026/vibe/index.md %}) -- the original event handout this page is derived from, including full configuration instructions and the recorded transcript.
-- [Prompt]({% link hacs-2026/vibe/prompt.md %}) -- the exact prompt used in the HACS 2026 demo. The scheme is `FunkyPRGSymEnc`, a PRG-based symmetric encryption scheme with a nonce; the proof establishes `OneTimeSecrecy` using `PRG.Security` and `OTPUniform`.
-- [Generated scheme]({% link hacs-2026/vibe/scheme.md %}) -- the scheme file the LLM produced.
-- [Generated proof]({% link hacs-2026/vibe/proof.md %}) -- the proof file the LLM produced. Seven game hops; the proof is symmetric, with the left and right halves mirroring each other.
-- [Session transcript]({% link hacs-2026/vibe/transcript.md %}) -- the full Claude Code session from the HACS 2026 demo.
+- [HACS 2026 vibe-coding demo]({% link researchers/presentations/hacs-2026/vibe/index.md %}) -- the original event handout this page is derived from, including full configuration instructions and the recorded transcript.
+- [Prompt]({% link researchers/presentations/hacs-2026/vibe/prompt.md %}) -- the exact prompt used in the HACS 2026 demo. The scheme is `FunkyPRGSymEnc`, a PRG-based symmetric encryption scheme with a nonce; the proof establishes `OneTimeSecrecy` using `PRG.Security` and `OTPUniform`.
+- [Generated scheme]({% link researchers/presentations/hacs-2026/vibe/scheme.md %}) -- the scheme file the LLM produced.
+- [Generated proof]({% link researchers/presentations/hacs-2026/vibe/proof.md %}) -- the proof file the LLM produced. Seven game hops; the proof is symmetric, with the left and right halves mirroring each other.
+- [Session transcript]({% link researchers/presentations/hacs-2026/vibe/transcript.md %}) -- the full Claude Code session from the HACS 2026 demo.
 - `CLAUDE.md` and `CLAUDE_MCP.md` in the ProofFrog repository -- the current best-practice guides for LLM clients. `CLAUDE.md` covers ProofFrog architecture, FrogLang conventions, and proof-writing discipline. `CLAUDE_MCP.md` is written for the LLM and documents each MCP tool with examples. These are not Jekyll pages; access them directly from the repository at `https://github.com/ProofFrog/ProofFrog/blob/main/CLAUDE.md` and `https://github.com/ProofFrog/ProofFrog/blob/main/CLAUDE_MCP.md`, or download them locally as described in the Setup section above.
