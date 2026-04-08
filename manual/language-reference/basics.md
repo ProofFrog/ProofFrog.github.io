@@ -137,7 +137,6 @@ From another file, after importing, a scheme or primitive instance `E` exposes t
 | `/` | `Int`, `Int` | `Int` | Integer division |
 | `/` | `ModInt<q>`, `ModInt<q>` | `ModInt<q>` | Modular division |
 | `/` | `GroupElem<G>`, `GroupElem<G>` | `GroupElem<G>` | `a * b^(-1)` |
-| `%` | `Int`, `Int` | `Int` | Remainder |
 | `^` | `Int`, `Int` | `Int` | Exponentiation (right-associative) |
 | `^` | `ModInt<q>`, `Int` | `ModInt<q>` | Modular exponentiation (right-associative) |
 | `^` | `GroupElem<G>`, `ModInt<G.order>` or `Int` | `GroupElem<G>` | Scalar power (right-associative) |

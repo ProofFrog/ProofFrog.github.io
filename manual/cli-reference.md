@@ -59,7 +59,7 @@ python -m proof_frog parse [OPTIONS] FILE
 
 ### Behavior
 
-Parses any FrogLang source file (`.primitive`, `.scheme`, `.game`, or `.proof`) and prints its abstract syntax tree (AST) to standard output. This is mainly useful for debugging grammar issues or for tooling that needs a structured representation of a file before type-checking. If the file cannot be parsed, ProofFrog prints an error with the offending line and column and exits with a non-zero status.
+Parses any FrogLang source file (`.primitive`, `.scheme`, `.game`, or `.proof`) and prints a normalized source representation of the parsed file to standard output. The default output is a pretty-printed form (useful for confirming the parser saw what you intended); the `--json` flag instead emits a JSON-encoded AST suitable for tooling. This command is mainly useful for debugging grammar issues. If the file cannot be parsed, ProofFrog prints an error with the offending line and column and exits with a non-zero status.
 
 ### Options
 
@@ -96,7 +96,7 @@ python -m proof_frog check [OPTIONS] FILE
 
 ### Behavior
 
-Type-checks and performs semantic analysis on any FrogLang file. This goes beyond parsing: ProofFrog verifies that types are used consistently, that scheme implementations match the signatures declared in the corresponding primitive, that modifiers (e.g., `const`, `random`) are compatible, and that all referenced identifiers are in scope. Running `check` is a good first step before `prove` — it catches structural errors quickly without the overhead of full equivalence checking.
+Type-checks and performs semantic analysis on any FrogLang file. This goes beyond parsing: ProofFrog verifies that types are used consistently, that scheme implementations match the signatures declared in the corresponding primitive, that method modifiers (`deterministic`, `injective`) match between the scheme and the primitive it extends, and that all referenced identifiers are in scope. Running `check` is a good first step before `prove` — it catches structural errors quickly without the overhead of full equivalence checking. On success, `check` prints `<file> is well-formed.` and exits with status 0. On failure it prints a diagnostic and exits with a non-zero status.
 
 ### Options
 
@@ -121,7 +121,7 @@ python -m proof_frog check --json examples/joy/Proofs/Ch2/OTPSecure.proof
 
 **Type error** — An expression or assignment involves incompatible types. The error message names the conflicting types and the relevant line.
 
-**Modifier mismatch** — A scheme method declares a modifier (e.g., `random`) that differs from what the primitive's signature requires. Align the modifiers between the scheme and primitive.
+**Modifier mismatch** — A scheme method declares a `deterministic`/`injective` modifier that differs from what the primitive's signature requires. Align the modifiers between the scheme and the primitive it extends.
 
 ---
 
@@ -223,7 +223,7 @@ python -m proof_frog web [OPTIONS] [DIRECTORY]
 
 ### Behavior
 
-Starts the ProofFrog browser-based editor, which provides an in-browser environment for editing and running proofs. The optional `DIRECTORY` argument sets the working directory that the editor will use as its file root; it defaults to the current working directory if omitted. The server starts on port 5173 and opens the editor automatically in your default browser.
+Starts the ProofFrog browser-based editor, which provides an in-browser environment for editing and running proofs. The optional `DIRECTORY` argument sets the working directory that the editor will use as its file root; it defaults to the current working directory if omitted. The server starts on port 5173 if it is free, otherwise it scans upward for the next available port; the actual URL is printed to the terminal at startup. ProofFrog also opens that URL in your default browser automatically.
 
 {: .note }
 The web interface provides the same verification engine as the CLI. It is particularly useful for exploring examples and for interactive proof development where you want to see game hops rendered graphically.
