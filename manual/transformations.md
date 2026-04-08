@@ -142,8 +142,7 @@ ModInt<q> u <- ModInt<q>;
 return u;
 ```
 
-Real-proof pointer: `examples/Proofs/PRF/` proofs that use modular-arithmetic PRFs
-exercise these identities. `examples/Proofs/SymEnc/ModOTPSecure.proof` uses the ModInt
+Real-proof pointer: `examples/Proofs/SymEnc/ModOTPSecure.proof` uses the ModInt
 one-time-pad argument directly.
 
 {: .note }
@@ -309,9 +308,11 @@ BitString<n> v = E.Enc(k, mL);
 return [v, v];
 ```
 
-Real-proof pointer: `examples/Proofs/PRF/` proofs rely on `DeduplicateDeterministicCalls`
-when a PRF key is used in multiple calls with the same arguments -- for example in the
-hybrid argument steps of a multi-query PRF proof.
+Real-proof pointer: any proof where a deterministic scheme method is invoked twice
+with identical arguments after inlining will exercise `DeduplicateDeterministicCalls`
+-- typically visible in proofs where the same encryption or hash call appears on both
+branches of a conditional or in two separate oracle bodies that reference the same
+message.
 
 {: .note }
 **If deduplication is not firing:** The method must be declared `deterministic` in the
@@ -522,15 +523,15 @@ Every use of an assumption in a proof -- whether a hardness assumption like DDH 
 statistical helper like UniqueSampling -- follows the same four-step reduction pattern.
 The user writes four consecutive entries in the `games:` list:
 
-1. An interchangeability hop from the current game to `Assumption.Side1 compose R`.
-2. The assumption hop from `Assumption.Side1 compose R` to `Assumption.Side2 compose R`.
-3. An interchangeability hop from `Assumption.Side2 compose R` to the next game.
+1. `G_before` -- the game immediately before the reduction hop.
+2. `Assumption.Side1 compose R against Adversary;` -- interchangeability hop from `G_before`.
+3. `Assumption.Side2 compose R against Adversary;` -- assumption hop from entry 2.
+4. `G_after` -- interchangeability hop from entry 3 back to a direct game.
 
-(The assumption hop in step 2 collapses to a single listed game pair; steps 1, 2, and 3
-together account for four `games:` entries.) The engine verifies steps 1 and 3 by
-canonicalization; step 2 is justified by the assumption listed in `assume:`. Assumption
-hops are bidirectional -- the engine accepts both Side1 -> Side2 and Side2 -> Side1
-because indistinguishability is symmetric.
+The engine verifies entries 1 to 2 and entries 3 to 4 by canonicalization; entry 2 to 3
+is justified by the assumption listed in `assume:`. Assumption hops are bidirectional --
+the engine accepts both Side1 -> Side2 and Side2 -> Side1 because indistinguishability
+is symmetric.
 
 For the syntactic reference for how to write reductions and structure the `games:` list,
 see [Proofs]({% link manual/language-reference/proofs.md %}). For a fully worked
@@ -575,7 +576,7 @@ links to [Limitations]({% link manual/limitations.md %}) for details and workaro
 When a proof step fails, the following recipe finds the problem in most cases.
 
 **Step 1: Get the canonical forms.**
-Run `proof_frog prove -v` (see [CLI Reference]({% link manual/cli-reference.md %})) or,
+Run `proof_frog prove -v` (see [CLI Reference]({% link manual/cli-reference.md %}#prove)) or,
 in the browser, click the Inlined Game button for each of the two games in the failing
 hop (see [Web Editor]({% link manual/web-editor.md %})).
 The verbose output shows the fully canonicalized form of each game after the entire
