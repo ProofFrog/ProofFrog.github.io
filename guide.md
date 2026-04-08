@@ -1,7 +1,7 @@
 ---
 title: Guide to Writing a Proof
 layout: default
-nav_order: 3
+nav_order: 97
 ---
 
 # Guide to Writing and Testing Proofs in ProofFrog
