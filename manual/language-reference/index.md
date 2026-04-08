@@ -5,6 +5,9 @@ parent: Manual
 nav_order: 30
 has_children: true
 permalink: /manual/language-reference/
+redirect_from:
+  - /guide/
+  - /guide.html
 ---
 
 # Language Reference

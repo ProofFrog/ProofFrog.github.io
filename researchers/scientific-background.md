@@ -3,6 +3,9 @@ title: Scientific Background
 layout: default
 parent: For Researchers
 nav_order: 1
+redirect_from:
+  - /design/
+  - /design.html
 ---
 
 # Scientific Background

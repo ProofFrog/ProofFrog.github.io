@@ -9,6 +9,7 @@ aux_links:
 
 plugins:
   - jekyll-katex
+  - jekyll-redirect-from
 
 callouts:
   highlight:

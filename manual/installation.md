@@ -3,6 +3,9 @@ title: Installation
 layout: default
 parent: Manual
 nav_order: 1
+redirect_from:
+  - /getting-started/
+  - /getting-started.html
 ---
 
 # Installation
