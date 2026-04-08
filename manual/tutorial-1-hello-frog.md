@@ -85,4 +85,4 @@ ProofFrog checked that each adjacent pair of games in the `games:` sequence is i
 
 ## Next
 
-Tutorial Part 2: OTP has one-time secrecy (coming soon).
+[Tutorial Part 2: OTP has one-time secrecy]({% link manual/tutorial-2-otp-ots.md %}) — write the same proof from scratch.

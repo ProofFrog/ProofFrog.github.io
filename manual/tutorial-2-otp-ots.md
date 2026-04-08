@@ -212,8 +212,9 @@ E.Ciphertext ENC(E.Message m, E.Message extra) {
 The engine rejects this at the type-checking stage with an error like:
 
 ```
-OneTimeSecrecy.game:17:5: error: Method 'ENC' has different signatures
-  in Random and Real: ENC(E.Message m, E.Message extra) vs ENC(E.Message m)
+OneTimeSecrecy.game:8:4: error: Method 'ENC' has different signatures in Real and Random: E.Ciphertext ENC(E.Message m) vs E.Ciphertext ENC(E.Message m, E.Message extra)
+    E.Ciphertext ENC(E.Message m) {
+    ^
 ```
 
 The fix is to make both oracles identical: same name, same parameters, same return type. The engine cares only about signatures here, not bodies.
