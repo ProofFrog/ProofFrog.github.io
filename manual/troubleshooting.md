@@ -82,8 +82,8 @@ Parse errors use the format `<file>:<line>:<col>: parse error: <message>`,
 followed by the offending source line and a caret pointing to the problem
 character.
 
-**Symptom:** `<file>:<line>:<col>: parse error: missing ';' before '}'`
-(or `missing ';' (found '<token>' on next line)`)
+**Symptom:** `<file>:<line>:<col>: parse error: missing ';' before '<token>'`
+(where `<token>` is typically `}` or the first token of the next statement)
 
 **Likely cause:** A statement in a method body is missing its terminating
 semicolon.

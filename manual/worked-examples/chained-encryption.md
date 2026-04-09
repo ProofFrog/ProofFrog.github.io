@@ -97,7 +97,7 @@ The `games:` block lists six game steps, producing five hops. The overall shape:
 - **Step 6** — `OneTimeSecrecy(CE).Random against OneTimeSecrecy(CE).Adversary`
   The ending point: the theorem's Random side. Once both components `c1` and `c2` are uniformly random (component-wise), the joint pair is also uniformly random, which equals a direct sample from `CE.Ciphertext`. The engine verifies this final equivalence.
 
-The proof is symmetric: the first half (hops 1-2-3) handles `E1`'s encryption, replacing `c1` with a random ciphertext; the second half (hops 3-4-5) handles `E2`'s encryption, replacing `c2` with a random ciphertext. Steps 2 through 5 are two interleaved applications of the four-step reduction pattern, with step 4 serving as both the exit step of the first application and the entry step of the second.
+The proof is symmetric: hops 1 and 2 handle `E1`'s encryption (replacing `c1` with a random ciphertext), and hops 4 and 5 handle `E2`'s encryption (replacing `c2` with a random ciphertext). Hop 3 is the pivot interchangeability hop that rewrites the halfway state from the `R1`/`E1.Random` form into the `R2`/`E2.Real` form. Steps 1 through 4 are the first four-step reduction pattern (for `E1`, via `R1`); steps 3 through 6 are the second (for `E2`, via `R2`). The two patterns share step 4 (which serves as both the exit step `G_B` of the first pattern and the entry step `G_A` of the second), so the six game steps cover two four-step patterns with one shared boundary.
 
 ---
 
@@ -184,7 +184,31 @@ When the `E1` challenger is in Real mode, the body of `R1 compose OneTimeSecrecy
 
 ---
 
-## 7. Verifying
+## 7. The second reduction in detail
+
+Reduction `R2` plays against a `OneTimeSecrecy(E2)` challenger and handles the second half of the proof:
+
+```prooffrog
+// R2: c1 is already random; delegates E2 encryption to the challenger
+Reduction R2(ChainedEncryption CE, SymEnc E1, SymEnc E2) compose OneTimeSecrecy(E2) against OneTimeSecrecy(CE).Adversary {
+    CE.Ciphertext ENC(CE.Message m) {
+        E1.Ciphertext c1 <- E1.Ciphertext;
+        E2.Ciphertext c2 = challenger.ENC(m);
+        E2.Ciphertext c2prime <- E2.Ciphertext;
+        return [c1, c2];
+    }
+}
+```
+
+Unlike `R1`, `R2` does not have any `E1` challenger in scope — the proof has already used up `OneTimeSecrecy(E1)` in the earlier assumption hop. The reduction must therefore produce `c1` by itself: it samples `c1` uniformly from `E1.Ciphertext` directly. This is why the halfway state between hops 3 and 4 (the step 4 entry point) canonicalizes to "c1 is a fresh uniform sample" — exactly the state `R1 compose OneTimeSecrecy(E1).Random` leaves us in at step 3. The engine verifies that the two forms agree.
+
+The body then asks the `E2` challenger to encrypt `m` (via `challenger.ENC(m)`) and returns `[c1, c2]`. When the `E2` challenger is in Real mode, `c2 = E2.Enc(k_fresh, m)` for a freshly sampled key, so the overall output matches the halfway state where `c1` is random and `c2` is a real encryption of `m`. When the `E2` challenger switches to Random mode, `c2` becomes a uniform `E2.Ciphertext`, and the output matches the final game `OneTimeSecrecy(CE).Random` where both components are uniformly random.
+
+**A note on `c2prime`.** Line 28 of the proof file samples `E2.Ciphertext c2prime <- E2.Ciphertext;` but never uses the result — `c2prime` is not returned, and no subsequent statement reads it. This is dead code and has no effect on the proof; the canonicalization pipeline eliminates unused samples when comparing the reduction's output to the surrounding games. You can mentally ignore the line when reading the reduction.
+
+---
+
+## 8. Verifying
 
 {: .important }
 **Activate your Python virtual environment first** if it is not already active in this terminal: `source .venv/bin/activate` on macOS/Linux (bash/zsh), `source .venv/bin/activate.fish` on fish, or `.venv\Scripts\Activate.ps1` on Windows PowerShell. See [Installation]({% link manual/installation.md %}).
@@ -222,6 +246,6 @@ In the web editor, open `Proofs/Ch2/ChainedEncryptionSecure.proof` and click the
 
 ---
 
-## 8. Next
+## 9. Next
 
 The next worked example, [KEM-DEM CPA]({% link manual/worked-examples/kemdem-cpa.md %}), is the graduation piece: a KEM-DEM hybrid encryption construction proved CPA-secure. It uses two independent primitives (a KEM and a symmetric cipher), two reductions that operate in opposite directions of the game sequence, and a lemma invocation. After seeing ChainedEncryption you have all the conceptual tools needed to read it; the KEM-DEM example shows how those tools combine at a scale closer to what real-world proof engineering looks like.

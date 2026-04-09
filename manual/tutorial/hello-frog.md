@@ -11,8 +11,12 @@ nav_order: 1
 
 In this tutorial you will run your first ProofFrog proof, break it on purpose to see what a failing proof looks like, and fix it again. You will not write any FrogLang yourself — the goal is simply to get comfortable with the tool before writing anything from scratch.
 
+---
+
 - TOC
 {:toc}
+
+---
 
 ## Prerequisites
 

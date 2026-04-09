@@ -102,9 +102,9 @@ external comment or separate argument outside the proof file.
 
 ## Capabilities the engine aspires to but is currently weak at
 
-The following limitations are verified weak spots in the current implementation. The
-engine's diagnostic system (see the `prove -v` output) will often flag these explicitly
-when a step fails for one of these reasons.
+The following limitations are registered in the engine's diagnostic system and will
+be flagged explicitly in the `prove -v` output when a failing step looks like one of
+these cases.
 
 ### `||` and `&&` commutativity
 
@@ -181,7 +181,7 @@ from there.
 
 ### Higher-level soft spots
 
-Beyond the five verified limitations above, the following areas are known to be
+Beyond the registered limitations above, the following areas are known to be
 challenging for the current engine, even though the diagnostic system may not always
 produce a specific error message for them.
 

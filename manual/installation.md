@@ -13,8 +13,12 @@ redirect_from:
 
 This page walks you through installing ProofFrog on your computer, verifying the installation, and obtaining the example files. No prior command-line experience is assumed.
 
+---
+
 - TOC
 {:toc}
+
+---
 
 ## Prerequisites
 

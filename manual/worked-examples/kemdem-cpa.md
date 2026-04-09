@@ -26,7 +26,7 @@ The recipient reverses the process: decapsulate `c_kem` to recover `ss`, then us
 
 This construction is how every modern TLS-like protocol works at a high level: the asymmetric primitive (historically RSA or ECDH, now increasingly a post-quantum KEM) establishes a shared secret, and all subsequent data is encrypted symmetrically.
 
-**Key design choice in this version.** The `SymEnc` primitive used here deliberately does **not** have a `KeyGen` method. The symmetric key is always the shared secret produced by the KEM; the scheme never generates a standalone symmetric key. This design avoids the need for a key-uniformity assumption — the question of whether the KEM shared secret is uniform enough to serve as a symmetric key is answered by the KEM's own CPA security definition, which says the real shared secret is indistinguishable from a uniform random sample. The result is a clean three-reduction proof. (The main in-repo file `examples/Proofs/PubEnc/KEMDEMCPA.proof` uses a `SymEnc` with a `KeyGen` and needs two additional `KeyUniformity` hops; this page intentionally uses the cleaner version from `examples/asymmetric-ladder/kemdem/`.)
+**Key design choice in this version.** Although the `SymEnc` primitive declares a `KeyGen` method, the `Hyb` scheme used here never calls it — the symmetric key is always the shared secret produced by the KEM. Because the scheme never generates a standalone symmetric key, the proof does not need a key-uniformity assumption: the question of whether the KEM shared secret is uniform enough to serve as a symmetric key is answered by the KEM's own CPA security definition, which says the real shared secret is indistinguishable from a uniform random sample. The result is a clean three-reduction proof. (The main in-repo file `examples/Proofs/PubEnc/KEMDEMCPA.proof` follows a different formulation that does invoke `E.KeyGen()` and consequently needs two additional `KeyUniformity` hops; this page intentionally uses the cleaner version from `examples/asymmetric-ladder/kemdem/`.)
 
 ---
 
@@ -40,7 +40,7 @@ The KEM-DEM construction and its CPA-security proof appear in Mike Rosulek's [Jo
 
 ### 3a. SymEnc — primitive and OTS game
 
-The symmetric encryption primitive is parameterized by a message space, a ciphertext space, and a key space. Notice there is no `KeyGen` method — the symmetric key always comes from outside the primitive (in this construction, from the KEM).
+The symmetric encryption primitive is parameterized by a message space, a ciphertext space, and a key space. The primitive declares a `KeyGen` method, but in this construction the `Hyb` scheme never calls it — the symmetric key always comes from outside the primitive (from the KEM's shared secret).
 
 ```prooffrog
 Primitive SymEnc(Set MessageSpace, Set CiphertextSpace, Set KeySpace) {
@@ -412,7 +412,7 @@ The pattern in each three-reduction block is the standard four-step pattern from
 3. An assumption hop to `Security.SideB compose R`.
 4. An interchangeability hop back to a direct game.
 
-R1 uses this pattern with `CPAKEM(K).Real` as SideA and `CPAKEM(K).Ideal` as SideB (Real → Ideal). R2 uses it with `OTS(E).Left` as SideA and `OTS(E).Right` as SideB (Left → Right). R3 uses it with `CPAKEM(K).Ideal` as SideA and `CPAKEM(K).Real` as SideB (Ideal → Real, the reverse direction). Twelve game steps cover three complete four-step patterns; the first and last steps are the two sides of the theorem goal.
+R1 uses this pattern with `CPAKEM(K).Real` as SideA and `CPAKEM(K).Ideal` as SideB (Real → Ideal). R2 uses it with `OTS(E).Left` as SideA and `OTS(E).Right` as SideB (Left → Right). R3 uses it with `CPAKEM(K).Ideal` as SideA and `CPAKEM(K).Real` as SideB (Ideal → Real, the reverse direction). The three four-step patterns share their boundary direct-games: `Game1` closes R1 and opens R2, `Game2` closes R2 and opens R3. The first (`CPA(H).Left`) and last (`CPA(H).Right`) of the twelve entries are the two sides of the theorem goal; the ten entries between them are the three four-step patterns glued at those shared boundaries.
 
 The proof also includes explicit intermediate game definitions (`Game0`, `Game1`, `Game2`, `Game3`) as additional documentation. ProofFrog can verify the proof without them (the equivalences they participate in would be direct consecutive hops between composed forms), but writing them out makes each game state legible as a standalone program and helps the reader understand what the proof claims at each stage.
 
