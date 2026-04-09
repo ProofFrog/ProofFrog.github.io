@@ -16,22 +16,22 @@ This page describes the syntactic and semantic foundations shared by all FrogLan
 
 **Character set.** FrogLang files must be ASCII only. Non-ASCII characters (including Unicode letters, accents, and non-breaking spaces) are rejected by the parser.
 
-**Comments.** Only line comments are supported: `//` begins a comment that runs to the end of the line. There are no block comments.
+**Comments.** `//` begins a comment that runs to the end of the line. Multi-line or block comments use `/* ... */`.
 
 **Identifiers.** An identifier is a sequence of letters, digits, and underscores that does not begin with a digit. Identifiers are case-sensitive.
 
 **Reserved keywords.** The following words are reserved and may not be used as identifiers:
 
 ```
-Primitive   Scheme      Game        Reduction   proof
-let         assume      lemma       theorem     games
-compose     against     import      export      as
-if          else        for         to          in
-return      extends     requires    this        challenger
-deterministic  injective  None      true        false
+Primitive      Scheme      Game        Reduction   proof
+let            assume      lemma       theorem     games
+compose        against     import      export      as
+if             else        for         to          in
+return         extends     requires    this        challenger
+deterministic  injective   None        true        false
 ```
 
-**File extensions.**
+**File extensions**
 
 | Extension | File type |
 |---|---|
@@ -95,6 +95,8 @@ Only sampled `Function` values receive random-function simplifications during pr
 
 Note: the current syntax for tuple types uses bracket notation `[A, B]`. An older product-type notation `A * B` is not accepted by the current engine.
 
+Note: `...` cannot be used in FrogLang tuples: when writing a tuple type or tuple literals in FrogLang, a concrete size must be used. In other words, you can write a 4-tuple `[T1, T2, T3, T4]` but not an `n`-tuple literal `[T1, T2, ..., Tn]`.
+
 ### Type aliases
 
 Primitives and schemes declare named `Set` fields that become type aliases:
@@ -115,12 +117,12 @@ From another file, after importing, a scheme or primitive instance `E` exposes t
 |---|---|---|
 | `0`, `42` | `Int` | Integer literal |
 | `0b101` | `BitString<3>` | Binary literal; length equals digit count after `0b` |
-| `0^n` | `BitString<n>` | All-zeros bitstring of length `n` |
-| `1^n` | `BitString<n>` | All-ones bitstring of length `n` |
+| `0^n` | `BitString<n>` | The all-zeros bitstring of length `n` |
+| `1^n` | `BitString<n>` | The all-ones bitstring of length `n` |
 | `true`, `false` | `Bool` | Boolean literals |
-| `None` | `T?` | Null optional |
-| `{e1, e2}`, `{}` | `Set<T>` | Set literals |
-| `[e1, e2]`, `[]` | `[T1, T2]` | Tuple literals |
+| `None` | `T?` | The null value, for methods with an optional return type |
+| `{e1, e2}` | `Set<T>` | Set literals (no empty set notation needed; all sets are initialized to empty) |
+| `[e1, e2]` | `[T1, T2]` | Tuple literal |
 
 ### Operator table
 
@@ -141,8 +143,8 @@ From another file, after importing, a scheme or primitive instance `E` exposes t
 | `^` | `ModInt<q>`, `Int` | `ModInt<q>` | Modular exponentiation (right-associative) |
 | `^` | `GroupElem<G>`, `ModInt<G.order>` or `Int` | `GroupElem<G>` | Scalar power (right-associative) |
 | `-` (unary) | `Int` | `Int` | Negation |
-| `\|\|` | `Bool`, `Bool` | `Bool` | Logical OR |
-| `\|\|` | `BitString<n>`, `BitString<m>` | `BitString<n+m>` | Concatenation |
+| `||` | `Bool`, `Bool` | `Bool` | Logical OR |
+| `||` | `BitString<n>`, `BitString<m>` | `BitString<n+m>` | Concatenation |
 | `&&` | `Bool`, `Bool` | `Bool` | Logical AND |
 | `!` | `Bool` | `Bool` | Logical NOT |
 | `==`, `!=` | any comparable | `Bool` | Equality / inequality |
@@ -151,17 +153,17 @@ From another file, after importing, a scheme or primitive instance `E` exposes t
 | `subsets` | `Set<T>`, `Set<T>` | `Bool` | Subset test |
 | `union` | `Set<T>`, `Set<T>` | `Set<T>` | Set union |
 | `\` | `Set<T>`, `Set<T>` | `Set<T>` | Set difference |
-| `\|x\|` | `Set<T>`, `Map<K,V>`, `BitString<n>`, `Array<T,n>` | `Int` | Cardinality / length |
+| `|x|` | `Set<T>`, `Map<K,V>`, `BitString<n>`, `Array<T,n>` | `Int` | Cardinality / length |
 | `a[i]` | `Array<T,n>`, index `Int` | `T` | Array element at index `i` |
 | `a[i]` | `BitString<n>`, index `Int` | single bit | Bit at position `i` |
 | `a[i : j]` | `BitString<n>` | `BitString<j-i>` | Slice from `i` (inclusive) to `j` (exclusive) |
 
-**Key gotchas:**
+**Highlights:**
 
-- `+` on `BitString<n>` is **XOR**, not arithmetic addition. This is the most common source of confusion: `k + m` in FrogLang XORs `k` and `m` when both are bitstrings. The OTP encryption `return k + m;` is XOR.
+- `+` on `BitString<n>` is **XOR**, not arithmetic addition. This is a common source of confusion: `k + m` in FrogLang XORs `k` and `m` when both are bitstrings. The OTP encryption `return k + m;` is XOR.
 - `||` is overloaded: logical OR on `Bool` and concatenation on `BitString`. The type of both operands determines which operation is performed.
 - `^` is **right-associative** exponentiation, not XOR. XOR is `+`.
-- Bitstring slice bounds: `a[i : j]` is **inclusive on the left, exclusive on the right**, yielding `BitString<j - i>`.
+- Bitstring slice bounds: `a[i : j]` is **inclusive on the left, exclusive on the right**, yielding a bitstring of length `j - i`.
 
 ### Operator precedence
 
@@ -174,7 +176,7 @@ Precedence from highest (binds tightest) to lowest:
 | 3 | `+`, `-` |
 | 4 | `==`, `!=`, `<`, `>`, `<=`, `>=`, `in`, `subsets` |
 | 5 | `&&` |
-| 6 (lowest) | `\|\|`, `union`, `\` |
+| 6 (lowest) | `||`, `union`, `\` |
 
 ### Algebraic properties
 
@@ -185,11 +187,11 @@ Precedence from highest (binds tightest) to lowest:
 | `*` | `Int`, `ModInt<q>` | Yes | Yes | `1` |
 | `*` | `GroupElem<G>` | Yes | Yes | `G.identity` |
 | `&&` | `Bool` | Yes | Yes | `true` |
-| `\|\|` | `Bool` | Yes | Yes | `false` |
+| `||` | `Bool` | Yes | Yes | `false` |
 | `-` | any | No | No | — |
 | `/` | any | No | No | — |
 | `^` | any | No | No | — |
-| `\|\|` | `BitString` | No | Yes | — |
+| `||` | `BitString` | No | Yes | — |
 
 ---
 
@@ -213,7 +215,7 @@ Draws a value uniformly at random from the full domain of the named type.
 BitString<n> x <-uniq[S] BitString<n>;
 ```
 
-Samples uniformly from `BitString<n> \ S`, where `S` is a set expression. Semantically equivalent to repeated sampling until the result is not in `S`. Used when freshness is required (for example, ensuring a nonce was not previously used).
+This is shorthand notation for sampling uniformly without replacement, with bookkeeping handled by the set `S`.  In other words, it's equivalent to initializing `S = {}`, sampling `x <- BitString<n> \ S`, and then updating `S <- S union {x}`. While the expanded form is also valid FrogLang, using the shorthand notation enables the ProofFrog engine to recognize this pattern and apply certain transformations.
 
 **Sample into a map entry:**
 
@@ -258,9 +260,10 @@ a[i] = expr;       // assign to an array or map element
 Sampling is a statement form (see the Sampling section above):
 
 ```prooffrog
-Type x <- Type;
-Type x <-uniq[S] Type;
-M[k] <- Type;
+Type x <- Type;         // sample variable x uniformly at random from set Type
+Type x <-uniq[S] Type;  // sample variable x uniformly at random from Type \ S 
+                        // and implicitly update bookkeeping set S
+M[k] <- Type;           // sample uniformly at random and assign to a map value
 ```
 
 ### Conditional
@@ -270,14 +273,16 @@ if (condition) {
     ...
 }
 
-if (condition) {
+if (condition1) {
+    ...
+} else if (condition2) {
     ...
 } else {
     ...
 }
 ```
 
-The condition must be a `Bool` expression. `else if` chains are supported.
+Conditions must be `Bool` expressions.
 
 ### Numeric for loop
 

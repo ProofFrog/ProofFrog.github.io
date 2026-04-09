@@ -4,6 +4,7 @@ layout: default
 parent: Manual
 nav_order: 30
 has_children: true
+has_toc: false
 permalink: /manual/language-reference/
 redirect_from:
   - /guide/
@@ -18,15 +19,13 @@ FrogLang has four file types — primitives, schemes, games, and proofs — and 
 - [Execution Model]({% link manual/language-reference/execution-model.md %}) covers the operational layer — what it means for an adversary to interact with a game, how state persists, what interchangeability means formally, and how composition works.
 - The four file-type pages below cover what is specific to each kind of file.
 
-If you are not yet comfortable writing a small proof from scratch, work through [Tutorial Part 2]({% link manual/tutorial/otp-ots.md %}) first and come back here for lookups.
+The [tutorials]({% link manual/tutorial/index.md %}) and [worked examples]({% link manual/worked-examples/index.md %}) are a good starting place if you are new to ProofFrog.
 
-## Cheat sheet
-
-| Page | What it covers |
+| Reference Page | Topic |
 |---|---|
 | [Basics]({% link manual/language-reference/basics.md %}) | Types, operators, sampling forms, statements, imports |
 | [Execution Model]({% link manual/language-reference/execution-model.md %}) | Adversary model, game lifecycle, state, non-determinism, composition, interchangeability |
 | [Primitives]({% link manual/language-reference/primitives.md %}) | The `.primitive` file type: `Primitive` block, parameters, set fields, method signatures, `deterministic`/`injective` modifiers |
 | [Schemes]({% link manual/language-reference/schemes.md %}) | The `.scheme` file type: `extends`, parameter forms, `requires`, field assignments, method bodies, the `this` keyword, matching-modifier rule |
-| [Games]({% link manual/language-reference/games.md %}) | The `.game` file type: two-game requirement, `Initialize` and state, oracle methods, `export as`, phases, helper games |
+| [Games]({% link manual/language-reference/games.md %}) | The `.game` file type: two-game requirement, `Initialize` and state, oracle methods, `export as`, helper games |
 | [Proofs]({% link manual/language-reference/proofs.md %}) | The `.proof` file type: `let:`, `assume:`, `lemma:`, `theorem:`, `games:` blocks, reductions, the reduction parameter rule, the four-step reduction pattern |

@@ -92,3 +92,12 @@ figure.highlight :not(pre) > code {
 	background-size: cover;
 	margin-left: 10px;
 }
+
+/* Label column: no left border, right-aligned */
+.table-labels td:last-child,
+.table-labels th:last-child {
+  border-left: none;
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}

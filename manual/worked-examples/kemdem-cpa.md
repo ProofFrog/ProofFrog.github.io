@@ -775,13 +775,14 @@ In the web editor, open `Proofs/PubEnc/KEMDEMCPA.proof` and click **Run Proof**.
 
 ---
 
-### Next steps
+### 13. Next steps
 
-TODO LEFT OFF HERE
+This concludes the tutorial and worked examples section of the ProofFrog manual.  From here you have a few options:
 
-- Elsewhere in the manual
-- Explore the examples catalogue
-- See via a KEM-DEM example how ProofFrog compares to EasyCrypt
-- Learn more about the science
-
-**Learn more.** If you are curious about how ProofFrog compares with other formal verification systems, check out the [Proof Ladders project](https://proof-ladders.github.io/), which includes an example showing CPA security of KEM-DEM in both [ProofFrog](https://github.com/proof-ladders/asymmetric-ladder/tree/main/kemdem/ProofFrog) and [EasyCrypt](https://github.com/proof-ladders/asymmetric-ladder/tree/main/kemdem/EasyCrypt). That version of the ProofFrog proof uses a slightly different formulation of the one-time secrecy game — one phrased with uniform sampling `E.Key k <- E.Key;` instead of `E.KeyGen()` — which lets the proof sidestep the key-uniformity assumption entirely and collapses the five reductions on this page down to three.
+- Build your own proof! You now have the tools to start modelling your own ideas in ProofFrog.
+- Explore the [**examples catalogue**]({% link examples.md %}) to see other examples of cryptographic schemes and proofs modelled in ProofFrog.
+- Read the [**language reference**]({% link manual/language-reference/index.md %}) to dive deeper into FrogLang.
+- Since ProofFrog is a new tool and is targeted at introduction proofs, it's important to understand the [**limitations**]({% link manual/limitations.md %}). There's also information about [**troubleshooting**]({% link manual/troubleshooting.md %}) when you get stuck. You can ask questions on the [ProofFrog discussion boards on GitHub](https://github.com/orgs/ProofFrog/discussions).
+- See how proofs in ProofFrog compare to proofs in more advanced formal verification tools like EasyCrypt via the [Proof Ladders project](https://proof-ladders.github.io/), which includes an example showing CPA security of KEM-DEM in both [ProofFrog](https://github.com/proof-ladders/asymmetric-ladder/tree/main/kemdem/ProofFrog) and [EasyCrypt](https://github.com/proof-ladders/asymmetric-ladder/tree/main/kemdem/EasyCrypt). That version of the ProofFrog proof uses a slightly different formulation of the one-time secrecy game — one phrased with uniform sampling `E.Key k <- E.Key;` instead of `E.KeyGen()` — which lets the proof sidestep the key-uniformity assumption entirely and collapses the five reductions on this page down to three.
+- Learn more about the technical background of ProofFrog in the [**for researchers section**]({% link researchers/index.md %}).
+- **Get in touch!** We'd love to hear about your use of ProofFrog. Contributions of examples or improvements to the ProofFrog software are also welcome. The best way to reach us is on the [ProofFrog GitHub repositories](https://github.com/ProofFrog).

@@ -4,128 +4,192 @@ layout: default
 nav_order: 3
 ---
 
-# Examples
+# Examples Catalogue
+{: .no_toc }
 
-Below are a list of examples that ProofFrog can currently verify.
-Many are adapted from [The Joy of Cryptography](https://joyofcryptography.com/).
-In such cases, we will indicate which claim in the textbook is being proved. References and examples are from the old PDF preview version, and need to be updated to the final print edition.
+The [ProofFrog/examples](https://github.com/ProofFrog/examples) repository contains a growing collection of cryptographic proofs verified by ProofFrog. This page organizes them by topic.
 
-## One-Time Uniform Ciphertexts implies One-Time Secrecy
+- <span class="label label-green">Beginner</span> denotes a proof that is a good starting point for learning ProofFrog
+- <span class="label label-purple">Rich example</span> denotes a substantial proof with multiple hops or techniques
 
-This proves [Theorem 2.15](https://joyofcryptography.com/pdf/book.pdf#page=49).
+---
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesOTS.proof).
+- TOC
+{:toc}
 
-## CPA$ Security implies CPA Security
+---
 
-This proves [Claim 7.3](https://joyofcryptography.com/pdf/book.pdf#page=145).
+## Joy of Cryptography (MIT Press Edition)
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/CPA%24impliesCPA.proof).
+The [`examples/joy`](https://github.com/ProofFrog/examples/tree/main/joy) directory contains ProofFrog formulations of constructions from Chapters 1 and 2 of [The Joy of Cryptography](https://joyofcryptography.com/) by Mike Rosulek. These are designed to be read alongside the textbook and are the best place to start learning ProofFrog.
 
-## Composing Two Symmetric Encryption Schemes for One-Time Uniform Ciphertexts
+| Proof | Description | |
+|:------|:------------|-|
+| [OTPCorrectness](https://github.com/ProofFrog/examples/blob/main/joy/Proofs/Ch1/OTPCorrectness.proof) | [One-time pad](https://github.com/ProofFrog/examples/blob/main/joy/Schemes/SymEnc/OTP.scheme) is [correct](https://github.com/ProofFrog/examples/blob/main/joy/Games/SymEnc/Correctness.game) (Claim 1.2.3) | <span class="label label-green">Beginner</span> |
+| [OTPSecure](https://github.com/ProofFrog/examples/blob/main/joy/Proofs/Ch2/OTPSecure.proof) | [One-time pad](https://github.com/ProofFrog/examples/blob/main/joy/Schemes/SymEnc/OTP.scheme) has [one-time secrecy](https://github.com/ProofFrog/examples/blob/main/joy/Games/SymEnc/OneTimeSecrecy.game) (Example 2.5.4) | <span class="label label-green">Beginner</span> |
+| [OTPSecureLR](https://github.com/ProofFrog/examples/blob/main/joy/Proofs/Ch2/OTPSecureLR.proof) | [One-time pad](https://github.com/ProofFrog/examples/blob/main/joy/Schemes/SymEnc/OTP.scheme) has [left-or-right one-time secrecy](https://github.com/ProofFrog/examples/blob/main/joy/Games/SymEnc/OneTimeSecrecyLR.game) | <span class="label label-green">Beginner</span> |
+| [ChainedEncryptionSecure](https://github.com/ProofFrog/examples/blob/main/joy/Proofs/Ch2/ChainedEncryptionSecure.proof) | [Chained encryption](https://github.com/ProofFrog/examples/blob/main/joy/Schemes/SymEnc/ChainedEncryption.scheme) has [one-time secrecy](https://github.com/ProofFrog/examples/blob/main/joy/Games/SymEnc/OneTimeSecrecy.game) (Claim 2.6.2) | <span class="label label-green">Beginner</span> |
+{: .table-labels }
 
-This proof analyzes a symmetric encryption scheme {% katex %}\Sigma{% endkatex %} that composes two symmetric encryption schemes {% katex %}S{% endkatex %} and {% katex %}T{% endkatex %} where {% katex %}S.C = T.M{% endkatex %}, and
-{% katex display %}
-\Sigma.\mathrm{KeyGen}() = (S.\mathrm{KeyGen()}, T.\mathrm{KeyGen()})
-{% endkatex %}
-{% katex display %}
-\Sigma.\mathrm{Enc}((k_S, k_T), m) = T.\mathrm{Enc}(k_T, S.\mathrm{Enc}(k_S, m))
-{% endkatex %}
-{% katex display %}
-\Sigma.\mathrm{Dec}((k_S, k_T), c) = S.\mathrm{Dec}(k_S, T.\mathrm{Dec}(k_T, c))
-{% endkatex %}
+**Joy of Cryptography exercises**. The [README file about the Joy of Cryptography examples](https://github.com/ProofFrog/examples/tree/main/joy#exercises) also lists exercises from Chapter 2 that are doable in ProofFrog — try them yourself! Solutions are not publicly available, but instructors can contact Douglas Stebila to obtain a copy.
 
-If {% katex %}T{% endkatex %} has one-time uniform ciphertexts, then so does {% katex %}\Sigma{% endkatex %}. The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/GeneralDoubleOTUC.proof).
+---
 
-## OTUC implies Double OTUC
+## Symmetric Encryption
 
-If a symmetric encryption scheme has one-time uniform ciphertexts, then the double encryption scheme (composing two copies of it) also has one-time uniform ciphertexts. The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesDoubleOTUC.proof).
+### Security notion implications
 
-## Composing Two Symmetric Encryption Schemes for CPA$ security
+| Proof | Description | |
+|:------|:------------|-|
+| [OTUCimpliesOTS](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesOTS.proof) | [One-time uniform ciphertexts](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeUniformCiphertexts.game) implies [one-time secrecy](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeSecrecy.game) | <span class="label label-green">Beginner</span> |
+| [CPA$impliesCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/CPA%24impliesCPA.proof) | [CPA$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA%24.game) security implies [CPA](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA.game) security |
+{: .table-labels }
 
-This proof analyzes the same encryption scheme {% katex %}\Sigma{% endkatex %} as in the prior heading. If {% katex %}T{% endkatex %} is CPA$ secure, then so is {% katex %}\Sigma{% endkatex %}. The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/DoubleCPA%24.proof).
+### Basic constructions
 
-## Double One-Time Pad has One-Time Uniform Ciphertexts
+| Proof | Description | |
+|:------|:------------|-|
+| [ModOTPSecure](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/ModOTPSecure.proof) | The [modular one-time pad](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/ModOTP.scheme) ({% katex %}\mathrm{Enc}(k, m) = m + k \bmod q{% endkatex %}) has [one-time secrecy](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeSecrecy.game) | <span class="label label-green">Beginner</span> |
+{: .table-labels }
 
-This proves [Claim 2.13](https://joyofcryptography.com/pdf/book.pdf#page=45).
+### PRF-based encryption
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Book/2/2_13.proof).
+The [PRF-based symmetric encryption scheme](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/SymEncPRF.scheme) {% katex %}\Sigma{% endkatex %} encrypts a message {% katex %}m{% endkatex %} under key {% katex %}k{% endkatex %} by sampling a random {% katex %}r{% endkatex %} and outputting {% katex %}(r,\; F(k, r) \oplus m){% endkatex %}, where {% katex %}F{% endkatex %} is a [PRF](https://github.com/ProofFrog/examples/blob/main/Primitives/PRF.primitive).
 
-## Pseudo One-Time Pad has One-Time Uniform Ciphertexts
+| Proof | Description | |
+|:------|:------------|-|
+| [SymEncPRFOTUC](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFOTUC.proof) | [PRF-based symmetric encryption](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/SymEncPRF.scheme) has [one-time uniform ciphertexts](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeUniformCiphertexts.game) |
+| [SymEncPRFCPA$](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof) | [PRF-based symmetric encryption](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/SymEncPRF.scheme) is [CPA$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA%24.game) secure | <span class="label label-purple">Rich example</span> |
+{: .table-labels }
 
-This proves [Claim 5.4](https://joyofcryptography.com/pdf/book.pdf#page=102).
+### Composition of encryption schemes
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Book/5/5_3.proof).
+Given two [symmetric encryption](https://github.com/ProofFrog/examples/blob/main/Primitives/SymEnc.primitive) schemes {% katex %}S{% endkatex %} and {% katex %}T{% endkatex %} where {% katex %}S.\mathcal{C} = T.\mathcal{M}{% endkatex %}, the [composed scheme](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/GeneralDoubleSymEnc.scheme) encrypts as {% katex %}\Sigma.\mathrm{Enc}((k_S, k_T), m) = T.\mathrm{Enc}(k_T, S.\mathrm{Enc}(k_S, m)){% endkatex %}.
 
-## Pseudorandomness of a length-tripling PRG
+| Proof | Description |
+|:------|:------------|
+| [OTUCimpliesDoubleOTUC](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesDoubleOTUC.proof) | If a scheme has [OTUC](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeUniformCiphertexts.game), then [double-encrypting](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/DoubleSymEnc.scheme) with two copies of it also has OTUC |
+| [GeneralDoubleOTUC](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/GeneralDoubleOTUC.proof) | If {% katex %}T{% endkatex %} has [one-time uniform ciphertexts](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeUniformCiphertexts.game), so does {% katex %}\Sigma{% endkatex %} |
+| [DoubleCPA$](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/DoubleCPA%24.proof) | If {% katex %}T{% endkatex %} is [CPA$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA%24.game) secure, so is {% katex %}\Sigma{% endkatex %} |
 
-This proves [Claim 5.5](https://joyofcryptography.com/pdf/book.pdf#page=105).
+### Authenticated encryption
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRGSecure.proof).
+| Proof | Description | |
+|:------|:------------|-|
+| [EncryptThenMACCCA](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/EncryptThenMACCCA.proof) | [Encrypt-then-MAC](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/EncryptThenMAC.scheme) is [CCA](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CCA.game) secure | <span class="label label-purple">Rich example</span> |
+{: .table-labels }
 
-## One-Time Secrecy implies CPA Security for Public Key Encryption Schemes
+---
 
-This proves [Claim 15.5](https://joyofcryptography.com/pdf/book.pdf#page=273).
+## Pseudorandom Generators
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/OTSimpliesCPA.proof).
+| Proof | Description |
+|:------|:------------|
+| [TriplingPRGSecure](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRGSecure.proof) | A [length-tripling PRG](https://github.com/ProofFrog/examples/blob/main/Schemes/PRG/TriplingPRG.scheme) built by applying a length-doubling [PRG](https://github.com/ProofFrog/examples/blob/main/Primitives/PRG.primitive) twice is [secure](https://github.com/ProofFrog/examples/blob/main/Games/PRG/Security.game) |
+| [CounterPRGSecure](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/CounterPRGSecure.proof) | A [counter-mode PRG](https://github.com/ProofFrog/examples/blob/main/Schemes/PRG/CounterPRG.scheme) built from a [PRF](https://github.com/ProofFrog/examples/blob/main/Primitives/PRF.primitive) is [secure](https://github.com/ProofFrog/examples/blob/main/Games/PRG/Security.game) |
 
-## KEM-DEM Hybrid Encryption is CPA secure
+---
 
-This proves CPA security of the hybrid public key encryption scheme constructed via the KEM-DEM paradigm, assuming CPA security of the KEM and one-time secrecy of the symmetric encryption scheme.
+## Pseudorandom Functions
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/KEMDEMCPA.proof).
+| Proof | Description |
+|:------|:------------|
+| [MultiKeyFromPRF](https://github.com/ProofFrog/examples/blob/main/Proofs/PRF/MultiKeyFromPRF.proof) | [Multi-key PRF security](https://github.com/ProofFrog/examples/blob/main/Games/PRF/MultiKey.game) follows from [single-key PRF security](https://github.com/ProofFrog/examples/blob/main/Games/PRF/Security.game) via a hybrid argument |
 
-## Hybrid Encryption is CPA secure
+---
 
-This proves [Claim 15.9](https://joyofcryptography.com/pdf/book.pdf#page=279).
+## Group-Based Assumptions
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/Hybrid.proof).
+These proofs establish implications between Diffie–Hellman-type assumptions.
 
-## Encrypt-then-MAC is CCA secure
+| Proof | Description |
+|:------|:------------|
+| [DDHImpliesHashedDDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesHashedDDH.proof) | [DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDH.game) implies [Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDH.game) (in the random oracle model) |
+| [OTDDHImpliesOTCDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/OTDDHImpliesOTCDH.proof) | [One-time DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/OneTimeDDH.game) implies [one-time CDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/OneTimeCDH.game) |
+| [OTDDHImpliesOTHashedDDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/OTDDHImpliesOTHashedDDH.proof) | [One-time DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/OneTimeDDH.game) implies [one-time Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/OneTimeHashedDDH.game) (standard model) |
+| [OTCDHImpliesOTHashedDDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/OTCDHImpliesOTHashedDDH.proof) | [One-time CDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/OneTimeCDH.game) implies [one-time Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/OneTimeHashedDDH.game) (random oracle model) |
 
-This proves [Claim 10.10](https://joyofcryptography.com/pdf/book.pdf#page=205).
+---
 
-The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/EncryptThenMACCCA.proof).
+## Public-Key Encryption
 
-## Textbook Exercises
+### Security notion implications
 
-The following are ProofFrog proofs of exercises from [The Joy of Cryptography](https://joyofcryptography.com/).
+| Proof | Description |
+|:------|:------------|
+| [OTSimpliesCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/OTSimpliesCPA.proof) | [One-time secrecy](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/OneTimeSecrecy.game) implies [CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) security for [public-key encryption](https://github.com/ProofFrog/examples/blob/main/Primitives/PubKeyEnc.primitive) |
 
-### Exercise 2.13
+### ElGamal
 
-One-time secrecy of the double symmetric encryption scheme. The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Book/2_Exercises/2_13.proof).
+| Proof | Description |
+|:------|:------------|
+| [ElGamalCorrectness](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/ElGamalCorrectness.proof) | [ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/ElGamal.scheme) encryption is [correct](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/Correctness.game) |
+| [ElGamalCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/ElGamalCPA.proof) | [ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/ElGamal.scheme) is [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) secure under [DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDH.game) |
+| [HashedElGamalCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPA.proof) | [Hashed ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/HashedElGamal.scheme) is [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) secure under [Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDH.game) (standard model) |
+| [HashedElGamalCPAROM](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPAROM.proof) | [Hashed ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/HashedElGamal.scheme) is [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPAROM.game) secure under [DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDH.game) (random oracle model) |
 
-### Exercise 2.14
+### Hybrid public-key encryption
 
-An alternative characterization of one-time secrecy. Proved in both directions:
-[forward](https://github.com/ProofFrog/examples/blob/main/Book/2_Exercises/2_14_Forward.proof) and
-[backward](https://github.com/ProofFrog/examples/blob/main/Book/2_Exercises/2_14_Backward.proof).
+| Proof | Description | |
+|:------|:------------|-|
+| [KEMDEMCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/KEMDEMCPA.proof) | [KEM-DEM](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/KEMDEM.scheme) hybrid public-key encryption is [CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) secure | <span class="label label-purple">Rich example</span> |
+| [Hybrid](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/Hybrid.proof) | [PKE+SymEnc](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/Hybrid.scheme) hybrid public-key encryption is [CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) secure | <span class="label label-purple">Rich example</span> |
+{: .table-labels }
 
-### Exercise 2.15
+### KEM constructions
 
-Another alternative characterization of one-time secrecy. Proved in both directions:
-[forward](https://github.com/ProofFrog/examples/blob/main/Book/2_Exercises/2_15_Forward.proof) and
-[backward](https://github.com/ProofFrog/examples/blob/main/Book/2_Exercises/2_15_Backward.proof).
+The [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) construction derives the shared secret by applying a [PRF](https://github.com/ProofFrog/examples/blob/main/Primitives/PRF.primitive) to the underlying [KEM](https://github.com/ProofFrog/examples/blob/main/Primitives/KEM.primitive)'s shared secret and ciphertext: {% katex %}\mathit{ss'} = F(k_F, \mathit{ss} \| c){% endkatex %}.
 
-### Exercise 5.8
+| Proof | Description | |
+|:------|:------------|-|
+| [KEMPRFCorrectness](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRFCorrectness.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [correct](https://github.com/ProofFrog/examples/blob/main/Games/KEM/Correctness.game) |
+| [KEMPRFCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRFCPA.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/KEM/CPAKEM.game) secure |
+| [KEMPRFCCA](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRFCCA.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [IND-CCA](https://github.com/ProofFrog/examples/blob/main/Games/KEM/CCAKEM.game) secure | <span class="label label-purple">Rich example</span> |
+{: .table-labels }
 
-Security of various PRG constructions. Parts:
-[a](https://github.com/ProofFrog/examples/blob/main/Book/5_Exercises/5_8_a.proof),
-[b](https://github.com/ProofFrog/examples/blob/main/Book/5_Exercises/5_8_b.proof),
-[e](https://github.com/ProofFrog/examples/blob/main/Book/5_Exercises/5_8_e.proof),
-[f](https://github.com/ProofFrog/examples/blob/main/Book/5_Exercises/5_8_f.proof).
-Also, [Pseudo-OTP has OTUC](https://github.com/ProofFrog/examples/blob/main/Book/5_Exercises/5_8_PseudoOTP_OTUC.proof) (used in part e).
+---
 
-### Exercise 5.10
+## Research Applications
 
-Security of a PRG construction. The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Book/5_Exercises/5_10.proof).
+### KEM Combiner (GHP18)
 
-### Exercise 7.13
+A ProofFrog formalization of the [KEM combiner](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombiner.scheme) from Giacon, Heuer, and Poettering ([PKC 2018](https://eprint.iacr.org/2018/024)). The combiner encapsulates with two KEMs independently, obtaining {% katex %}(\mathit{ss}_1, c_1){% endkatex %} and {% katex %}(\mathit{ss}_2, c_2){% endkatex %}, then derives the combined shared secret as {% katex %}\mathit{ss} = F(\mathit{ss}_1, \mathit{ss}_2, \mathit{pk}_1 \| c_1 \| \mathit{pk}_2 \| c_2){% endkatex %} using a [two-key PRF](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/TwoKeyPRF.primitive) {% katex %}F{% endkatex %}. The combined KEM is secure as long as **at least one** of the component KEMs is secure.
 
-An alternative characterization of CPA security. Proved in both directions:
-[forward](https://github.com/ProofFrog/examples/blob/main/Book/7_Exercises/7_13_Forward.proof) and
-[backward](https://github.com/ProofFrog/examples/blob/main/Book/7_Exercises/7_13_Backward.proof).
+See the [full README](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/README.md) for construction details and a list of all files.
 
-### Exercise 9.6
+| Proof | Description | |
+|:------|:------------|-|
+| [KEMCombinerCorrectness](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombinerCorrectness.proof) | The [KEM combiner](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombiner.scheme) is correct |
+| [KEMCombinerINDCPA1](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombinerINDCPA1.proof) | [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/KEM/CPAKEM.game) security from security of the first component KEM | <span class="label label-purple">Rich example</span> |
+| [KEMCombinerINDCPA2](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombinerINDCPA2.proof) | [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/KEM/CPAKEM.game) security from security of the second component KEM | <span class="label label-purple">Rich example</span> |
+{: .table-labels }
 
-CCA$ security implies CCA security. The proof file can be found [here](https://github.com/ProofFrog/examples/blob/main/Book/9_Exercises/9_6_CCA%24impliesCCA.proof).
+---
+
+## Proof Ladders
+
+The [Proof Ladders project](https://proof-ladders.github.io/) includes an example showing CPA security of KEM-DEM in both [ProofFrog](https://github.com/proof-ladders/asymmetric-ladder/tree/main/kemdem/ProofFrog) and [EasyCrypt](https://github.com/proof-ladders/asymmetric-ladder/tree/main/kemdem/EasyCrypt), which is helpful for seeing how proofs in ProofFrog compare to proofs in more advanced formal verification tools like EasyCrypt.  Note that that version of the ProofFrog KEM-DEM proof uses a slightly different formulation compared to the example linked earlier on this page.
+
+---
+
+## Old Joy of Cryptography Exercises (PDF Preview Edition)
+
+The [`examples/joy_old`](https://github.com/ProofFrog/examples/tree/main/joy_old) directory contains ProofFrog proofs of selected exercises from the older PDF preview edition of [The Joy of Cryptography](https://joyofcryptography.com/). These use an older syntax; for new work, prefer the examples in [`examples/joy`](https://github.com/ProofFrog/examples/tree/main/joy) above.
+
+| Exercise | Description | Proof |
+|----------|-------------|-------|
+| Claim 2.13 | Double one-time pad has OTUC | [2_13](https://github.com/ProofFrog/examples/blob/main/joy_old/2/2_13.proof) |
+| Claim 5.4 | Pseudo one-time pad has OTUC | [5_3](https://github.com/ProofFrog/examples/blob/main/joy_old/5/5_3.proof) |
+| Exercise 2.13 | One-time secrecy of the double symmetric encryption scheme | [2_13](https://github.com/ProofFrog/examples/blob/main/joy_old/2_Exercises/2_13.proof) |
+| Exercise 2.14 | Alternative characterization of one-time secrecy | [forward](https://github.com/ProofFrog/examples/blob/main/joy_old/2_Exercises/2_14_Forward.proof), [backward](https://github.com/ProofFrog/examples/blob/main/joy_old/2_Exercises/2_14_Backward.proof) |
+| Exercise 2.15 | Another alternative characterization of one-time secrecy | [forward](https://github.com/ProofFrog/examples/blob/main/joy_old/2_Exercises/2_15_Forward.proof), [backward](https://github.com/ProofFrog/examples/blob/main/joy_old/2_Exercises/2_15_Backward.proof) |
+| Exercise 5.8 | Security of PRG constructions | [a](https://github.com/ProofFrog/examples/blob/main/joy_old/5_Exercises/5_8_a.proof), [b](https://github.com/ProofFrog/examples/blob/main/joy_old/5_Exercises/5_8_b.proof), [e](https://github.com/ProofFrog/examples/blob/main/joy_old/5_Exercises/5_8_e.proof), [f](https://github.com/ProofFrog/examples/blob/main/joy_old/5_Exercises/5_8_f.proof); also [Pseudo-OTP OTUC](https://github.com/ProofFrog/examples/blob/main/joy_old/5_Exercises/5_8_PseudoOTP_OTUC.proof) |
+| Exercise 5.10 | Security of a PRG construction | [5_10](https://github.com/ProofFrog/examples/blob/main/joy_old/5_Exercises/5_10.proof) |
+| Exercise 7.13 | Alternative characterization of CPA security | [forward](https://github.com/ProofFrog/examples/blob/main/joy_old/7_Exercises/7_13_Forward.proof), [backward](https://github.com/ProofFrog/examples/blob/main/joy_old/7_Exercises/7_13_Backward.proof) |
+| Exercise 9.6 | CCA$ security implies CCA security | [9_6](https://github.com/ProofFrog/examples/blob/main/joy_old/9_Exercises/9_6_CCA%24impliesCCA.proof) |
+
+---
+
+## External Uses of ProofFrog
+
+A list of external projects and papers using ProofFrog is maintained on the [external uses page]{% link researchers/external-uses.md %}.
