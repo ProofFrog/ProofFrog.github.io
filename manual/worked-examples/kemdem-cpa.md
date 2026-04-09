@@ -761,16 +761,27 @@ In the web editor, open `Proofs/PubEnc/KEMDEMCPA.proof` and click **Run Proof**.
 
 ---
 
-## 12. What this teaches that Chained Encryption did not
+## 12. Lessons learned
 
 - **Multi-primitive composition.** The proof reasons about three distinct primitives simultaneously — a KEM, a SymEnc, and a PKE — each with its own security game and its own type namespace. Reductions must carefully distinguish which primitive's methods and sets they are invoking. The `requires` clause on the scheme is what makes the types align across primitive boundaries.
 
-- **Reductions in opposite directions.** {% katex %}R_1{% endkatex %} and {% katex %}R_5{% endkatex %} both reduce to the same underlying assumption ({% katex %}\mathsf{CPAKEM}(K){% endkatex %}), but {% katex %}R_1{% endkatex %} invokes it in the Real → Random direction and {% katex %}R_5{% endkatex %} invokes it in the Random → Real direction. Similarly, {% katex %}R_2{% endkatex %} and {% katex %}R_4{% endkatex %} invoke key uniformity in opposite directions. Both directions are valid because indistinguishability is symmetric. This "go-and-come-back" pattern is fundamental to hybrid encryption proofs: use the KEM assumption to move into a world with a random key, do the message-switching argument, and use the same KEM assumption to move back out. Neither direction is privileged; the same security game serves both roles.
+- **Reductions in opposite directions.** {% katex %}R_1{% endkatex %} and {% katex %}R_5{% endkatex %} both reduce to the same underlying assumption ({% katex %}\mathsf{CPAKEM}(K){% endkatex %}), but {% katex %}R_1{% endkatex %} invokes it in the Real → Random direction and {% katex %}R_5{% endkatex %} invokes it in the Random → Real direction. Similarly, {% katex %}R_2{% endkatex %} and {% katex %}R_4{% endkatex %} invoke key uniformity in opposite directions. Both directions are valid because indistinguishability is symmetric. This "go-and-come-back" pattern often comes up in security proofs: here we use the KEM assumption to move into a world with a random key, do the message-switching argument, then use the same KEM assumption to move back out. Neither direction is privileged; the same security game serves both roles.
 
-- **Bridging distributions with a key-uniformity assumption.** The `KEMDEM` scheme never calls `E.KeyGen()` — it uses the KEM's shared secret directly as the symmetric key — while the one-time secrecy game for {% katex %}E{% endkatex %} *does* call `E.KeyGen()`. These two key distributions don't match on the nose, so the proof needs a key-uniformity assumption ("`E.KeyGen()` is indistinguishable from uniform sampling over `E.Key`") to bridge them. The bridge is invoked symmetrically — once on each side of the OTS hop — which is why there are five reductions instead of three.
+- **Bridging distributions with a key-uniformity assumption.** The `KEMDEM` scheme never calls `E.KeyGen()` — it uses the KEM's shared secret directly as the symmetric key — while the one-time secrecy game for {% katex %}E{% endkatex %} *does* call `E.KeyGen()`. These two key distributions aren't always identical, so the proof needs a key-uniformity assumption (that "`E.KeyGen()` *is* indistinguishable from uniform sampling over `E.Key`") to bridge them. The bridge is invoked symmetrically — once on each side of the OTS hop — which is why there are five reductions instead of three.
 
 - **Generic construction parameter handling.** The {% katex %}\mathsf{KEMDEM}{% endkatex %} scheme is parameterized by {% katex %}(K, E){% endkatex %}, and the proof is parameterized by the same values in its `let:` block. Every reduction carries `(E, K, KD)` as parameters. This is how ProofFrog proves theorems about generic constructions rather than concrete instantiations: the proof holds for any choice of {% katex %}K{% endkatex %} and {% katex %}E{% endkatex %} satisfying the stated assumptions and the {% katex %}K.\mathcal{S} = E.\mathcal{K}{% endkatex %} constraint.
 
-- **Proofs without explicit intermediate games.** Unlike proofs that write out each {% katex %}\mathsf{Game}_i{% endkatex %} as a standalone `Game` definition, this proof keeps its intermediate games implicit — every entry in the `games:` list is either a side of `CPA(KD)` or a `compose` expression. The engine verifies the interchangeability hops by canonicalizing adjacent composed forms directly. This keeps the proof file shorter, at the cost of making each conceptual game only visible in the reader's head (or in the line comments that label them).
+- **Proofs without explicit intermediate games.** Unlike proofs that write out each {% katex %}\mathsf{Game}_i{% endkatex %} as a standalone `Game` definition, this proof keeps its intermediate games implicit — every entry in the `games:` list is either a side of `CPA(KD)` or a `compose` expression. The engine verifies the interchangeability hops by canonicalizing adjacent composed forms directly. This keeps the proof file shorter, at the cost of making each conceptual game only visible in the reader's head (or in the line comments that label them). You can add them if you want, or you can use the web editor's game hop detail view to see what the intermediate games are.
+
+---
+
+### Next steps
+
+TODO LEFT OFF HERE
+
+- Elsewhere in the manual
+- Explore the examples catalogue
+- See via a KEM-DEM example how ProofFrog compares to EasyCrypt
+- Learn more about the science
 
 **Learn more.** If you are curious about how ProofFrog compares with other formal verification systems, check out the [Proof Ladders project](https://proof-ladders.github.io/), which includes an example showing CPA security of KEM-DEM in both [ProofFrog](https://github.com/proof-ladders/asymmetric-ladder/tree/main/kemdem/ProofFrog) and [EasyCrypt](https://github.com/proof-ladders/asymmetric-ladder/tree/main/kemdem/EasyCrypt). That version of the ProofFrog proof uses a slightly different formulation of the one-time secrecy game — one phrased with uniform sampling `E.Key k <- E.Key;` instead of `E.KeyGen()` — which lets the proof sidestep the key-uniformity assumption entirely and collapses the five reductions on this page down to three.
