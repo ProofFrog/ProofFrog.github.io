@@ -17,7 +17,7 @@ If you are new to ProofFrog, work through the pages below in order:
 
 1. **[Installation]({% link manual/installation.md %})**: Set up Python, install via pip, and verify.
 2. **[Tutorial]({% link manual/tutorial/index.md %})**: A two-part hands-on introduction — [Part 1: Hello Frog]({% link manual/tutorial/hello-frog.md %}) runs an existing proof, breaks it on purpose, and fixes it; [Part 2: OTP has one-time secrecy]({% link manual/tutorial/otp-ots.md %}) walks through writing your first complete four-file proof from scratch, about the security of the one-time pad.
-3. **[Worked Examples]({% link manual/worked-examples/index.md %})**: Read fully-explained walkthroughs of real proofs, starting with [chained symmetric encryption]({% link manual/worked-examples/chained-encryption.md %}) (the first reduction proof) and then [chosen-plaintext attack security of the hybrid encryption (the KEM-DEM construction)]({% link manual/worked-examples/kemdem-cpa.md %}) (a multi-primitive proof).
+3. **[Worked Examples]({% link manual/worked-examples/index.md %})**: Read fully-explained walkthroughs of real proofs, starting with [chained symmetric encryption]({% link manual/worked-examples/chained-encryption.md %}) (the first reduction proof) and then [chosen-plaintext attack security of hybrid public key encryption (the KEM-DEM construction)]({% link manual/worked-examples/kemdem-cpa.md %}) (a multi-primitive proof).
 
 After that, treat the manual as a reference and use the navigation to look up what you need.
 

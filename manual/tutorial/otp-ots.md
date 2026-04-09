@@ -29,6 +29,18 @@ In Tutorial Part 1, you ran an existing proof that that the one-time pad has one
 
 A **primitive** in FrogLang is a named interface: it declares what sets and methods a cryptographic scheme must provide, without saying anything about how those methods work. Think of it as the abstract type signature that any concrete scheme (like OTP) must satisfy. The one-time pad scheme is a symmetric encryption scheme, so we have to define the primitive of "symmetric encryption".
 
+Mathematically, a symmetric encryption scheme is a triple of algorithms over a key space {% katex %}\mathcal{K}{% endkatex %}, message space {% katex %}\mathcal{M}{% endkatex %}, and ciphertext space {% katex %}\mathcal{C}{% endkatex %}:
+
+{% katex display %}
+\begin{array}{l}
+\mathsf{KeyGen}: () \to \mathcal{K} \\
+\mathsf{Enc}: \mathcal{K} \times \mathcal{M} \to \mathcal{C} \\
+\mathsf{Dec}: \mathcal{K} \times \mathcal{C} \to \mathcal{M} \cup \{\bot\} \quad \text{(deterministic)}
+\end{array}
+{% endkatex %}
+
+We will now translate this signature into a FrogLang `Primitive` declaration.
+
 ### Building the file, line by line
 
 In the web editor, use the "New File" button to create a new file called `SymEnc.primitive`.
@@ -120,6 +132,24 @@ SymEnc.primitive is well-formed.
 A **security property** in FrogLang is always a *pair* of games exported under a single name. The adversary is given access to one of the two games but not told which one; security means the adversary cannot reliably distinguish them. This is the left/right (or Real/Random) formulation of indistinguishability used throughout Joy of Cryptography.
 
 The engine requires both games in a pair to expose the exact same method signatures — same names, same parameter types, same return types. The adversary interacts with both games through the same interface; only the internals differ.
+
+For one-time secrecy of a symmetric encryption scheme {% katex %}E{% endkatex %}, the two games each expose a single oracle {% katex %}\mathsf{ENC}(m){% endkatex %}. In the {% katex %}\mathsf{Real}{% endkatex %} game, {% katex %}\mathsf{ENC}{% endkatex %} returns a genuine encryption of the adversary's message under a freshly generated key. In the {% katex %}\mathsf{Random}{% endkatex %} game, {% katex %}\mathsf{ENC}{% endkatex %} ignores the message and returns a uniformly random ciphertext:
+
+{% katex display %}
+\begin{array}{l}
+\underline{\mathsf{Real}_E.\mathsf{ENC}(m)} \\
+k \gets E.\mathsf{KeyGen}() \\
+c \gets E.\mathsf{Enc}(k, m) \\
+\text{return } c
+\end{array} \qquad
+\begin{array}{l}
+\underline{\mathsf{Random}_E.\mathsf{ENC}(m)} \\
+c \stackrel{\$}{\leftarrow} E.\mathcal{C} \\
+\text{return } c
+\end{array}
+{% endkatex %}
+
+{% katex %}E{% endkatex %} satisfies one-time secrecy if no adversary making a single query to {% katex %}\mathsf{ENC}(m){% endkatex %} can distinguish the two games. Notice the adversary has no access to the decryption algorithm {% katex %}\mathsf{Dec}{% endkatex %} — otherwise they could trivially decrypt and win.
 
 ### Building the file, line by line
 
@@ -245,6 +275,32 @@ A second common mistake is forgetting the `export as OneTimeSecrecy;` line at th
 ### What a scheme is
 
 A **scheme** is a concrete instantiation of a primitive. Where the primitive declared method *signatures*, the scheme provides *bodies*. A scheme must implement every method the primitive declares, with exactly the same modifiers and types. For example, the one-time pad scheme is an instantiation of the symmetric encryption primitive.
+
+Parameterized by a security parameter {% katex %}\lambda{% endkatex %}, the one-time pad fixes all three sets to {% katex %}\lambda{% endkatex %}-bit strings and defines encryption and decryption by XOR:
+
+{% katex display %}
+\mathcal{K} = \mathcal{M} = \mathcal{C} = \{0, 1\}^{\lambda}
+{% endkatex %}
+
+{% katex display %}
+\begin{array}{l}
+\underline{\mathsf{KeyGen}()} \\
+k \stackrel{\$}{\leftarrow} \{0, 1\}^{\lambda} \\
+\text{return } k
+\end{array} \qquad
+\begin{array}{l}
+\underline{\mathsf{Enc}(k, m)} \\
+\text{return } k \oplus m
+\end{array} \qquad
+\begin{array}{l}
+\underline{\mathsf{Dec}(k, c)} \\
+\text{return } k \oplus c
+\end{array}
+{% endkatex %}
+
+Correctness is immediate: {% katex %}\mathsf{Dec}(k, \mathsf{Enc}(k, m)) = k \oplus (k \oplus m) = m{% endkatex %}. (Although it is possible to formulate and prove correctness in ProofFrog.)
+
+We will now encode this scheme in FrogLang.
 
 ### Building the file, line by line
 
@@ -545,7 +601,7 @@ If you really want to dive into the details of every transformation ProofFrog ap
 
 Congratulations — you have written a complete game-hopping proof from scratch! Security of the one-time pad is the simplest possible case: one primitive, one scheme, one game pair, one hop, no assumptions. Most real proofs are more complex. There are three directions to explore next:
 
-- **Reductions and the four-step pattern.** When a scheme relies on an underlying primitive (like a PRF or a hash function), the proof uses *reductions* to hop via an assumption rather than an equivalence. We'll see this in the next worked example: [Chained Encryption]({% link manual/worked-examples/chained-encryption.md %}).
+- **Reductions and the four-step pattern.** When a scheme relies on an underlying primitive (like a PRF or a hash function), the proof uses *reductions* to hop via an assumption rather than an equivalence. We'll see this in the next worked example: [security of chained symmetric encryption]({% link manual/worked-examples/chained-encryption.md %}).
 
 - **The rest of the language.** Everything else FrogLang offers — tuples, maps, arrays, random functions, injective annotations, induction — is documented in the [Language Reference]({% link manual/language-reference/index.md %}).
 
