@@ -23,4 +23,4 @@ If you are learning provable security or are new to ProofFrog, the [Manual]({% l
 
 ## Lineage
 
-ProofFrog was built by Ross Evans and Douglas Stebila at the University of Waterloo, building on the earlier `pygamehop` tool by Douglas Stebila and Matthew McKague at Queensland University of Technology. Full bibliographic details are on the [Publications]({% link researchers/publications.md %}) page. Development is supported by the Natural Sciences and Engineering Research Council of Canada (NSERC) Discovery grant RGPIN-2022-03187.
+ProofFrog was built by Ross Evans, Matthew McKague, and Douglas Stebila at the University of Waterloo, building on the earlier `pygamehop` tool by Douglas Stebila and Matthew McKague at Queensland University of Technology. Full bibliographic details are on the [Publications]({% link researchers/publications.md %}) page. Development is supported by the Natural Sciences and Engineering Research Council of Canada (NSERC) Discovery grant RGPIN-2022-03187.

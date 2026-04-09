@@ -48,9 +48,10 @@ The authoritative source for this list is `proof_frog/CLAUDE.md`.
 
 **`proof_frog.py`** is the Click-based CLI entry point. It defines commands for
 `version`, `parse`, `check`, `prove`, `describe`, `step-detail`, `inlined-game`,
-`canonicalization-trace`, `step-after-transform`, `web`, `lsp`, and `mcp`. The first
-five commands are documented in the [CLI Reference]({% link manual/cli-reference.md %});
-the four introspection commands are documented in the
+`canonicalization-trace`, `step-after-transform`, `web`, `lsp`, and `mcp`. The
+public commands (`version`, `parse`, `check`, `prove`, `describe`, `web`) are
+documented in the [CLI Reference]({% link manual/cli-reference.md %}); the four
+introspection commands are documented in the
 [Engine introspection commands](#engine-introspection-commands) section of this page.
 
 **`frog_ast.py`** defines every AST node type. All of ProofFrog's analysis and
@@ -159,11 +160,11 @@ structural comparison.
 
 `STANDARDIZATION_PIPELINE` is a shorter list that runs once after `CORE_PIPELINE`
 converges, using `run_standardization(game, pipeline, ctx)`. It renames local
-variables to canonical identifiers (`v0`, `v1`, ...), normalizes field names, sorts
+variables to canonical identifiers (`v1`, `v2`, ...), normalizes field names, sorts
 field assignments into a stable order, and stabilizes independent statements. Because
 it runs only once rather than to a fixed point, its passes must be idempotent.
 
-`PipelineContext` is a read-only bundle passed to every transform. It carries the
+`PipelineContext` is a read-mostly bundle passed to every transform. It carries the
 proof's `let:` type map (`proof_let_types`), the `proof_namespace` (the resolved set
 of named definitions), any user-supplied `subsets_pairs`, known `equality_pairs`,
 an optional `sort_game_fn`, `sampled_let_names` (names that were sampled uniformly in
@@ -321,10 +322,10 @@ common-subexpression elimination.
 **`standardization.py`** runs once after the core pipeline converges, normalizing
 names and ordering.
 
-- `VariableStandardize` -- renames local variables to `v0`, `v1`, ... in order of
+- `VariableStandardize` -- renames local variables to `v1`, `v2`, ... in order of
   first appearance in the AST.
-- `StandardizeFieldNames` -- renames game fields to `f0`, `f1`, ... in order of
-  first appearance.
+- `StandardizeFieldNames` -- renames game fields to `field1`, `field2`, ... in order
+  of first appearance.
 - `BubbleSortFieldAssignments` -- sorts the field assignment block into a stable
   canonical order.
 - `StabilizeIndependentStatements` -- reorders independent statements within a method
@@ -628,6 +629,7 @@ The server exposes the following tools:
 
 | Tool | Description |
 |------|-------------|
+| `version` | Report the installed ProofFrog version |
 | `list_files` | Browse `.primitive`, `.game`, `.scheme`, `.proof` files as a nested tree |
 | `read_file` | Read a ProofFrog file by path |
 | `write_file` | Create or overwrite a file; parent directories are created automatically |
@@ -646,4 +648,4 @@ FrogLang syntax reference that an LLM can fetch without reading through example 
 The canonical tool-usage guide and setup instructions are in
 `ProofFrog/CLAUDE_MCP.md` in the ProofFrog repository. For a practical introduction
 to using the MCP server to iteratively write and debug proofs with Claude Code,
-see the Vibe-Coding page (in progress).
+see [Vibe-Coding]({% link researchers/vibe-coding.md %}).

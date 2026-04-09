@@ -93,11 +93,11 @@ is an external dependency.
 semantics, and similar runtime properties are all implicitly trusted.
 
 Be honest about the size of this trust base. EasyCrypt and CryptoVerif also have trust
-bases, but those tools have pen-and-paper formalizations of their program logics, and
-their engines have been the subject of mechanized correctness arguments. ProofFrog has
-neither. The published paper describing ProofFrog explicitly notes that it "does not
-provide any formal proofs of correctness for the transformations ProofFrog uses or for
-the correctness of the engine's implementation."
+bases, but those tools have pen-and-paper formalizations of their program logics, with
+meta-theoretic soundness arguments for those logics. ProofFrog has neither a
+formalization nor a meta-theoretic soundness argument. The published ProofFrog eprint
+explicitly notes that it "does not provide any formal proofs of correctness for the
+transformations ProofFrog uses or for the correctness of the engine's implementation."
 
 ---
 
@@ -146,11 +146,12 @@ to manually inspect what changed. A hop that inlines one function and cancels on
 straightforwardly checkable by hand. A hop that fires fifteen transforms across a complex
 game body is not. When in doubt, split a large hop into two or three smaller ones.
 
-**Inspect canonical forms directly.** Run `python -m proof_frog prove -v <your-file.proof>`
-to see the canonical form of each game and the point of failure or success. The
-`step-detail` and `canonicalization-trace` CLI commands expose the canonical form and
-intermediate rewrite steps for a specific hop. Reviewing the canonical form before and
-after a hop gives you direct evidence of what the engine is claiming.
+**Inspect canonical forms directly.** The `step-detail` and `canonicalization-trace`
+CLI commands expose the canonical form of a specific game step and the sequence of
+intermediate rewrites the pipeline applied. `step-after-transform` shows the game AST
+after all transforms up to a named pass. Reviewing the canonical form before and after
+a hop gives you direct evidence of what the engine is claiming. (`proof_frog prove -v`
+adds game-level output to a proof run; `-vv` adds per-transform tracing.)
 
 **Cross-check against pen-and-paper proofs.** If a textbook says the proof works and
 ProofFrog says the proof works, the two checks reinforce each other. If they disagree,
@@ -175,8 +176,8 @@ as high priority.
 ## Comparison framing
 
 EasyCrypt and CryptoVerif have deeper trust bases: their program logics and tactic
-languages have pen-and-paper formalizations, and their engines have been the subject of
-mechanized correctness arguments. ProofFrog makes no such claims. This is a genuine gap,
+languages have pen-and-paper formalizations with meta-theoretic soundness arguments for
+those logics. ProofFrog makes no such claims. This is a genuine gap,
 not a rhetorical understatement. For high-assurance cryptographic work -- standards,
 deployed protocols, production code -- the more established tools remain the appropriate
 choice. ProofFrog's niche is earlier in the pipeline: exploration, education, and

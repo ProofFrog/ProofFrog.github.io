@@ -11,7 +11,7 @@ Papers, theses, and event material related to ProofFrog. For curated case studie
 
 ## Papers and theses
 
-- **Ross Evans.** *ProofFrog: A Tool for Verifying Game-Hopping Cryptographic Proofs.* Master's thesis, University of Waterloo, 2024. [UWSpace link](https://uwspace.uwaterloo.ca/bitstream/handle/10012/20441/Evans_Ross.pdf).
+- **Ross Evans.** *ProofFrog: A Tool for Verifying Game-Hopping Cryptographic Proofs.* Master's thesis, University of Waterloo, 2024. [UWSpace record](https://hdl.handle.net/10012/20441) ([PDF](https://uwspace.uwaterloo.ca/bitstream/handle/10012/20441/Evans_Ross.pdf)).
 
 - **Ross Evans, Matthew McKague, Douglas Stebila.** *ProofFrog: A Tool For Verifying Transitions in Game-Hopping Proofs.* Cryptology ePrint Archive, Paper 2025/418, 2025. [eprint.iacr.org/2025/418](https://eprint.iacr.org/2025/418).
 
@@ -23,7 +23,7 @@ Papers, theses, and event material related to ProofFrog. For curated case studie
 
 ## How to cite ProofFrog
 
-Until a canonical citation is published, the recommended form is to cite the eprint:
+Until a peer-reviewed venue version appears, the recommended form is to cite the eprint:
 
 {% raw %}
 ```bibtex
@@ -33,6 +33,21 @@ Until a canonical citation is published, the recommended form is to cite the epr
     howpublished = {Cryptology {ePrint} Archive, Paper 2025/418},
     year = {2025},
     url  = {https://eprint.iacr.org/2025/418}
+}
+```
+{% endraw %}
+
+The Evans thesis can be cited as:
+
+{% raw %}
+```bibtex
+@phdthesis{evans2024prooffrog,
+    author = {Ross Evans},
+    title  = {{ProofFrog}: A Tool for Verifying Game-Hopping Cryptographic Proofs},
+    school = {University of Waterloo},
+    year   = {2024},
+    type   = {Master's thesis},
+    url    = {https://hdl.handle.net/10012/20441}
 }
 ```
 {% endraw %}
