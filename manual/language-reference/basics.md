@@ -7,8 +7,12 @@ nav_order: 1
 ---
 
 # FrogLang Basics
+{: .no_toc }
 
 This page describes the syntactic and semantic foundations shared by all FrogLang file types: lexical conventions, types, expressions and operators, sampling, statements, and imports.
+
+- TOC
+{:toc}
 
 ---
 

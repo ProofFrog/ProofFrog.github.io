@@ -198,14 +198,6 @@ linear sequence of game hops. The `lemma:` mechanism supports one level of exter
 verified induction, but nested induction or induction with complex base cases must be
 handled by breaking the argument into multiple lemma files and composing them.
 
-**Reasoning across phase boundaries in phased games.** Some security games are naturally
-phased -- an adversary first makes queries in a challenge phase, then makes queries in a
-guess phase, and information flows between phases through shared state. The engine
-verifies interchangeability based on canonical forms of individual oracle methods. When a
-rewrite requires reasoning jointly about how two different oracle methods interact
-through shared state across phases, the engine may not find the equivalence even when it
-is valid.
-
 **Probabilistic reasoning beyond the algebraic identities listed in [Canonicalization]({% link manual/canonicalization.md %}).**
 The engine knows that XOR with a uniform value produces a uniform value, that unique
 sampling gives independent uniform outputs, and that random functions on fresh inputs

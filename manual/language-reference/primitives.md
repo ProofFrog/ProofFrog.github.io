@@ -10,7 +10,7 @@ nav_order: 3
 
 ## Overview
 
-A `.primitive` file defines an *abstract cryptographic interface*: the named sets and method signatures that characterize a cryptographic operation, with no implementations. Primitives capture what a scheme *is* — its types and its calling contract — but say nothing about how it works internally. Concrete instantiations are provided by schemes (covered on the Schemes page). For the full type system available in primitives, see the [Basics]({% link manual/language-reference/basics.md %}) page. For an explanation of how oracle calls made to primitive methods behave at runtime during game evaluation, see the [Execution Model]({% link manual/language-reference/execution-model.md %}) page.
+A `.primitive` file defines an *abstract cryptographic interface*: the named sets and method signatures that characterize a cryptographic operation, with no implementations. Primitives capture a class of schemes — its types and its calling contract — but say nothing about how it works internally. Concrete instantiations are provided by schemes (covered on the [Schemes]({% link manual/language-reference/schemes.md %}) page). For the full type system available in primitives, see the [Basics]({% link manual/language-reference/basics.md %}) page. For an explanation of how oracle calls made to primitive methods behave at runtime during game evaluation, see the [Execution Model]({% link manual/language-reference/execution-model.md %}) page.
 
 ---
 
@@ -128,7 +128,7 @@ Marking a method `deterministic` enables several engine optimizations during pro
 
 ### `injective`
 
-A method marked `injective` maps distinct inputs to distinct outputs. The engine uses this to see through encoding wrappers when applying certain transforms — for instance, the `ChallengeExclusionRFToUniform` transform can recognize that sampling distinct preimages under an injective function yields distinct images, enabling simplifications that would not be sound otherwise.
+A method marked `injective` maps distinct inputs to distinct outputs. The engine uses this to see through encoding wrappers when applying certain transforms. This allows the engine to realize, for example, that sampling distinct preimages under an injective function yields distinct images, enabling simplifications that would not be sound otherwise.
 
 ### Combining the modifiers
 
