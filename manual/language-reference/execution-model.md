@@ -127,6 +127,8 @@ instantiates a *truly random function*. Its semantics:
 
 This is the standard formal model for a random oracle. It arises on the "Random" side of PRF security games and in proofs that use the random oracle methodology.
 
+Every sampled `Function<D, R>` field automatically maintains an implicit **`.domain`** set (of type `Set<D>`) that records every input on which the function has been evaluated. For example, if `H` is a sampled `Function<GroupElem<G>, BitString<n>>`, then `H.domain` is a `Set<GroupElem<G>>` containing all queried inputs. This set is commonly used as the bookkeeping set for `<-uniq` sampling — writing `c <-uniq[H.domain] GroupElem<G>` guarantees `c` is fresh with respect to all prior `H` queries, which is the precondition for the engine's [random-function simplifications]({% link manual/canonicalization.md %}#random-function-on-distinct-inputs).
+
 {: .important }
 **Declared vs. sampled `Function<D, R>` values have different semantics.** In a proof's `let:` block, writing `Function<D, R> H;` (no `<-`) declares a *known deterministic function in the standard model*. The adversary can compute it; calls to `H(x)` are treated as deterministic (same input, same output, always). Writing `Function<D, R> H <- Function<D, R>;` places the proof in the random oracle model, where `H` is chosen uniformly at random from all functions `D -> R`. The engine applies random-function simplifications only to *sampled* `Function` values. Confusing the two forms is a common source of subtle proof errors.
 

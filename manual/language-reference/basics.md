@@ -89,6 +89,8 @@ The type of a function from domain `D` to range `R`. Its meaning depends on how 
 
 Only sampled `Function` values receive random-function simplifications during proof verification. This distinction matters: declaring `H` without sampling gives the adversary free access to a fixed function, not a random one.
 
+Every sampled `Function<D, R>` field automatically maintains an implicit **`.domain`** set that tracks which inputs have been queried. For example, if a game has a field `Function<BitString<n>, BitString<m>> RF`, then `RF.domain` is a `Set<BitString<n>>` containing every input on which `RF` has been evaluated. This set can be used as the bookkeeping set for `<-uniq` sampling (e.g., `r <-uniq[RF.domain] BitString<n>`) or passed to a helper game's `Samp` method (e.g., `challenger.Samp(RF.domain)`). See [Canonicalization]({% link manual/canonicalization.md %}#random-function-on-distinct-inputs) for how the engine uses this to simplify random-function calls on distinct inputs.
+
 ### Optional type
 
 **`T?`** — either a value of type `T` or `None`. Commonly used for operations that may fail, such as decryption (`Message? Dec(Key k, Ciphertext c);`).
@@ -220,6 +222,8 @@ BitString<n> x <-uniq[S] BitString<n>;
 ```
 
 This is shorthand notation for sampling uniformly without replacement, with bookkeeping handled by the set `S`.  In other words, it's equivalent to initializing `S = {}`, sampling `x <- BitString<n> \ S`, and then updating `S <- S union {x}`. While the expanded form is also valid FrogLang, using the shorthand notation enables the ProofFrog engine to recognize this pattern and apply certain transformations.
+
+A common pattern is to use a random function's implicit `.domain` set as the bookkeeping set: `r <-uniq[RF.domain] BitString<n>` ensures `r` is distinct from all inputs on which `RF` has previously been evaluated. See [`Function<D, R>`](#functiond-r) for details on `.domain`.
 
 **Sample into a map entry:**
 

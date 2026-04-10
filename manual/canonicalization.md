@@ -6,11 +6,15 @@ nav_order: 40
 ---
 
 # Canonicalization
+{: .no_toc }
 
 This page explains what the ProofFrog engine does between receiving a `.proof` file and
 producing a green (valid) or red (failed) result for each hop. It is written for a
 cryptographer who wants to understand why two games are being called interchangeable, or
 who is diagnosing a hop that refuses to validate.
+
+- TOC
+{:toc}
 
 ---
 
@@ -22,7 +26,7 @@ games differ only in which side of an assumed security property is composed with
 reduction -- it checks that the assumption appears in the `assume:` section and accepts
 the hop on that basis. Otherwise it treats the pair as an interchangeability hop: it
 canonicalizes both games independently and compares their canonical forms. The
-canonicalization step is a fixed-point loop of semantics-preserving AST rewrites (the
+canonicalization step is a fixed-point loop of semantics-preserving abstract syntax tree (AST) rewrites (the
 core pipeline) followed by a single-pass normalization (the standardization pipeline).
 If the canonical forms are structurally identical, the hop is accepted; if not, the
 engine additionally asks Z3 whether the two forms differ only in logically equivalent
@@ -31,8 +35,8 @@ branch conditions.
 The phrase "semantics-preserving" means preserving the probability distribution that the
 game induces over adversary outputs, as defined by the FrogLang execution model in
 [Execution Model]({% link manual/language-reference/execution-model.md %}). The engine is
-deliberately limited to a fixed catalog of transformations it knows to be sound; it does
-not discover or invent new algebraic moves. For a map of what the engine cannot do, see
+deliberately limited to a fixed catalog of transformations it believes to be sound; it does
+not discover or invent new algebraic moves. For a list of what the engine cannot do, see
 [Limitations]({% link manual/limitations.md %}).
 
 ---
@@ -69,7 +73,7 @@ E.Ciphertext Eavesdrop(E.Message mL, E.Message mR) {
 ```
 
 Real-proof pointer: every proof in the distribution relies on inlining.
-`examples/Proofs/PRG/TriplingPRGSecure.proof` is a clean illustration -- the
+[`examples/Proofs/PRG/TriplingPRGSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRGSecure.proof) is a clean illustration -- the
 `TriplingPRG` scheme composes calls to an underlying `PRG`, and those calls are inlined
 before the PRG reduction hops.
 
@@ -97,20 +101,20 @@ is annotated `deterministic`.
 to just `u`. This formalizes the one-time-pad argument: XOR of a uniform value with any
 independent value is uniform.
 
-**Concat/slice inverses:** `SimplifySplice` replaces `(x || y)[0 : n]` with `x` when the
-slice boundaries align with the component widths, saving a round-trip through
-concatenation and slicing.
-
 ```prooffrog
 // Uniform-absorbs on bitstrings
 BitString<n> u <- BitString<n>;
-return u + m;       // simplifies to:
-
+return u + m;
+// simplifies to:
 BitString<n> u <- BitString<n>;
 return u;
 ```
 
-Real-proof pointer: `examples/Proofs/SymEnc/SymEncPRFCPA$.proof` -- the final
+**Concat/slice inverses:** `SimplifySplice` replaces `(x || y)[0 : n]` with `x` when the
+slice boundaries align with the component widths, saving a round-trip through
+concatenation and slicing.
+
+Real-proof pointer: [`examples/Proofs/SymEnc/SymEncPRFCPA$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof) -- the final
 merge of two independent uniform samples into the CPA$ random game relies on XOR
 absorption after the PRF is replaced by a random function.
 
@@ -136,13 +140,13 @@ element modulo `q` with any fixed value is uniform.
 ```prooffrog
 // Uniform-absorbs on ModInt
 ModInt<q> u <- ModInt<q>;
-return u + m;       // simplifies to:
-
+return u + m;
+// simplifies to:
 ModInt<q> u <- ModInt<q>;
 return u;
 ```
 
-Real-proof pointer: `examples/Proofs/SymEnc/ModOTPSecure.proof` uses the ModInt
+Real-proof pointer: [`examples/Proofs/SymEnc/ModOTPSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/ModOTPSecure.proof) uses the ModInt
 one-time-pad argument directly.
 
 {: .note }
@@ -174,12 +178,12 @@ The engine applies the following identities for group elements in `GroupElem<G>`
 ```prooffrog
 // Power-of-power and exponent combination
 GroupElem<G> h = G.generator ^ a;
-return (h ^ b) * (h ^ c);   // simplifies to:
-
+return (h ^ b) * (h ^ c);
+// simplifies to:
 return G.generator ^ (a * b + a * c);
 ```
 
-Real-proof pointer: `examples/Proofs/Group/DDHImpliesHashedDDH.proof` uses the
+Real-proof pointer: [`examples/Proofs/Group/DDHImpliesHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesHashedDDH.proof) uses the
 group masking move (the DDH `Right` game replaces `pk ^ r` with a random group element,
 and the uniform-absorbs rule fires to simplify the subsequent hash-and-XOR masking
 step).
@@ -210,8 +214,8 @@ the same randomness in different granularities.
 // Sample merge
 BitString<n> x <- BitString<n>;
 BitString<m> y <- BitString<m>;
-return x || y;      // simplifies to:
-
+return x || y;
+// simplifies to:
 BitString<n + m> x <- BitString<n + m>;
 return x;
 ```
@@ -219,14 +223,14 @@ return x;
 ```prooffrog
 // Sample split
 BitString<n + m> z <- BitString<n + m>;
-return [z[0 : n], z[n : n + m]];   // simplifies to:
-
+return [z[0 : n], z[n : n + m]];
+// simplifies to:
 BitString<n> z_0 <- BitString<n>;
 BitString<m> z_1 <- BitString<m>;
 return [z_0, z_1];
 ```
 
-Real-proof pointer: `examples/Proofs/PRG/TriplingPRGSecure.proof` uses sample split
+Real-proof pointer: [`examples/Proofs/PRG/TriplingPRGSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRGSecure.proof) uses sample split
 to decompose a single PRG output into its two halves (each half is then used
 independently as a new seed or output value, and the split enables the per-component
 uniform reasoning).
@@ -248,21 +252,27 @@ independent uniform sample). Soundness: a truly random function evaluated on pai
 distinct inputs produces independent uniform outputs -- this is a direct consequence of
 the definition of a random function.
 
+In practice, the bookkeeping set `S` is almost always the random function's own implicit
+`.domain` set -- for example `r <-uniq[RF.domain] BitString<n>` guarantees that `r` has
+not been queried before on `RF`, which is exactly the precondition this transform
+requires. See [Function<D, R>]({% link manual/language-reference/basics.md %}#functiond-r)
+for details on `.domain`.
+
 A related transform, `FreshInputRFToUniform`, fires when the argument `v` to `H(v)` is
 a `<-uniq`-sampled variable used solely in that single call: in that case the input is
 structurally guaranteed to be fresh, and the RF call is replaced by a uniform sample.
 
 ```prooffrog
 // Before: RF on uniquely-sampled input
-BitString<n> r <-uniq[used] BitString<n>;
-BitString<m> z = H(r);
+BitString<n> r <-uniq[RF.domain] BitString<n>;
+BitString<m> z = RF(r);
 
 // After: independent uniform sample
-BitString<n> r <-uniq[used] BitString<n>;
+BitString<n> r <-uniq[RF.domain] BitString<n>;
 BitString<m> z <- BitString<m>;
 ```
 
-Real-proof pointer: `examples/Proofs/PubEnc/HashedElGamalCPAROM.proof` -- the proof
+Real-proof pointer: [`examples/Proofs/PubEnc/HashedElGamalCPAROM.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPAROM.proof) -- the proof
 uses `FreshInputRFToUniform` (after the DDH hop places a uniform group element `c` in
 the exclusion set) to collapse `H(c)` into a fresh uniform bitstring, which then masks
 the message via XOR.
@@ -360,7 +370,7 @@ return k + m;
 Real-proof pointer: dead code elimination is exercised in almost every proof. The
 elimination of the random-function field after `UniqueRFSimplification` replaces all
 its calls with uniform samples is a good representative case; see
-`examples/Proofs/SymEnc/SymEncPRFCPA$.proof`.
+[`examples/Proofs/SymEnc/SymEncPRFCPA$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof).
 
 {: .note }
 **If a branch is not being eliminated:** The engine folds `if (true)` and `if (false)`
@@ -386,7 +396,7 @@ The `RemoveUnreachable` pass also uses Z3 to determine whether a statement after
 guarded return is reachable, allowing dead branches under non-trivially-false conditions
 to be removed.
 
-Real-proof pointer: `examples/Proofs/SymEnc/EncryptThenMACCCA.proof` uses phased
+Real-proof pointer: [`examples/Proofs/SymEnc/EncryptThenMACCCA.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/EncryptThenMACCCA.proof) uses phased
 games with guard conditions that require Z3 to confirm equivalence after inlining.
 
 {: .note }
@@ -408,23 +418,26 @@ The user invokes a helper game as an assumption hop in the same way as any other
 assumption; the difference is that the helper game is not a hardness assumption but a
 statistical argument that the proof author vouches for.
 
-The four load-bearing helper games currently in the distribution are:
+Four helper games currently in the distribution are:
 
 ### UniqueSampling
 
-**File:** `examples/Games/Misc/UniqueSampling.game`
+**File:** [`examples/Games/Misc/UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/UniqueSampling.game)
 
 **What it states:** Sampling uniformly with replacement from a set `S` is
 indistinguishable from sampling without replacement (exclusion sampling, `<-uniq`).
 The `Replacement` game draws `val <- S`; the `NoReplacement` game draws
 `val <-uniq[bookkeeping] S`. The statistical distinguishing advantage is bounded by
-the birthday probability `|bookkeeping| / |S|`.
+the guessing probability `|bookkeeping| / |S|`.
 
 **When to reach for it:** Whenever your proof needs to switch from plain uniform sampling
 to `<-uniq` sampling (or back) so that the `UniqueRFSimplification` or
 `FreshInputRFToUniform` transform can fire. The switch to `<-uniq` is the forward hop
 (Replacement -> NoReplacement); after the random-function simplifications fire, the
-switch back is the reverse hop.
+switch back is the reverse hop. In reductions that compose with `UniqueSampling`, the
+bookkeeping set is typically the random function's implicit `.domain` set -- for example,
+the reduction calls `challenger.Samp(RF.domain)` to delegate sampling to the
+`UniqueSampling` challenger while using `RF`'s query history as the exclusion set.
 
 ```prooffrog
 // Four-step pattern using UniqueSampling
@@ -434,12 +447,12 @@ UniqueSampling.NoReplacement compose R_Uniq against Adversary; // by UniqueSampl
 G_after against Adversary;                               // interchangeability
 ```
 
-Real-proof pointer: used in `examples/Proofs/SymEnc/SymEncPRFCPA$.proof`,
-`examples/Proofs/PubEnc/HashedElGamalCPAROM.proof`, `examples/Proofs/Group/DDHImpliesHashedDDH.proof`.
+Real-proof pointer: used in [`examples/Proofs/SymEnc/SymEncPRFCPA$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof),
+[`examples/Proofs/PubEnc/HashedElGamalCPAROM.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPAROM.proof), [`examples/Proofs/Group/DDHImpliesHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesHashedDDH.proof).
 
 ### HashOnUniform
 
-**File:** `examples/Games/Misc/HashOnUniform.game`
+**File:** [`examples/Games/Misc/HashOnUniform.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/HashOnUniform.game)
 
 **What it states:** Applying a hash function `H : D -> BitString<n>` to a uniformly
 sampled input from `D` is indistinguishable from sampling `BitString<n>` uniformly.
@@ -452,19 +465,11 @@ block without sampling, so not a random oracle), and the proof requires treating
 output of `H` on a uniform input as uniformly random. This is the standard-model
 counterpart to what `FreshInputRFToUniform` does automatically in the ROM.
 
-```prooffrog
-// Four-step pattern using HashOnUniform
-G_before against Adversary;
-HashOnUniform.Real compose R_Hash against Adversary;      // interchangeability
-HashOnUniform.Ideal compose R_Hash against Adversary;     // by HashOnUniform
-G_after against Adversary;                                // interchangeability
-```
-
-Real-proof pointer: used in `examples/Proofs/Group/OTDDHImpliesOTHashedDDH.proof`.
+Real-proof pointer: used in [`examples/Proofs/Group/OTDDHImpliesOTHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/OTDDHImpliesOTHashedDDH.proof).
 
 ### ROMProgramming
 
-**File:** `examples/Games/Misc/ROMProgramming.game`
+**File:** [`examples/Games/Misc/ROMProgramming.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/ROMProgramming.game)
 
 **What it states:** Programming a random function at a single target point with a fresh
 uniform value is statistically equivalent to evaluating it naturally. The `Natural` game
@@ -477,19 +482,11 @@ challenge point -- replacing `H(target)` with an independently sampled value so 
 challenge ciphertext becomes statistically independent of the adversary's hash queries.
 This is a standard technique in ROM proofs.
 
-```prooffrog
-// Four-step pattern using ROMProgramming
-G_before against Adversary;
-ROMProgramming.Natural compose R_ROM against Adversary;     // interchangeability
-ROMProgramming.Programmed compose R_ROM against Adversary;  // by ROMProgramming
-G_after against Adversary;                                  // interchangeability
-```
-
-Real-proof pointer: used in `examples/Proofs/Group/OTCDHImpliesOTHashedDDH.proof`.
+Real-proof pointer: used in [`examples/Proofs/Group/OTCDHImpliesOTHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/OTCDHImpliesOTHashedDDH.proof).
 
 ### RandomTargetGuessing
 
-**File:** `examples/Games/Misc/RandomTargetGuessing.game`
+**File:** [`examples/Games/Misc/RandomTargetGuessing.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/RandomTargetGuessing.game)
 
 **What it states:** Comparing an adversary-supplied value against a hidden, uniformly
 sampled target is indistinguishable from always returning false. The `Real` game samples
@@ -499,44 +496,12 @@ game always returns `false`. Any adversary distinguishes the two with advantage 
 
 **When to reach for it:** When a game checks whether the adversary has guessed a secret
 uniform value, and the proof argues that such a guess succeeds only with negligible
-probability (bounded by the birthday / guessing bound).
+probability.
 
-```prooffrog
-// Four-step pattern using RandomTargetGuessing
-G_before against Adversary;
-RandomTargetGuessing.Real compose R_RTG against Adversary;    // interchangeability
-RandomTargetGuessing.Ideal compose R_RTG against Adversary;   // by RandomTargetGuessing
-G_after against Adversary;                                    // interchangeability
-```
-
-Real-proof pointer: used in `examples/Proofs/Group/OTDDHImpliesOTCDH.proof`.
+Real-proof pointer: used in [`examples/Proofs/Group/OTDDHImpliesOTCDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/OTDDHImpliesOTCDH.proof).
 
 {: .important }
 Using a helper game adds to the trust base -- see the [Soundness]({% link researchers/soundness.md %}) page in the For Researchers area.
-
----
-
-## The standard four-step reduction pattern
-
-Every use of an assumption in a proof -- whether a hardness assumption like DDH or a
-statistical helper like UniqueSampling -- follows the same four-step reduction pattern.
-The user writes four consecutive entries in the `games:` list:
-
-1. `G_before` -- the game immediately before the reduction hop.
-2. `Assumption.Side1 compose R against Adversary;` -- interchangeability hop from `G_before`.
-3. `Assumption.Side2 compose R against Adversary;` -- assumption hop from entry 2.
-4. `G_after` -- interchangeability hop from entry 3 back to a direct game.
-
-The engine verifies entries 1 to 2 and entries 3 to 4 by canonicalization; entry 2 to 3
-is justified by the assumption listed in `assume:`. Assumption hops are bidirectional --
-the engine accepts both Side1 -> Side2 and Side2 -> Side1 because indistinguishability
-is symmetric.
-
-For the syntactic reference for how to write reductions and structure the `games:` list,
-see [Proofs]({% link manual/language-reference/proofs.md %}). For a fully worked
-instance of this pattern embedded in a complete proof, see the
-[Chained Encryption]({% link manual/worked-examples/chained-encryption.md %}) worked
-example.
 
 ---
 
@@ -550,10 +515,11 @@ links to [Limitations]({% link manual/limitations.md %}) for details and workaro
   author's responsibility and are stated as external arguments. See
   [Limitations]({% link manual/limitations.md %}) for details.
 
-- **No automatic induction.** Proofs that require a hybrid argument over a polynomial
-  number of steps must be structured using the `lemma:` mechanism to reason about one
-  step at a time; the engine does not construct or verify inductive arguments on its
-  own. See [Limitations]({% link manual/limitations.md %}) for details.
+- **No nested induction.** The engine supports single-level hybrid arguments via the
+  [`induction` construct]({% link manual/language-reference/proofs.md %}#induction-hybrid-arguments),
+  but nested induction or induction with complex base cases must be decomposed into
+  multiple proof files via `lemma:`. See [Limitations]({% link manual/limitations.md %})
+  for details.
 
 - **No reduction search.** When a proof hop requires a reduction to an underlying
   hardness assumption, the user supplies the reduction code. The engine verifies that

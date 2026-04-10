@@ -9,15 +9,21 @@ nav_order: 60
 
 The ProofFrog command-line interface (`proof_frog`) lets you parse, type-check, and verify cryptographic game-hopping proofs entirely from the terminal. Six public commands cover the full workflow from inspecting files to running complete proof verification. If you prefer a graphical environment, a browser-based editor is also available via the `web` command described below.
 
+> **Activate your Python virtual environment first.** All of the commands below assume that the virtual environment in which ProofFrog was installed is activated in the current terminal session. If you opened a new terminal, re-activate it before running any `proof_frog` (or `python -m proof_frog`) command: 
+>
+> - `source .venv/bin/activate` on macOS/Linux (bash/zsh)
+> - `source .venv/bin/activate.fish` on fish
+> - `.venv\Scripts\Activate.ps1` on Windows PowerShell
+>
+> See [Installation]({% link manual/installation.md %}) for details. A `command not found: proof_frog` error almost always means the virtual environment is not active.
 {: .important }
-**Activate your Python virtual environment first.** All of the commands below assume that the virtual environment in which ProofFrog was installed is activated in the current terminal session. If you opened a new terminal, re-activate it before running any `proof_frog` (or `python -m proof_frog`) command: `source .venv/bin/activate` on macOS/Linux (bash/zsh), `source .venv/bin/activate.fish` on fish, or `.venv\Scripts\Activate.ps1` on Windows PowerShell. See [Installation]({% link manual/installation.md %}) for details. A `command not found: proof_frog` error almost always means the virtual environment is not active.
 
 ## Command Summary
 
 | Command | Description |
 |---------|-------------|
 | [`version`](#version) | Print the ProofFrog version. |
-| [`parse`](#parse) | Parse a FrogLang file and print its AST. |
+| [`parse`](#parse) | Parse a FrogLang file and pretty-print it. |
 | [`check`](#check) | Type-check and semantically analyze a FrogLang file. |
 | [`prove`](#prove) | Run proof verification on a `.proof` file. |
 | [`describe`](#describe) | Print a concise interface description of a FrogLang file. |
@@ -47,7 +53,7 @@ python -m proof_frog version
 Expected output (version may differ):
 
 ```
-ProofFrog 0.4.0.dev0
+ProofFrog 0.4.0
 ```
 
 ---

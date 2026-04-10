@@ -6,11 +6,15 @@ nav_order: 50
 ---
 
 # Limitations
+{: .no_toc }
 
 ProofFrog is a mechanized proof assistant for a specific class of cryptographic arguments.
 This page describes where the tool stops: what it cannot express, what it deliberately
 chooses not to do, and where its current implementation is weak.
 If a proof step fails unexpectedly, this page is the right place to start diagnosing why.
+
+- TOC
+{:toc}
 
 ---
 
@@ -107,6 +111,7 @@ be flagged explicitly in the `prove -v` output when a failing step looks like on
 these cases.
 
 ### `||` and `&&` commutativity
+{: .no_toc }
 
 The engine normalizes `+` and `*` via commutative chain normalization, but it does not
 normalize the operand order of `||` (logical OR on Bool, or concatenation on BitString)
@@ -116,10 +121,8 @@ canonicalization.
 **Workaround.** Reorder the operands manually in your intermediate game so that both
 sides of the hop list them in the same order.
 
-**Forward note.** A future version of the canonicalization pipeline is expected to
-extend commutative normalization to Boolean operators. Check the [Canonicalization]({% link manual/canonicalization.md %}) page for updates.
-
 ### Field declaration ordering
+{: .no_toc }
 
 The engine does not reorder field declarations (state variables or local variable
 declarations) within a game. If two games have the same set of declarations but in a
@@ -129,11 +132,8 @@ different order, they will not be recognized as equivalent.
 an intermediate game, inspect the canonical form produced by `prove -v` on the preceding
 step and copy the field order from there.
 
-**Forward note.** Declaration-order normalization is a planned improvement. Until it
-lands, consistent ordering is a style discipline that pays off in maintainability as well
-as correctness.
-
 ### `||` and `&&` associativity
+{: .no_toc }
 
 Just as the engine does not normalize commutativity for `||` and `&&`, it does not
 normalize associativity. The expressions `(a || b) || c` and `a || (b || c)` are
@@ -144,10 +144,8 @@ parenthesization matches the previous step. Running `prove -v` shows the canonic
 on both sides of a failing hop, which makes it straightforward to identify where the
 grouping differs.
 
-**Forward note.** Associativity normalization for Boolean operators is part of the same
-planned work as commutativity normalization.
-
 ### Extra temporary variable form
+{: .no_toc }
 
 The engine's `SimplifyReturn` transform inlines single-use temporary variables that are
 immediately returned. If this transform fires on one game but not on a structurally
@@ -170,6 +168,7 @@ The direct-return form (`return f();`) is the canonical target, so preferring it
 the discrepancy.
 
 ### `if`/`else if` branch reordering
+{: .no_toc }
 
 The engine does not normalize the order of `if`/`else if` branches. Two games that
 test the same conditions in a different order will not be recognized as equivalent, even
@@ -180,6 +179,7 @@ intermediate game, check the canonical form from `prove -v` and copy the branch 
 from there.
 
 ### Higher-level soft spots
+{: .no_toc }
 
 Beyond the registered limitations above, the following areas are known to be
 challenging for the current engine, even though the diagnostic system may not always
@@ -192,11 +192,7 @@ non-trivial group law or an algebraic manipulation involving exponents -- the en
 will not find it automatically. The user must introduce an intermediate game that
 already has the result of the identity applied.
 
-**Loops and induction beyond `lemma:`.** Because FrogLang has no loop construct, proofs
-that require induction over a polynomial number of steps cannot be expressed as a single
-linear sequence of game hops. The `lemma:` mechanism supports one level of externally
-verified induction, but nested induction or induction with complex base cases must be
-handled by breaking the argument into multiple lemma files and composing them.
+**Nested induction.** FrogLang supports single-level hybrid arguments via the `induction` construct (see [Proofs: Induction]({% link manual/language-reference/proofs.md %}#induction-hybrid-arguments)), but nested induction or induction with complex base cases must be handled by breaking the argument into multiple proof files composed via the `lemma:` mechanism.
 
 **Probabilistic reasoning beyond the algebraic identities listed in [Canonicalization]({% link manual/canonicalization.md %}).**
 The engine knows that XOR with a uniform value produces a uniform value, that unique

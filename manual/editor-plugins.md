@@ -6,8 +6,12 @@ nav_order: 80
 ---
 
 # Editor Plugins
+{: .no_toc }
 
 ProofFrog ships a plugin for Visual Studio Code that provides rich editing support for FrogLang files. The plugin connects to an LSP server bundled with ProofFrog (`proof_frog lsp`); any other editor that supports the Language Server Protocol can be wired up to the same server without a dedicated plugin. Additional first-party plugins may be added in the future. See the [Engine Internals]({% link researchers/engine-internals.md %}) page for details on the LSP protocol, the language IDs, and the workspace configuration the server expects.
+
+- TOC
+{:toc}
 
 ---
 

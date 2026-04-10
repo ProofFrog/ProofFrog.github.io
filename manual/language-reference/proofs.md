@@ -355,6 +355,91 @@ For a detailed walkthrough of the four-step pattern applied to a concrete proof,
 
 ---
 
+## Induction (hybrid arguments)
+
+Many cryptographic proofs use a *hybrid argument*: a sequence of games {% katex %}G_0, G_1, \ldots, G_q{% endkatex %} where each adjacent pair differs in the treatment of a single oracle call, and the total number of steps {% katex %}q{% endkatex %} depends on the adversary's query budget. FrogLang supports this pattern with the `induction` construct, `calls <= q` query bounds, and `assume` step assumptions.
+
+### Query bounds
+
+A proof can declare a bound on the number of oracle calls the adversary makes by adding a `calls <= expr;` declaration in the `assume:` block:
+
+```prooffrog
+assume:
+    PRFSecurity(F);
+    calls <= q;
+```
+
+The variable `q` must be an `Int` declared in `let:`. This tells the engine that the adversary makes at most `q` calls to each oracle method per game execution. The bound is used during induction verification: the engine treats `q` as a symbolic integer and reasons about game equivalence under that constraint.
+
+### The `induction` block
+
+The `induction` block replaces a linear sequence of game hops with a parameterized loop. Its syntax is:
+
+```prooffrog
+induction(i from start to end) {
+    // game steps parameterized by i
+}
+```
+
+Here `i` is an `Int` variable (scoped to the block) that ranges from `start` to `end` (both expressions of type `Int`, typically `1` and `q`). The body contains game steps — the same syntax as the `games:` block — that are parameterized by `i`.
+
+The engine verifies an induction block in two phases:
+
+1. **Internal hops.** Each adjacent pair of steps inside the block is checked for interchangeability or assumption validity, treating `i` as a symbolic integer.
+2. **Rollover.** The engine checks that the last step of iteration `i` is interchangeable with the first step of iteration `i + 1` (substituting `i + 1` for `i` in the first step). This ensures the iterations chain together correctly.
+
+The step immediately before the `induction` block is checked against the first step of the block (at `i = start`), and the step immediately after is checked against the last step (at `i = end`).
+
+### Step assumptions (`assume`)
+
+Some hops inside an induction block (or adjacent to it) require facts about game state that the engine cannot derive structurally — typically bounds on a counter variable. The `assume expr;` directive asserts that `expr` holds at that point in the game sequence, making it available to the engine's Z3-based comparison:
+
+```prooffrog
+assume R_Hybrid(F, 1).count >= 1;
+
+induction(i from 1 to q) {
+    PRFSecurity(F).Real compose R_Hybrid(F, i) against MultiKeyPRFSecurity(F).Adversary;
+    PRFSecurity(F).Random compose R_Hybrid(F, i) against MultiKeyPRFSecurity(F).Adversary;
+}
+
+assume R_Hybrid(F, q).count < q + 1;
+
+MultiKeyPRFSecurity(F).Random against MultiKeyPRFSecurity(F).Adversary;
+```
+
+The expression in `assume` can reference game or reduction fields using dot notation (e.g., `R_Hybrid(F, 1).count`). The engine resolves these field references against the games in the adjacent hop and passes the assertion to Z3 as an additional constraint. Step assumptions placed immediately before an `induction` block apply to the entry hop; those placed at the end of the block (after the last game step) apply to the rollover check.
+
+{: .important }
+Step assumptions are **not verified** by the engine — they are trusted assertions that the proof author provides. Using an incorrect step assumption can make an invalid proof appear to verify. Use them only for facts that follow from the query bound and the structure of the reduction (such as counter range constraints).
+
+### Example: multi-key PRF security
+
+The proof that multi-key PRF security follows from single-key PRF security ([`MultiKeyFromPRF.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRF/MultiKeyFromPRF.proof)) is a clean example of induction. The reduction `R_Hybrid` uses a counter to select the `i`-th call for delegation to the PRF challenger:
+
+```prooffrog
+games:
+    MultiKeyPRFSecurity(F).Real against MultiKeyPRFSecurity(F).Adversary;
+
+    assume R_Hybrid(F, 1).count >= 1;
+
+    induction(i from 1 to q) {
+        PRFSecurity(F).Real compose R_Hybrid(F, i)
+            against MultiKeyPRFSecurity(F).Adversary;
+        PRFSecurity(F).Random compose R_Hybrid(F, i)
+            against MultiKeyPRFSecurity(F).Adversary;
+    }
+
+    assume R_Hybrid(F, q).count < q + 1;
+
+    MultiKeyPRFSecurity(F).Random against MultiKeyPRFSecurity(F).Adversary;
+```
+
+Each iteration replaces one PRF call with a random output via the standard assumption hop pattern. The rollover check ensures that iteration `i`'s final game (where calls `1` through `i` are random) matches iteration `i + 1`'s first game (where calls `1` through `i` are also random).
+
+For a more complex example with intermediate games inside the induction body, see [`CounterPRGSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/CounterPRGSecure.proof).
+
+---
+
 ## Verification and development workflow
 
 ProofFrog offers two ways to verify proofs: the command-line interface (CLI) and the browser-based web editor. Both use the same underlying engine; choose whichever fits your workflow.

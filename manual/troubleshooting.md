@@ -6,10 +6,14 @@ nav_order: 90
 ---
 
 # Troubleshooting
+{: .no_toc }
 
 This page is keyed by symptom. Find the error message or behavior you are
 seeing, then follow the **Fix** to resolve it. Where a more detailed
 explanation exists elsewhere in the manual, a **See also** link is provided.
+
+- TOC
+{:toc}
 
 ---
 
@@ -22,7 +26,7 @@ activated in the current shell session, or you installed ProofFrog into a
 different Python installation than the one your shell resolves.
 
 **Fix:** Activate the virtual environment (`source .venv/bin/activate` on
-macOS/Linux, `.venv\Scripts\Activate.ps1` on Windows PowerShell) before
+macOS/Linux, `source .venv/bin/activate.fish` on fish, `.venv\Scripts\Activate.ps1` on Windows PowerShell) before
 running `proof_frog`. If you are not using a virtual environment, verify with
 `which proof_frog` (macOS/Linux) or `where proof_frog` (Windows) that the
 command is on your `PATH`.
@@ -349,7 +353,7 @@ If all of your proof steps look logically correct but one or more
 interchangeability hops still fail, the steps below help narrow down the
 cause.
 
-**Step 1: run with verbose output.**
+**Step 1: Run with verbose output.**
 
 ```bash
 proof_frog prove -v your_proof.proof
@@ -361,7 +365,7 @@ a known engine limitation.
 
 **See also:** [CLI Reference]({% link manual/cli-reference.md %})
 
-**Step 2: check for known engine limitations.**
+**Step 2: Check for known engine limitations.**
 
 The ProofFrog engine currently does not normalize the following patterns when
 comparing canonical game forms. If the verbose output shows a diff that matches
@@ -399,12 +403,12 @@ game or reduction.
    *Workaround:* Match the branch order from the previous game in your
    intermediate game.
 
-**Step 3: check for deeper engine issues.**
+**Step 3: Check for deeper engine issues.**
 
 If none of the limitations above apply and the diff still looks semantically
 equivalent, there may be an engine bug or an unimplemented transformation.
 The [Canonicalization]({% link manual/canonicalization.md %}) and
 [Limitations]({% link manual/limitations.md %}) pages document the full
 canonicalization pipeline and its current gaps. If the gap you are seeing is
-not covered there, consult the ProofFrog issue tracker or contact the
-maintainers.
+not covered there, consult the ProofFrog issue tracker or ask on the 
+[GitHub discussions forum](https://github.com/orgs/ProofFrog/discussions).
