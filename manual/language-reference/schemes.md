@@ -7,10 +7,12 @@ nav_order: 4
 ---
 
 # Schemes
-
-## Overview
+{: .no_toc }
 
 A `.scheme` file defines a *concrete instantiation* of a primitive: it provides implementations for every method declared in the primitive, with matching signatures. Where a [primitive]({% link manual/language-reference/primitives.md %}) is an abstract interface — declaring types and method signatures with no code — a scheme fills in the method bodies and binds abstract sets to concrete types. Schemes can themselves be parameterized over other primitives, which is how generic constructions such as KEMDEM, EncryptThenMAC, and TriplingPRG are expressed. For the full type system and statement forms available in scheme bodies, see the [Basics]({% link manual/language-reference/basics.md %}) page.
+
+- TOC
+{:toc}
 
 ---
 
@@ -85,7 +87,7 @@ Scheme TriplingPRG(PRG G) extends PRG {
 
 The expression may reference any integer fields exposed by the parameter primitives. In the example above, `G.lambda` and `G.stretch` come from the PRG primitive's integer field declarations; the clause asserts that the underlying PRG has equal seed length and stretch length, which the TriplingPRG construction requires in order to apply the underlying PRG twice as intended.
 
-A scheme may have at most one `requires` clause. It is checked when the scheme is instantiated in a proof's `let:` block: if the condition does not hold for the supplied parameter values, the proof is rejected at type-checking time.
+A scheme may have zero or more `requires` clauses. Each clause is checked when the scheme is instantiated in a proof's `let:` block: if the condition does not hold for the supplied parameter values, the proof is rejected at type-checking time.
 
 ---
 
@@ -153,7 +155,7 @@ During proof verification, `this` references are automatically rewritten to the 
 {: .important }
 When a scheme `extends` a primitive, the typechecker requires that each method implementation carries *exactly* the same `deterministic` and `injective` modifiers as the corresponding method declaration in the primitive. Adding a modifier that the primitive does not declare, or omitting one that the primitive does declare, is a type error. Return types must also match exactly: `T?` is not accepted in place of `T` or vice versa.
 
-This is one of the most common sources of type errors when writing schemes. If the primitive declares:
+This is a common source of type errors when writing schemes. If the primitive declares:
 
 ```prooffrog
 deterministic Message? Dec(Key k, Ciphertext c);
@@ -173,11 +175,11 @@ See the [Primitives]({% link manual/language-reference/primitives.md %}) page fo
 
 ## Examples
 
-The following examples are drawn from `examples/Schemes/` in the ProofFrog repository.
+The following examples are drawn from the [Schemes](https://github.com/ProofFrog/examples/tree/main/Schemes) directory in the ProofFrog examples repository.
 
 ### OTP — One-Time Pad
 
-*`examples/Schemes/SymEnc/OTP.scheme`* — the simplest possible symmetric encryption scheme: all three spaces are `BitString<lambda>`, key generation samples a uniform random key, and encryption and decryption are both XOR.
+[`Schemes/SymEnc/OTP.scheme`](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/OTP.scheme) — the simplest possible symmetric encryption scheme: all three spaces are `BitString<lambda>`, key generation samples a uniform random key, and encryption and decryption are both XOR.
 
 ```prooffrog
 import '../../Primitives/SymEnc.primitive';
@@ -206,7 +208,7 @@ Note that `Dec` carries the `deterministic` modifier and returns `Message?`, mat
 
 ### TriplingPRG — Generic PRG Construction
 
-*`examples/Schemes/PRG/TriplingPRG.scheme`* — a generic construction that takes a PRG as a parameter and produces a PRG with twice the stretch. It uses a `requires` clause, integer field assignments, and calls the underlying PRG twice.
+[`Schemes/PRG/TriplingPRG.scheme`](https://github.com/ProofFrog/examples/blob/main/Schemes/PRG/TriplingPRG.scheme) — a generic construction that takes a PRG as a parameter and produces a PRG with twice the stretch. It uses a `requires` clause, integer field assignments, and calls the underlying PRG twice.
 
 ```prooffrog
 import '../../Primitives/PRG.primitive';
@@ -232,7 +234,7 @@ The `requires` clause enforces that the underlying PRG's seed length equals its 
 
 ### EncryptThenMAC — Two-Primitive Generic Construction
 
-*`examples/Schemes/SymEnc/EncryptThenMAC.scheme`* — a generic authenticated encryption scheme that takes a symmetric encryption scheme and a MAC as parameters. It shows a `requires` clause relating sets from two different primitive parameters, tuple types for key and ciphertext, and method bodies that call into two distinct primitive instances.
+[`Schemes/SymEnc/EncryptThenMAC.scheme`](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/EncryptThenMAC.scheme) — a generic authenticated encryption scheme that takes a symmetric encryption scheme and a MAC as parameters. It shows a `requires` clause relating sets from two different primitive parameters, tuple types for key and ciphertext, and method bodies that call into two distinct primitive instances.
 
 ```prooffrog
 import '../../Primitives/SymEnc.primitive';
@@ -268,9 +270,9 @@ Scheme EncryptThenMAC(SymEnc E, MAC M) extends SymEnc {
 
 The key is a tuple `[E.Key, M.Key]` and the ciphertext is a tuple `[E.Ciphertext, M.Tag]`. The `requires` clause ensures that the symmetric ciphertext space is a subset of the MAC message space, as required by the Encrypt-then-MAC construction. Tuple element access (`k[0]`, `k[1]`, `c[0]`, `c[1]`) is used throughout to unpack the compound types.
 
-### KEMDEM — Public-Key Hybrid Encryption
+### KEM-DEM — Hybrid Public-Key Encryption
 
-*`examples/Schemes/PubEnc/KEMDEM.scheme`* — a hybrid public-key encryption scheme that combines a Key Encapsulation Mechanism with a symmetric encryption scheme.
+[`Schemes/PubEnc/KEMDEM.scheme`](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/KEMDEM.scheme) — a hybrid public-key encryption scheme that combines a key encapsulation mechanism with a symmetric encryption scheme.
 
 ```prooffrog
 import '../../Primitives/KEM.primitive';

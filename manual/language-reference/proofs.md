@@ -7,8 +7,12 @@ nav_order: 6
 ---
 
 # Proofs
+{: .no_toc }
 
 A `.proof` file is the central artifact in ProofFrog. It proves that a scheme satisfies a security property under stated assumptions by exhibiting a sequence of games that walks from one side of the theorem to the other. Every adjacent pair of games in the sequence must be either interchangeable (verified automatically by the ProofFrog engine) or justified by an assumed security property. The engine checks every hop and reports the result.
+
+- TOC
+{:toc}
 
 ---
 
@@ -35,6 +39,10 @@ import 'relative/path/to/Scheme.scheme';
 import 'relative/path/to/Security.game';
 
 // Helpers: Reduction and intermediate Game definitions
+
+Game G_Mid(params) {
+    // state variables and oracle methods for an intermediate proof step
+}
 
 Reduction R(params) compose AssumedGame(params) against TheoremGame(params).Adversary {
     // oracle implementations
@@ -67,7 +75,45 @@ The region above `proof:` (after any `import` statements) holds:
 - **`Reduction` definitions** — adapters that translate between the theorem game's adversary interface and an assumed security game's interface. Detailed in the Reductions section below.
 - **Intermediate `Game` definitions** — explicit game definitions that appear as steps in the `games:` sequence but are not already defined in an imported `.game` file.
 
-Helpers are only meaningful when referenced from the `games:` block. They do not affect the `let:`, `assume:`, or `theorem:` sections. Intermediate games are documented in the [Games]({% link manual/language-reference/games.md %}) file-type reference; reductions are documented later on this page.
+Helpers are only meaningful when referenced from the `games:` block. They do not affect the `let:`, `assume:`, or `theorem:` sections. Reductions are documented later on this page; intermediate games are described in the next subsection.
+
+### Intermediate games
+
+An intermediate game is a `Game` definition written directly in the `.proof` file's helpers section (above `proof:`), rather than imported from a `.game` file. Intermediate games represent explicit proof states that appear as steps in the `games:` sequence. They are useful when a transition between two games is too large for the engine to verify in a single hop, so you introduce one or more named waypoints that break the transition into smaller, verifiable steps.
+
+Because an intermediate game is a standalone game (not a game pair), it is referenced in the `games:` block by name and parameters alone — there is no `.Side` suffix:
+
+```prooffrog
+IntermediateGame(params) against TheoremGame(params).Adversary;
+```
+
+Here is a simplified example. Suppose a proof needs to transition from a game that encrypts using a PRF to one that encrypts using a truly random function. An intermediate game makes the boundary explicit:
+
+```prooffrog
+// Helpers section: define the intermediate game
+Game G_RF(PRF F, SymEnc se) {
+    Map<F.inp, F.out> T;
+
+    se.Ciphertext Enc(se.Message m) {
+        se.Key k = F.inp.uniform();
+        if (T[k] == bottom) {
+            T[k] = F.out.uniform();
+        }
+        return se.Enc(T[k], m);
+    }
+}
+
+proof:
+// ...
+games:
+    CPA(S).Real against CPA(S).Adversary;
+    G_RF(F, se) against CPA(S).Adversary;          // intermediate step
+    CPA(S).Random against CPA(S).Adversary;
+```
+
+The engine checks that each adjacent pair of games is interchangeable or justified by an assumption, just as it would for any other game step.
+
+Intermediate games can take parameters from the proof's `let:` block. Common naming conventions include `G_` prefixes (e.g., `G_RF`, `G_RandKey`), `Intermediate` names (e.g., `Intermediate1`, `Intermediate2`), or descriptive names like `Hyb`. For real-world examples, see [`SymEncPRFOTUC.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFOTUC.proof) (which defines `G0`, `G_RF`, and `G_Uniq`) and [`Hybrid.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/Hybrid.proof) (which defines `Intermediate1` and `Intermediate2`).
 
 ---
 
@@ -118,9 +164,8 @@ The `assume:` block lists the security properties that the proof takes as given.
 
 ```prooffrog
 assume:
-    Security(G);
-    BitStringSampling(lambda, lambda);
-    BitStringSampling(lambda, 2 * lambda);
+    PRFSecurity(F);
+    UniqueSampling(BitString<F.in>);
 ```
 
 An assumption `Prop(params)` means: the two sides of the game pair `Prop` are computationally indistinguishable when instantiated with `params`. The proof is valid *conditional on* all stated assumptions being true.
@@ -131,9 +176,9 @@ An assumption `Prop(params)` means: the two sides of the game pair `Prop` are co
 assume:
 ```
 
-**Helper games from `Games/Misc/`.** The `Games/Misc/` directory contains game pairs that capture simple probabilistic facts rather than cryptographic hardness assumptions — for example, `BitStringSampling` (concatenating two independent uniform samples equals one longer uniform sample) and `OTPUniform` (XOR with a uniform key produces a uniform ciphertext). These hold unconditionally and can be listed in `assume:` freely to enable certain game hops.
+**Helper games from `Games/Misc/`.** The [`Games/Misc/`](https://github.com/ProofFrog/examples/tree/main/Games/Misc) directory contains game pairs that capture simple probabilistic facts rather than cryptographic hardness assumptions — for example, [`UniqueSampling`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/UniqueSampling.game) (sampling uniformly from a set is indistinguishable from sampling with exclusion of a bookkeeping set) and [`HashOnUniform`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/HashOnUniform.game) (applying a hash to a uniformly random input yields a uniform output). These hold unconditionally and can be listed in `assume:` freely to enable certain game hops.
 
-An assumption entry can appear in the `games:` sequence as a hop justification as many times as needed.
+An assumption entry can be used in the `games:` sequence as a hop justification as many times as needed.
 
 ---
 
@@ -180,15 +225,14 @@ The sequence for the OTP proof has a single hop:
 ```prooffrog
 games:
     OneTimeSecrecy(E).Real against OneTimeSecrecy(E).Adversary;
-
     OneTimeSecrecy(E).Random against OneTimeSecrecy(E).Adversary;
 ```
 
-The engine inlines the OTP scheme into both games, canonicalizes the resulting code, and checks equivalence. Because XOR with a uniform random bit string that is used exactly once produces a uniform result, the two games canonicalize identically.
+The engine inlines the OTP scheme into both games, canonicalizes the resulting code, and checks equivalence. Because XOR with a uniform random bit string that is used exactly once produces a uniform result, the two games canonicalize identically without any additional effort by the proof author.
 
 ---
 
-## Game step syntax
+### Game step syntax
 
 Each entry in the `games:` block takes one of two forms.
 
@@ -197,6 +241,8 @@ Each entry in the `games:` block takes one of two forms.
 ```prooffrog
 GameProperty(params).Side against GameProperty(params).Adversary;
 ```
+
+Direct steps are used for the starting and ending games (which use the `.Side` suffix of a game pair) and for intermediate games defined in the helpers section (which are standalone games referenced by name alone, without a `.Side` suffix).
 
 **Composed step** — the game is applied through a reduction:
 
@@ -207,7 +253,7 @@ GameProperty(params).Side compose ReductionName(params)
 
 In a composed step, `GameProperty(params).Side` is the assumed game (the challenger the adversary inside the reduction talks to), and `ReductionName(params)` is a `Reduction` defined in the helpers section. The adversary in `against ...` is the adversary for the theorem game.
 
-The full six-step sequence from `OTUCimpliesOTS.proof` illustrates both forms:
+The full six-step sequence from [`OTUCimpliesOTS.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesOTS.proof) illustrates both forms:
 
 ```prooffrog
 games:
@@ -250,7 +296,7 @@ Inside a reduction body:
 
 The reduction acts as a simulator: from the theorem-game adversary's point of view, it is interacting with the theorem game; in reality, it is forwarding calls to the assumed game and translating inputs and outputs as needed.
 
-Here is `R1` from `OTUCimpliesOTS.proof`, a complete reduction:
+Here is `R1` from [`OTUCimpliesOTS.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesOTS.proof), a complete reduction:
 
 ```prooffrog
 // R1 forwards the left message to the OTUC oracle
@@ -266,71 +312,62 @@ Reduction R1(SymEnc se) compose OneTimeUniformCiphertexts(se)
 
 ---
 
-## The reduction parameter rule
+### The reduction parameter rule
 
 {: .important }
 > **A reduction's parameter list must include every parameter needed to instantiate the composed security game, even if that parameter is not referenced anywhere in the reduction body.**
 >
 > If a parameter required to instantiate `AssumedGame(params)` is missing from the reduction's parameter list, you will get a confusing instantiation error at the game step that uses the reduction — not at the reduction definition itself. The error message may not point clearly to the missing parameter.
 >
-> Example: a reduction that composes with `BitStringSampling(lambda, lambda)` must take `Int lambda` as a parameter (or take a scheme instance whose fields expose `lambda`), even if `lambda` does not appear in the reduction body. See `R2` in `TriplingPRGSecure.proof` for an example of an `Int lambda` parameter that is present solely to satisfy this rule.
+> Example: a reduction that composes with `UniqueSampling(BitString<F.in>)` must take a parameter that exposes `F.in` (such as a `PRF F` instance), even if `F` is not otherwise referenced in the reduction body. See `R_Uniq` in [`SymEncPRFCPA$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof) for an example.
 
 ---
 
-## The four-step reduction pattern
+### The four-step reduction pattern
 
-Each use of a reduction in the `games:` sequence follows a standard four-step pattern. Every reduction hop occupies four consecutive entries — two interchangeability hops flanking one assumption hop:
+The standard way to invoke an assumption in a game-hopping proof is the four-step reduction pattern. Suppose the proof is at some game {% katex %}G_A{% endkatex %} and wants to transition to a game {% katex %}G_B{% endkatex %} by appealing to a security assumption on some underlying primitive `Security` (whose two sides are `Security.Real` and `Security.Random`), via a reduction `R`. The pattern occupies four consecutive entries in the `games:` list:
 
-{: .important }
-```
-G_A against Adversary;                          // interchangeability with Security.Side1 compose R
-Security.Side1 compose R against Adversary;      // interchangeability
-Security.Side2 compose R against Adversary;      // by assumption (Side1 -> Side2)
-G_B against Adversary;                          // interchangeability with Security.Side2 compose R
-```
+1. {% katex %}G_A{% endkatex %} — some starting game.
+2. `Security.Real compose R` — the engine verifies, by code equivalence, that this is interchangeable with {% katex %}G_A{% endkatex %}.
+3. `Security.Random compose R` — the **assumption hop**. The engine accepts this transition without checking equivalence because `Security` is in the proof's `assume:` block, so its `Real` and `Random` sides are indistinguishable by hypothesis.
+4. {% katex %}G_B{% endkatex %} — the engine verifies, by code equivalence, that this is interchangeable with `Security.Random compose R`.
 
-Reading the four steps:
-
-1. **Step 1 (direct game `G_A`)**: This game is equivalent to `Security.Side1 compose R`. The engine verifies this by inlining both and checking code equivalence.
-2. **Step 2 (`Security.Side1 compose R`)**: The assumed game on its `Side1`, composed with the reduction.
-3. **Step 3 (`Security.Side2 compose R`)**: The assumed game switches from `Side1` to `Side2`. This hop is justified by the assumption entry `Security(params)` in the `assume:` block, not by code equivalence.
-4. **Step 4 (direct game `G_B`)**: This game is equivalent to `Security.Side2 compose R`. Again verified by code equivalence.
-
-**Transitions 1-2 and 3-4** are interchangeability hops, checked by the engine.
-**Transition 2-3** is the assumption hop, justified by an entry in `assume:`.
+So the assumption hop (steps 2 → 3) is sandwiched between two engine-verified interchangeability hops (1 → 2 and 3 → 4). The role of `R` is to bridge between the "high-level" games {% katex %}G_A{% endkatex %} and {% katex %}G_B{% endkatex %} and the lower-level `Security` game whose assumption we want to use.
 
 **Assumption hops are bidirectional.** A hop from `Side1` to `Side2` and a hop from `Side2` to `Side1` are both valid — indistinguishability is symmetric. In a symmetric proof, the forward half often uses `Real -> Random` hops and the reverse half uses `Random -> Real` hops.
 
-The `TriplingPRGSecure.proof` example shows the four-step pattern applied twice (once per application of the underlying PRG):
+**Merging adjacent patterns.** When two four-step patterns are chained — one assumption hop followed by another — {% katex %}G_B{% endkatex %} of the first pattern often doubles as {% katex %}G_A{% endkatex %} of the second, compressing eight steps down to seven (or fewer if additional boundary games coincide). The [`TriplingPRGSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRGSecure.proof) example shows the four-step pattern applied twice (once per application of the underlying PRG), with the shared boundary compressed:
 
-```prooffrog
+```
 games:
-    Security(T).Real against Security(T).Adversary;
-
-    // Four-step pattern for the first PRG application:
-    Security(G).Real compose R1(G, T) against Security(T).Adversary;   // step 2
-    Security(G).Random compose R1(G, T) against Security(T).Adversary; // step 3: assumption hop
-
-    // Four-step pattern for the second PRG application:
-    Security(G).Real compose R3(G, T) against Security(T).Adversary;   // step 2
-    Security(G).Random compose R3(G, T) against Security(T).Adversary; // step 3: assumption hop
-
-    Security(T).Random against Security(T).Adversary;
+    Security(T).Real against Security(T).Adversary;                    //  }
+                                                                       //  } 1st four-step
+    Security(G).Real compose R1(G, T) against Security(T).Adversary;   //  } pattern
+    Security(G).Random compose R1(G, T) against Security(T).Adversary; //  }   ]
+                                                                       //  }   ]
+    Security(G).Real compose R3(G, T) against Security(T).Adversary;   //  }   ] 2nd
+    Security(G).Random compose R3(G, T) against Security(T).Adversary; //      ] four-step
+                                                                       //      ] pattern
+    Security(T).Random against Security(T).Adversary;                  //      ]
 ```
 
-`Security(T).Real` acts as `G_A` for the first pattern, and the interchangeability between it and `Security(G).Real compose R1(G, T)` is verified automatically. The `G_B` step of the first pattern is merged with the `G_A` step of the second pattern (they are both the transition between the two PRG hops), compressing the sequence.
+For a detailed walkthrough of the four-step pattern applied to a concrete proof, see the [Chained Encryption worked example]({% link manual/worked-examples/chained-encryption.md %}).
 
 ---
 
 ## Verification and development workflow
 
-To verify a proof:
+ProofFrog offers two ways to verify proofs: the command-line interface (CLI) and the browser-based web editor. Both use the same underlying engine; choose whichever fits your workflow.
+
+### CLI workflow
+
+To verify a proof from the terminal:
 
 ```bash
 proof_frog prove examples/Proofs/PRG/TriplingPRGSecure.proof
 ```
 
-Use `-v` for verbose output showing canonical forms of each game:
+Use `-v` for verbose output showing canonical forms of each game, or `-vv` for very verbose output including detailed canonicalization information:
 
 ```bash
 proof_frog prove -v examples/Proofs/PRG/TriplingPRGSecure.proof
@@ -338,11 +375,30 @@ proof_frog prove -v examples/Proofs/PRG/TriplingPRGSecure.proof
 
 The engine reports each hop as `ok` or failing and prints the step type (`equivalence` or `assumption`). When a hop fails, the verbose output shows the canonical form of both sides so you can see where they diverge.
 
-**Recommended incremental approach:**
+You can also type-check a proof file without running the full proof verification:
+
+```bash
+proof_frog check examples/Proofs/PRG/TriplingPRGSecure.proof
+```
+
+See the [CLI reference]({% link manual/cli-reference.md %}) for the full set of commands.
+
+### Web editor workflow
+
+Start the web editor with `proof_frog web [directory]` and open a `.proof` file from the file tree. The toolbar provides **Parse**, **Type Check**, and **Run Proof** buttons that correspond to the CLI's `parse`, `check`, and `prove` commands. A verbosity selector next to the **Run Proof** button lets you choose Quiet, Verbose, or Very Verbose output (matching the CLI's no-flag, `-v`, and `-vv` modes).
+
+When a proof runs, the **Game Hops** panel in the left sidebar lists each step of the `games:` block, color-coded by result. Clicking a step opens a detail view showing the canonical forms of the games on each side of the hop — this is the fastest way to diagnose why a hop succeeds or fails.
+
+See the [Web Editor]({% link manual/web-editor.md %}) page for details on layout, editing features, and limitations.
+
+### Recommended incremental approach
+
+Regardless of which environment you use:
 
 1. Write the `let:`, `assume:`, and `theorem:` blocks first.
 2. Add only the first and last game steps (the two sides of the theorem).
-3. Write one reduction and add its corresponding four-step pattern to `games:`.
-4. Run `proof_frog prove` after each addition. Address failures one hop at a time before adding more steps.
+3. **Sketch the proof with intermediate games.** Before writing any reductions, it can be helpful to define intermediate games in the helpers section that represent the key waypoints in your proof strategy. Even before these games are connected by verified hops, writing them out forces you to be precise about what each step of the proof looks like and gives you a concrete target for each reduction.
+4. Write one reduction and add its corresponding four-step pattern to `games:`.
+5. Verify after each addition — run `proof_frog prove` on the CLI or click **Run Proof** in the web editor. Address failures one hop at a time before adding more steps.
 
-For a guided walkthrough of writing a complete proof from scratch, see Tutorial Part 2 ({% link manual/tutorial/otp-ots.md %}).
+For a guided walkthrough of writing a complete proof from scratch, see [Tutorial Part 2]({% link manual/tutorial/otp-ots.md %}).

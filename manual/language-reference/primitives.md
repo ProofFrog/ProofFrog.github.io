@@ -7,10 +7,12 @@ nav_order: 3
 ---
 
 # Primitives
-
-## Overview
+{: .no_toc }
 
 A `.primitive` file defines an *abstract cryptographic interface*: the named sets and method signatures that characterize a cryptographic operation, with no implementations. Primitives capture a class of schemes — its types and its calling contract — but say nothing about how it works internally. Concrete instantiations are provided by schemes (covered on the [Schemes]({% link manual/language-reference/schemes.md %}) page). For the full type system available in primitives, see the [Basics]({% link manual/language-reference/basics.md %}) page. For an explanation of how oracle calls made to primitive methods behave at runtime during game evaluation, see the [Execution Model]({% link manual/language-reference/execution-model.md %}) page.
+
+- TOC
+{:toc}
 
 ---
 
@@ -150,9 +152,11 @@ When a scheme `extends` a primitive, the typechecker requires that the scheme's 
 
 ## Examples
 
-The following examples are drawn directly from `examples/Primitives/` in the ProofFrog repository.
+The following examples are drawn directly from the [Primitives](https://github.com/ProofFrog/examples/tree/main/Primitives) directory in the ProofFrog examples repository.
 
 ### PRG — Pseudorandom Generator
+
+[`Primitives/PRG.primitive`](https://github.com/ProofFrog/examples/blob/main/Primitives/PRG.primitive)
 
 ```prooffrog
 Primitive PRG(Int lambda, Int stretch) {
@@ -167,6 +171,8 @@ Takes a seed of `lambda` bits and stretches it to `lambda + stretch` bits. The `
 
 ### PRF — Pseudorandom Function
 
+[`Primitives/PRF.primitive`](https://github.com/ProofFrog/examples/blob/main/Primitives/PRF.primitive)
+
 ```prooffrog
 Primitive PRF(Int lambda, Int in, Int out) {
     Int lambda = lambda;
@@ -180,6 +186,8 @@ Primitive PRF(Int lambda, Int in, Int out) {
 A keyed function mapping `in`-bit inputs to `out`-bit outputs under a `lambda`-bit key. Like the PRG, `evaluate` is `deterministic` because the same key and input always produce the same output.
 
 ### SymEnc — Symmetric Encryption
+
+[`Primitives/SymEnc.primitive`](https://github.com/ProofFrog/examples/blob/main/Primitives/SymEnc.primitive)
 
 ```prooffrog
 Primitive SymEnc(Set MessageSpace, Set CiphertextSpace, Set KeySpace) {
@@ -197,6 +205,8 @@ An encryption scheme over abstract message, ciphertext, and key spaces. `KeyGen`
 
 ### MAC — Message Authentication Code
 
+[`Primitives/MAC.primitive`](https://github.com/ProofFrog/examples/blob/main/Primitives/MAC.primitive)
+
 ```prooffrog
 Primitive MAC(Set MessageSpace, Set TagSpace, Set KeySpace) {
     Set Message = MessageSpace;
@@ -212,6 +222,8 @@ Primitive MAC(Set MessageSpace, Set TagSpace, Set KeySpace) {
 A tagging scheme over abstract message, tag, and key spaces. Tag computation is `deterministic`: given a fixed key and message, the tag is always the same value. Key generation is non-deterministic.
 
 ### PRP — Pseudorandom Permutation
+
+[`Primitives/PRP.primitive`](https://github.com/ProofFrog/examples/blob/main/Primitives/PRP.primitive)
 
 ```prooffrog
 Primitive PRP(Int lambda, Int blen) {

@@ -7,10 +7,12 @@ nav_order: 5
 ---
 
 # Games
+{: .no_toc }
 
-## Overview
+A `.game` file defines a *security property* as a pair of games. The adversary interacts with one of the two games — without knowing which — and tries to distinguish them. If no efficient adversary can tell the two games apart (except with small probability), the scheme satisfies the security property. For a precise description of what "interact with a game" means at runtime — how `Initialize` is called, how oracle calls are sequenced, how state is managed — see the [Execution Model]({% link manual/language-reference/execution-model.md %}) page.
 
-A `.game` file defines a *security property* as a pair of games. The adversary interacts with one of the two games — without knowing which — and tries to distinguish them. If no efficient adversary can tell the two games apart (except with negligible probability), the scheme satisfies the security property. For a precise description of what "interact with a game" means at runtime — how `Initialize` is called, how oracle calls are sequenced, how state is managed — see the [Execution Model]({% link manual/language-reference/execution-model.md %}) page.
+- TOC
+{:toc}
 
 ---
 
@@ -30,11 +32,21 @@ There is no enforced naming convention for the two sides. Common choices from th
 | `Real` / `Fake` | Various simulation-based definitions |
 | `Real` / `Ideal` | Composable security |
 
-Pick the names that match how the security property is stated in the relevant literature. The proof engine treats whichever game appears first as the "left" side of the indistinguishability challenge and the second as the "right" side; in a proof's `games:` list, the sequence must start on one side and end on the other.
+Pick names that make sense for the property in question, and consider how the security property is stated in the relevant literature. Neither side is "preferred": your game hopping proof can go from left to right or right to left; all that matters is that in a proof's `games:` list, the sequence must start on one side and end on the other.
+
+### Distinguishing games versus win/lose and hidden bit games
+
+Following the conventions of Joy of Cryptography, security properties in ProofFrog are always about distinguishing a pair of games. 
+
+Conventional cryptographic literature naturally phrases some security properties as distinguishing a pair of games, but naturally phrases many security properties in terms of single games, where the adversary has to guess a hidden bit (e.g., a traditional formulation of IND-CPA security for encryption) or produce an output satisfying a condition (e.g., hash function collision resistance or unforgeability of a message authentication code). 
+
+In order to model such properties in ProofFrog, they must be phrased in terms of distinguishing a pair of games. This may feel unnatural at times, but is usually doable. 
+
+For example, [unforgeability of a MAC](https://github.com/ProofFrog/examples/blob/main/Games/MAC/SUFCMA.game) can be formulated with a game that provides a `GetTag(m)` oracle and a `CheckTag(m, t)` oracle.  In the real world, `CheckTag` returns the boolean result testing `t == E.MAC(k, m)`, whereas in the ideal world, `CheckTag` only accepts tags that were produced by `GetTag`. An adversary who produces a forgery (that was never queried to the `GetTag` oracle) will indeed be able to distinguish the two games.
 
 ---
 
-## The `Game` block
+## The `Game` blocks
 
 The general form of a single game is:
 
@@ -83,11 +95,13 @@ Game Left(SymEnc E) {
 
 `Initialize` is run exactly once, before the adversary makes any oracle call. It is the right place to perform setup that must happen once per execution (sampling a key, initializing a counter, populating a table).
 
+`Initialize` can have a non-`Void` return type; the semantics of the execution model are that any value returned from `Initialize` is provided to the adversary. For further details on the semantics, see the [Execution Model]({% link manual/language-reference/execution-model.md %}) page.
+
 State fields persist across oracle calls for the entire duration of a game execution. A value written in `Initialize` is visible in every subsequent oracle call; a value written by one oracle call is visible in later oracle calls. Each game execution starts with fresh state — there is no sharing of state between different executions.
 
 `Initialize` is optional. If it is absent, state fields begin in an undefined state (unless their declaration includes an initializer expression). Games with no state fields at all typically need no `Initialize`.
 
-For the precise semantics — including how `Initialize` interacts with phases, and the scoping rules for local variables vs. state fields — see the [Execution Model]({% link manual/language-reference/execution-model.md %}) page.
+
 
 ---
 
@@ -101,7 +115,10 @@ Return types follow the same rules as the [Basics]({% link manual/language-refer
 - Optional types `T?`: the oracle may return `None` (e.g., a decryption oracle that rejects invalid ciphertexts returns `E.Message?`)
 - Tuple types `[T1, T2]`: the oracle returns multiple values at once
 
-Inside an oracle body, calls to scheme and primitive methods (e.g., `E.Enc(k, m)`) are the only way the game exercises the cryptographic construction being studied. The adversary never calls scheme methods directly — it goes through the game's oracles.
+Inside an oracle body, calls to scheme and primitive methods (e.g., `E.Enc(k, m)`) are the only way the game exercises the cryptographic construction being studied. The adversary never calls scheme methods directly — it goes through the game's oracles (though by Kerckhoff's principle, the adversary does know which scheme is being used).
+
+{: .warning }
+ProofFrog's convention, following Joy of Cryptography, allows all game oracles (other than `Initialize`) to be called arbitrarily many times by the adversary. The language does not natively support restricting an oracle to be called only once, though you can try to encode such a condition using counters. This means that security notions in ProofFrog are often inherently multi-instance. For an example, see the two different formulations of decisional Diffie–Hellman in the examples repository: [multi-challenge DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDH.game) versus [single-challenge DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/OneTimeDDH.game).
 
 ---
 
@@ -123,76 +140,20 @@ The `export as` name is also what appears in the proof's `theorem:` and `assume:
 
 ---
 
-## Phases
-
-Some security definitions involve a *staged interaction* in which the adversary alternates between different sets of oracles. The canonical example is CCA (chosen-ciphertext) security: in one stage the adversary may both encrypt and decrypt freely; in the next stage the adversary receives a challenge ciphertext and may no longer query decryption on that specific ciphertext.
-
-FrogLang supports this with the `Phase` construct. A game may contain two or more `Phase` blocks instead of a flat list of oracles. Each phase has its own `Initialize` method and an `oracles:` list:
-
-```prooffrog
-Game Left(SymEnc E) {
-    E.Key k;
-    E.Ciphertext cStar;
-
-    E.Ciphertext Enc(E.Message m) {
-        return E.Enc(k, m);
-    }
-
-    E.Message? Dec(E.Ciphertext c) {
-        return E.Dec(k, c);
-    }
-
-    E.Message? restrainedDec(E.Ciphertext c) {
-        if (cStar == c) { return None; }
-        return E.Dec(k, c);
-    }
-
-    Phase {
-        Void Initialize() {
-            k = E.KeyGen();
-        }
-        oracles: [Enc, Dec];
-    }
-
-    Phase {
-        E.Ciphertext Initialize(E.Message mL, E.Message mR) {
-            cStar = E.Enc(k, mL);
-            return cStar;
-        }
-        oracles: [Enc, restrainedDec];
-    }
-}
-```
-
-Execution of a phased game proceeds as follows:
-
-1. The first phase's `Initialize` is called automatically before the adversary does anything. In the example above this samples the key.
-2. The adversary calls any oracle in the first phase's `oracles:` list — `Enc` and `Dec` — in any order, any number of times.
-3. When the adversary is ready to move on, it calls the second phase's `Initialize` with its chosen arguments. In the example this submits the two challenge messages and receives back the challenge ciphertext. Calling a phase's `Initialize` is the signal that transitions to that phase.
-4. The adversary then calls any oracle in the second phase's `oracles:` list — `Enc` and `restrainedDec`. The `Dec` oracle is no longer available; `restrainedDec` provides decryption but refuses to answer on the challenge ciphertext.
-
-State fields (`k` and `cStar`) are shared across all phases. A value written in Phase 1 is readable in Phase 2, which is how `restrainedDec` can check `cStar == c`.
-
-Oracle method bodies may be declared anywhere in the game body, outside any `Phase` block. Any method listed in a phase's `oracles:` list must have a body defined in the surrounding game. The two games in a CCA game file both use phases, and — per the two-game requirement — they must expose the same phase structure and oracle signatures.
-
-A game that uses phases is still exported and referenced in exactly the same way as a flat game:
-
-```prooffrog
-export as CCA;
-```
-
----
-
 ## Helper games as a special case
 
-Not every `.game` file defines a cryptographic security property. The `examples/Games/Misc/` directory contains *helper games* that capture simple probabilistic facts — not assumptions about any cryptographic construction, but mathematical truths about sampling. Examples:
+Not every `.game` file has to define a *cryptographic security property*. Game files can be used to capture facts that ProofFrog's engine is not able to reason about, such as mathematical properties, statistical claims, or additional program equivalence properties. The [`Games/Misc/`](https://github.com/ProofFrog/examples/tree/main/Games/Misc) directory contains several *helper games*.
+ 
+Here are some helper games that capture mathematical facts:
 
-- **`UniqueSampling`** (`UniqueSampling.game`): sampling uniformly from a set `S` is indistinguishable from sampling from `S` with exclusion of a bookkeeping set (rejection sampling).
-- **`HashOnUniform`** (`HashOnUniform.game`): applying a hash to a uniformly random input yields a uniform output.
-- **`RandomTargetGuessing`** (`RandomTargetGuessing.game`): guessing a random target is no easier than guessing any fixed value.
-- **`ROMProgramming`** (`ROMProgramming.game`): facts about programming random oracles.
+- **`UniqueSampling`** ([`UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/UniqueSampling.game)): sampling uniformly from a set `S` is indistinguishable from sampling from `S` with exclusion of a bookkeeping set (rejection sampling).
+- **`HashOnUniform`** ([`HashOnUniform.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/HashOnUniform.game)): applying a hash to a uniformly random input yields a uniform output.
+- **`RandomTargetGuessing`** ([`RandomTargetGuessing.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/RandomTargetGuessing.game)): guessing a random target is no easier than guessing any fixed value.
+- **`ROMProgramming`** ([`ROMProgramming.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/ROMProgramming.game)): facts about programming random oracles.
 
 Helper games are structurally identical to security-property games — they are pairs of games with `export as` — but they appear in a proof's `assume:` block rather than the `theorem:` block. They can be assumed freely because they hold unconditionally or statistically, not by reduction to a computational hardness assumption. For the full catalog of available helper games and when to use each, see the [Canonicalization]({% link manual/canonicalization.md %}) page.
+
+When a mathematical fact is encoded via a helper game and used to bridge a step in a game hopping proof, ProofFrog will still check that the claimed fact was applied properly in the game hopping proof (via an appropriate reduction). However, ProofFrog does not itself check the *validity* of the fact stated in a helper game. It is up to the proof author and the proof reader to confirm the validity of these facts. It is also up to the proof author and reader to include the appropriate probabilistic bound in the analysis, for example a {% katex %}|S| / |D|{% endkatex %} term when applying a unique sampling hop that replaces sampling {% katex %}x \stackrel{\$}\leftarrow D{% endkatex %} with {% katex %}x \stackrel{\$}\leftarrow D \setminus S{% endkatex %}.
 
 ---
 
@@ -200,7 +161,7 @@ Helper games are structurally identical to security-property games — they are 
 
 ### One-time secrecy
 
-Path: `examples/Games/SymEnc/OneTimeSecrecy.game`
+[`Games/SymEnc/OneTimeSecrecy.game`](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeSecrecy.game)
 
 ```prooffrog
 import '../../Primitives/SymEnc.primitive';
@@ -228,7 +189,7 @@ The adversary submits two equal-length messages and receives an encryption of ei
 
 ### CPA security (stateful game)
 
-Path: `examples/Games/SymEnc/CPA.game`
+[`Games/SymEnc/CPA.game`](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA.game)
 
 ```prooffrog
 import '../../Primitives/SymEnc.primitive';
@@ -260,7 +221,7 @@ Like one-time secrecy, but the key is sampled once in `Initialize` and reused ac
 
 ### A helper game
 
-Path: `examples/Games/Misc/UniqueSampling.game`
+[`Games/Misc/UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/UniqueSampling.game)
 
 ```prooffrog
 // Assumption: sampling uniformly from a set S is indistinguishable from
@@ -283,4 +244,4 @@ Game NoReplacement(Set S) {
 export as UniqueSampling;
 ```
 
-This game captures the fact that sampling with replacement (`Replacement`) is indistinguishable from sampling without replacement (`NoReplacement`) when the bookkeeping set is small relative to the sample space. It takes no cryptographic scheme as a parameter — it is a self-contained probabilistic fact. In a proof, it appears under `assume:` rather than `theorem:`.
+This game captures the fact that sampling with replacement (`Replacement`) is indistinguishable from sampling without replacement (`NoReplacement`) when the bookkeeping set is small relative to the sample space. It takes no cryptographic scheme as a parameter — it is a self-contained probabilistic fact. In a proof, it appears under `assume:` rather than `theorem:`. It is up to the proof author and proof reader to mathematically compute and interpret the probabilistic loss incurred by such a step.
