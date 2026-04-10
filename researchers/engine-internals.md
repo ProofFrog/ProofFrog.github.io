@@ -6,6 +6,7 @@ nav_order: 2
 ---
 
 # Engine Internals
+{: .no_toc }
 
 This page is written for researchers who want to contribute to ProofFrog, understand
 its canonicalization pipeline at the module level, use the engine-introspection CLI
@@ -14,6 +15,9 @@ server, or script ProofFrog from an MCP client. It complements the user-facing
 [Canonicalization]({% link manual/canonicalization.md %}) page, which describes *what*
 the engine does from a proof-author's perspective; this page describes *how* it does
 it.
+
+- TOC
+{:toc}
 
 ---
 
@@ -648,4 +652,4 @@ FrogLang syntax reference that an LLM can fetch without reading through example 
 The canonical tool-usage guide and setup instructions are in
 `ProofFrog/CLAUDE_MCP.md` in the ProofFrog repository. For a practical introduction
 to using the MCP server to iteratively write and debug proofs with Claude Code,
-see [Vibe-Coding]({% link researchers/vibe-coding.md %}).
+see the [Gen AI & Proving page]({% link researchers/gen-ai.md %}).

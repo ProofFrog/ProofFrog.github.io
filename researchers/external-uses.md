@@ -7,11 +7,11 @@ nav_order: 5
 
 # External Uses
 
-This page lists external projects that use ProofFrog. This page is distinct from [Publications]({% link researchers/publications/index.md %}), which is bibliographic; this page is case studies of adoption.
+This page lists external projects that use ProofFrog. See the [Publications & More]({% link researchers/publications/index.md %}) for outputs from the ProofFrog team.
 
 If you are using ProofFrog in your own project and would like to be listed here, please file an issue at the [ProofFrog GitHub repository](https://github.com/ProofFrog/ProofFrog/issues).
 
-## Projects
+---
 
 ### [StarFortress](https://github.com/dconnolly/starfortress)
 

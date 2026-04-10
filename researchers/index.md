@@ -15,7 +15,7 @@ If you are learning provable security or are new to ProofFrog, we recommend star
 - [Scientific Background]({% link researchers/scientific-background.md %}) — motivation, the three tasks of a game-hopping proof, design choices, positioning relative to other tools, and what ProofFrog is and isn't.
 - [Engine Internals]({% link researchers/engine-internals.md %}) — high-level architecture, core modules, the transformation pipeline by category, diagnostics and near-miss matching, the engine-introspection CLI commands, and the LSP and MCP servers.
 - [Soundness]({% link researchers/soundness.md %}) — what ProofFrog claims, what is in the trust base, what is *not* claimed, mitigations a careful user can apply, and the comparison framing relative to EasyCrypt and CryptoVerif.
-- [Vibe-Coding]({% link researchers/vibe-coding.md %}) — using LLM-based coding assistants to draft and iterate on proofs (a research-and-experimentation tool, not a recommended student workflow).
+- [GenAI & Proving]({% link researchers/gen-ai.md %}) — using LLM-based coding assistants to draft and iterate on proofs (a research-and-experimentation tool, not a recommended student workflow).
 - [External Uses]({% link researchers/external-uses.md %}) — curated case studies of external projects using ProofFrog.
 - [Publications]({% link researchers/publications/index.md %}) — papers, theses, talks, and how to cite ProofFrog.
 
