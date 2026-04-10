@@ -183,10 +183,10 @@ return (h ^ b) * (h ^ c);
 return G.generator ^ (a * b + a * c);
 ```
 
-Real-proof pointer: [`examples/Proofs/Group/DDHImpliesHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesHashedDDH.proof) uses the
-group masking move (the DDH `Right` game replaces `pk ^ r` with a random group element,
-and the uniform-absorbs rule fires to simplify the subsequent hash-and-XOR masking
-step).
+Real-proof pointer: [`examples/Proofs/PubEnc/ElGamalCPA.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/ElGamalCPA.proof) uses the
+group masking move (the DDH `Right` game replaces `pk ^ r` with a random group element `c`,
+and the uniform-absorbs rule fires to simplify `mL * c` to `c`, making the ciphertext
+independent of the message).
 
 {: .note }
 **If this is not firing for uniform-absorbs:** Exponentiation (`^`) is deliberately
@@ -448,7 +448,7 @@ G_after against Adversary;                               // interchangeability
 ```
 
 Real-proof pointer: used in [`examples/Proofs/SymEnc/SymEncPRFCPA$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof),
-[`examples/Proofs/PubEnc/HashedElGamalCPAROM.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPAROM.proof), [`examples/Proofs/Group/DDHImpliesHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesHashedDDH.proof).
+[`examples/Proofs/PubEnc/HashedElGamalCPAROM.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPAROM.proof), [`examples/Proofs/Group/DDHMultiChalImpliesHashedDDHMultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHMultiChalImpliesHashedDDHMultiChal.proof).
 
 ### HashOnUniform
 
@@ -465,7 +465,7 @@ block without sampling, so not a random oracle), and the proof requires treating
 output of `H` on a uniform input as uniformly random. This is the standard-model
 counterpart to what `FreshInputRFToUniform` does automatically in the ROM.
 
-Real-proof pointer: used in [`examples/Proofs/Group/OTDDHImpliesOTHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/OTDDHImpliesOTHashedDDH.proof).
+Real-proof pointer: used in [`examples/Proofs/Group/DDHImpliesHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesHashedDDH.proof).
 
 ### ROMProgramming
 
@@ -482,7 +482,7 @@ challenge point -- replacing `H(target)` with an independently sampled value so 
 challenge ciphertext becomes statistically independent of the adversary's hash queries.
 This is a standard technique in ROM proofs.
 
-Real-proof pointer: used in [`examples/Proofs/Group/OTCDHImpliesOTHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/OTCDHImpliesOTHashedDDH.proof).
+Real-proof pointer: used in [`examples/Proofs/Group/CDHImpliesHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/CDHImpliesHashedDDH.proof).
 
 ### RandomTargetGuessing
 
@@ -498,7 +498,7 @@ game always returns `false`. Any adversary distinguishes the two with advantage 
 uniform value, and the proof argues that such a guess succeeds only with negligible
 probability.
 
-Real-proof pointer: used in [`examples/Proofs/Group/OTDDHImpliesOTCDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/OTDDHImpliesOTCDH.proof).
+Real-proof pointer: used in [`examples/Proofs/Group/DDHImpliesCDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesCDH.proof).
 
 {: .important }
 Using a helper game adds to the trust base -- see the [Soundness]({% link researchers/soundness.md %}) page in the For Researchers area.

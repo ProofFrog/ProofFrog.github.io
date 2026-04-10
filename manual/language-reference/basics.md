@@ -62,7 +62,9 @@ deterministic  injective   None        true        false
 
 **`ModInt<q>`** — integers modulo `q`, i.e., the set `{0, 1, ..., q-1}`. Cardinality: `q`. Arithmetic on `ModInt<q>` is performed mod `q`.
 
-**`Group`** — a declaration type used to introduce a group parameter. The model is a finite cyclic group; all finite cyclic groups are abelian, so the group operation is commutative. A group identifier `G` provides three built-in accessors:
+**`Group`** — a declaration type used to introduce a group parameter. The model is a finite cyclic group; all finite cyclic groups are abelian, so the group operation is commutative. Groups may have prime or composite order.
+
+A group identifier `G` provides three built-in accessors:
 
 | Accessor | Type | Description |
 |---|---|---|
