@@ -38,7 +38,7 @@ See the [installation instructions]({% link manual/installation.md %}) for detai
 
 ## Recent updates
 
-- Mar. 6, 2026: [ProofFrog discussions and demos at HACS 2026](http://prooffrog.github.io/researchers/presentations/hacs-2026/)
+- Mar. 6, 2026: [ProofFrog discussions and demos at HACS 2026](http://prooffrog.github.io/researchers/publications/hacs-2026/)
 - **Mar. 5, 2026: Release of [ProofFrog version 0.3.1](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.3.1)** featuring a web interface and engine updates
 
 ## Acknowledgements

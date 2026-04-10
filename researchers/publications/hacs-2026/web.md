@@ -2,6 +2,7 @@
 title: Web interface
 layout: default
 parent: HACS 2026 Updates
+grand_parent: Publications & More
 nav_order: 2
 redirect_from:
   - /hacs-2026/web

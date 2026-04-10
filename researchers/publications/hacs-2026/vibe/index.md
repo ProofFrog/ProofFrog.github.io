@@ -2,6 +2,7 @@
 title: Vibe-coding a proof
 layout: default
 parent: HACS 2026 Updates
+grand_parent: Publications & More
 has_children: true
 has_toc: false
 nav_order: 1
