@@ -115,6 +115,16 @@ pip install proof_frog
 {: .note }
 The virtual environment ensures that ProofFrog's dependencies do not conflict with other Python packages you have installed, and makes it straightforward to uninstall ProofFrog completely by simply deleting the `.venv` directory.
 
+## Upgrade ProofFrog
+
+To upgrade to the latest version of ProofFrog, activate your virtual environment and run:
+
+```bash
+pip install --upgrade proof_frog
+```
+
+After upgrading, you can re-run `proof_frog download-examples` to get the examples matching the new version.
+
 ## Verify your ProofFrog installation
 
 To confirm that ProofFrog installed correctly, run:
