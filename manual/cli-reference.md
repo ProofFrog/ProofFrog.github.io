@@ -177,7 +177,7 @@ python -m proof_frog prove -v examples/joy/Proofs/Ch2/OTPSecure.proof
 python -m proof_frog prove -vv examples/joy/Proofs/Ch2/OTPSecure.proof
 
 # Verify a PRG security proof, skipping lemma re-verification
-python -m proof_frog prove --skip-lemmas examples/Proofs/PRG/CounterPRGSecure.proof
+python -m proof_frog prove --skip-lemmas examples/Proofs/PRG/CounterPRG_PRGSecurity.proof
 ```
 
 ### Common Errors

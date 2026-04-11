@@ -41,15 +41,15 @@ The [`examples/joy`](https://github.com/ProofFrog/examples/tree/main/joy) direct
 
 | Proof | Description | |
 |:------|:------------|-|
-| [OTUCimpliesOTS](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesOTS.proof) | [One-time uniform ciphertexts](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeUniformCiphertexts.game) implies [one-time secrecy](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeSecrecy.game) | <span class="label label-green">Beginner</span> |
-| [CPA$impliesCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/CPA%24impliesCPA.proof) | [CPA$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA%24.game) security implies [CPA](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA.game) security |
+| [INDOT$_implies_INDOT](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/INDOT%24_implies_INDOT.proof) | [IND-OT$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDOT%24.game) implies [IND-OT](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDOT.game) | <span class="label label-green">Beginner</span> |
+| [INDCPA$_MultiChal_implies_INDCPA_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/INDCPA%24_MultiChal_implies_INDCPA_MultiChal.proof) | [IND-CPA$ (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDCPA%24_MultiChal.game) security implies [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDCPA_MultiChal.game) security |
 {: .table-labels }
 
 ### Basic constructions
 
 | Proof | Description | |
 |:------|:------------|-|
-| [ModOTPSecure](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/ModOTPSecure.proof) | The [modular one-time pad](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/ModOTP.scheme) ({% katex %}\mathrm{Enc}(k, m) = m + k \bmod q{% endkatex %}) has [one-time secrecy](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeSecrecy.game) | <span class="label label-green">Beginner</span> |
+| [ModOTP_INDOT](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/ModOTP_INDOT.proof) | The [modular one-time pad](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/ModOTP.scheme) ({% katex %}\mathrm{Enc}(k, m) = m + k \bmod q{% endkatex %}) has [IND-OT](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDOT.game) | <span class="label label-green">Beginner</span> |
 {: .table-labels }
 
 ### PRF-based encryption
@@ -58,8 +58,8 @@ The [PRF-based symmetric encryption scheme](https://github.com/ProofFrog/example
 
 | Proof | Description | |
 |:------|:------------|-|
-| [SymEncPRFOTUC](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFOTUC.proof) | [PRF-based symmetric encryption](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/SymEncPRF.scheme) has [one-time uniform ciphertexts](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeUniformCiphertexts.game) |
-| [SymEncPRFCPA$](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof) | [PRF-based symmetric encryption](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/SymEncPRF.scheme) is [CPA$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA%24.game) secure | <span class="label label-purple">Rich example</span> |
+| [SymEncPRF_INDOT$](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDOT%24.proof) | [PRF-based symmetric encryption](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/SymEncPRF.scheme) has [IND-OT$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDOT%24.game) |
+| [SymEncPRF_INDCPA$_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDCPA%24_MultiChal.proof) | [PRF-based symmetric encryption](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/SymEncPRF.scheme) is [IND-CPA$ (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDCPA%24_MultiChal.game) secure | <span class="label label-purple">Rich example</span> |
 {: .table-labels }
 
 ### Composition of encryption schemes
@@ -68,15 +68,15 @@ Given two [symmetric encryption](https://github.com/ProofFrog/examples/blob/main
 
 | Proof | Description |
 |:------|:------------|
-| [OTUCimpliesDoubleOTUC](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesDoubleOTUC.proof) | If a scheme has [OTUC](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeUniformCiphertexts.game), then [double-encrypting](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/DoubleSymEnc.scheme) with two copies of it also has OTUC |
-| [GeneralDoubleOTUC](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/GeneralDoubleOTUC.proof) | If {% katex %}T{% endkatex %} has [one-time uniform ciphertexts](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeUniformCiphertexts.game), so does {% katex %}\Sigma{% endkatex %} |
-| [DoubleCPA$](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/DoubleCPA%24.proof) | If {% katex %}T{% endkatex %} is [CPA$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA%24.game) secure, so is {% katex %}\Sigma{% endkatex %} |
+| [INDOT$_implies_DoubleSymEnc_INDOT$](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/INDOT%24_implies_DoubleSymEnc_INDOT%24.proof) | If a scheme has [IND-OT$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDOT%24.game), then [double-encrypting](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/DoubleSymEnc.scheme) with two copies of it also has IND-OT$ |
+| [GeneralDoubleSymEnc_INDOT$](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/GeneralDoubleSymEnc_INDOT%24.proof) | If {% katex %}T{% endkatex %} has [IND-OT$](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDOT%24.game), so does {% katex %}\Sigma{% endkatex %} |
+| [GeneralDoubleSymEnc_INDCPA$_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/GeneralDoubleSymEnc_INDCPA%24_MultiChal.proof) | If {% katex %}T{% endkatex %} is [IND-CPA$ (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDCPA%24_MultiChal.game) secure, so is {% katex %}\Sigma{% endkatex %} |
 
 ### Authenticated encryption
 
 | Proof | Description | |
 |:------|:------------|-|
-| [EncryptThenMACCCA](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/EncryptThenMACCCA.proof) | [Encrypt-then-MAC](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/EncryptThenMAC.scheme) is [CCA](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CCA.game) secure | <span class="label label-purple">Rich example</span> |
+| [EncryptThenMAC_INDCCA_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/EncryptThenMAC_INDCCA_MultiChal.proof) | [Encrypt-then-MAC](https://github.com/ProofFrog/examples/blob/main/Schemes/SymEnc/EncryptThenMAC.scheme) is [IND-CCA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDCCA_MultiChal.game) secure | <span class="label label-purple">Rich example</span> |
 {: .table-labels }
 
 ---
@@ -85,8 +85,8 @@ Given two [symmetric encryption](https://github.com/ProofFrog/examples/blob/main
 
 | Proof | Description |
 |:------|:------------|
-| [TriplingPRGSecure](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRGSecure.proof) | A [length-tripling PRG](https://github.com/ProofFrog/examples/blob/main/Schemes/PRG/TriplingPRG.scheme) built by applying a length-doubling [PRG](https://github.com/ProofFrog/examples/blob/main/Primitives/PRG.primitive) twice is [secure](https://github.com/ProofFrog/examples/blob/main/Games/PRG/Security.game) |
-| [CounterPRGSecure](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/CounterPRGSecure.proof) | A [counter-mode PRG](https://github.com/ProofFrog/examples/blob/main/Schemes/PRG/CounterPRG.scheme) built from a [PRF](https://github.com/ProofFrog/examples/blob/main/Primitives/PRF.primitive) is [secure](https://github.com/ProofFrog/examples/blob/main/Games/PRG/Security.game) |
+| [TriplingPRG_PRGSecurity](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRG_PRGSecurity.proof) | A [length-tripling PRG](https://github.com/ProofFrog/examples/blob/main/Schemes/PRG/TriplingPRG.scheme) built by applying a length-doubling [PRG](https://github.com/ProofFrog/examples/blob/main/Primitives/PRG.primitive) twice is [secure](https://github.com/ProofFrog/examples/blob/main/Games/PRG/PRGSecurity.game) |
+| [CounterPRG_PRGSecurity](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/CounterPRG_PRGSecurity.proof) | A [counter-mode PRG](https://github.com/ProofFrog/examples/blob/main/Schemes/PRG/CounterPRG.scheme) built from a [PRF](https://github.com/ProofFrog/examples/blob/main/Primitives/PRF.primitive) is [secure](https://github.com/ProofFrog/examples/blob/main/Games/PRG/PRGSecurity.game) |
 
 ---
 
@@ -94,7 +94,7 @@ Given two [symmetric encryption](https://github.com/ProofFrog/examples/blob/main
 
 | Proof | Description |
 |:------|:------------|
-| [MultiKeyFromPRF](https://github.com/ProofFrog/examples/blob/main/Proofs/PRF/MultiKeyFromPRF.proof) | [Multi-key PRF security](https://github.com/ProofFrog/examples/blob/main/Games/PRF/MultiKey.game) follows from [single-key PRF security](https://github.com/ProofFrog/examples/blob/main/Games/PRF/Security.game) via a hybrid argument |
+| [PRFSecurity_implies_PRFSecurity_MultiKey](https://github.com/ProofFrog/examples/blob/main/Proofs/PRF/PRFSecurity_implies_PRFSecurity_MultiKey.proof) | [Multi-key PRF security](https://github.com/ProofFrog/examples/blob/main/Games/PRF/PRFSecurity_MultiKey.game) follows from [single-key PRF security](https://github.com/ProofFrog/examples/blob/main/Games/PRF/PRFSecurity.game) via a hybrid argument |
 
 ---
 
@@ -104,10 +104,10 @@ These proofs establish implications between Diffie–Hellman-type assumptions.
 
 | Proof | Description |
 |:------|:------------|
-| [DDHImpliesCDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesCDH.proof) | [DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDH.game) implies [CDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/CDH.game) |
-| [DDHImpliesHashedDDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesHashedDDH.proof) | [DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDH.game) implies [Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDH.game) (standard model) |
-| [CDHImpliesHashedDDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/CDHImpliesHashedDDH.proof) | [CDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/CDH.game) implies [Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDH.game) (random oracle model) |
-| [DDHMultiChalImpliesHashedDDHMultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHMultiChalImpliesHashedDDHMultiChal.proof) | [DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDHMultiChal.game) implies [Hashed DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDHMultiChal.game) (random oracle model) |
+| [DDH_implies_CDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDH_implies_CDH.proof) | [DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDH.game) implies [CDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/CDH.game) |
+| [DDH_implies_HashedDDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDH_implies_HashedDDH.proof) | [DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDH.game) implies [Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDH.game) (standard model) |
+| [CDH_implies_HashedDDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/CDH_implies_HashedDDH.proof) | [CDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/CDH.game) implies [Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDH.game) (random oracle model) |
+| [DDHMultiChal_implies_HashedDDHMultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHMultiChal_implies_HashedDDHMultiChal.proof) | [DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDHMultiChal.game) implies [Hashed DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDHMultiChal.game) (random oracle model) |
 
 ---
 
@@ -117,23 +117,23 @@ These proofs establish implications between Diffie–Hellman-type assumptions.
 
 | Proof | Description |
 |:------|:------------|
-| [OTSimpliesCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/OTSimpliesCPA.proof) | [One-time secrecy](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/OneTimeSecrecy.game) implies [CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) security for [public-key encryption](https://github.com/ProofFrog/examples/blob/main/Primitives/PubKeyEnc.primitive) |
+| [INDCPA_implies_INDCPA_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/INDCPA_implies_INDCPA_MultiChal.proof) | [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/INDCPA.game) implies [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/INDCPA_MultiChal.game) for [public-key encryption](https://github.com/ProofFrog/examples/blob/main/Primitives/PubKeyEnc.primitive) |
 
 ### ElGamal
 
 | Proof | Description |
 |:------|:------------|
-| [ElGamalCorrectness](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/ElGamalCorrectness.proof) | [ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/ElGamal.scheme) encryption is [correct](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/Correctness.game) |
-| [ElGamalCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/ElGamalCPA.proof) | [ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/ElGamal.scheme) is [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) secure under [DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDHMultiChal.game) |
-| [HashedElGamalCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPA.proof) | [Hashed ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/HashedElGamal.scheme) is [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) secure under [Hashed DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDHMultiChal.game) (standard model) |
-| [HashedElGamalCPAROM](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPAROM.proof) | [Hashed ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/HashedElGamal.scheme) is [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPAROM.game) secure under [DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDHMultiChal.game) (random oracle model) |
+| [ElGamal_Correctness](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/ElGamal_Correctness.proof) | [ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubKeyEnc/ElGamal.scheme) encryption is [correct](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/Correctness.game) |
+| [ElGamal_INDCPA_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/ElGamal_INDCPA_MultiChal.proof) | [ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubKeyEnc/ElGamal.scheme) is [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/INDCPA_MultiChal.game) secure under [DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDHMultiChal.game) |
+| [HashedElGamal_INDCPA_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HashedElGamal_INDCPA_MultiChal.proof) | [Hashed ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubKeyEnc/HashedElGamal.scheme) is [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/INDCPA_MultiChal.game) secure under [Hashed DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDHMultiChal.game) (standard model) |
+| [HashedElGamal_INDCPA_ROM_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HashedElGamal_INDCPA_ROM_MultiChal.proof) | [Hashed ElGamal](https://github.com/ProofFrog/examples/blob/main/Schemes/PubKeyEnc/HashedElGamal.scheme) is [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/INDCPA_ROM_MultiChal.game) secure under [DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDHMultiChal.game) (random oracle model) |
 
 ### Hybrid public-key encryption
 
 | Proof | Description | |
 |:------|:------------|-|
-| [KEMDEMCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/KEMDEMCPA.proof) | [KEM-DEM](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/KEMDEM.scheme) hybrid public-key encryption is [CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) secure | <span class="label label-purple">Rich example</span> |
-| [Hybrid](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/Hybrid.proof) | [PKE+SymEnc](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/Hybrid.scheme) hybrid public-key encryption is [CPA](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game) secure | <span class="label label-purple">Rich example</span> |
+| [HybridKEMDEM_INDCPA_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof) | [KEM-DEM](https://github.com/ProofFrog/examples/blob/main/Schemes/PubKeyEnc/HybridKEMDEM.scheme) hybrid public-key encryption is [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/INDCPA_MultiChal.game) secure | <span class="label label-purple">Rich example</span> |
+| [HybridPKEDEM_INDCPA_MultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HybridPKEDEM_INDCPA_MultiChal.proof) | [PKE+SymEnc](https://github.com/ProofFrog/examples/blob/main/Schemes/PubKeyEnc/HybridPKEDEM.scheme) hybrid public-key encryption is [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/INDCPA_MultiChal.game) secure | <span class="label label-purple">Rich example</span> |
 {: .table-labels }
 
 ### KEM constructions
@@ -142,9 +142,9 @@ The [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.
 
 | Proof | Description | |
 |:------|:------------|-|
-| [KEMPRFCorrectness](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRFCorrectness.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [correct](https://github.com/ProofFrog/examples/blob/main/Games/KEM/Correctness.game) |
-| [KEMPRFCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRFCPA.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/KEM/CPAKEM.game) secure |
-| [KEMPRFCCA](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRFCCA.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [IND-CCA](https://github.com/ProofFrog/examples/blob/main/Games/KEM/CCAKEM.game) secure | <span class="label label-purple">Rich example</span> |
+| [KEMPRF_Correctness](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRF_Correctness.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [correct](https://github.com/ProofFrog/examples/blob/main/Games/KEM/Correctness.game) |
+| [KEMPRF_INDCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRF_INDCPA.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/KEM/INDCPA_MultiChal.game) secure |
+| [KEMPRF_INDCCA](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRF_INDCCA.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [IND-CCA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/KEM/INDCCA_MultiChal.game) secure | <span class="label label-purple">Rich example</span> |
 {: .table-labels }
 
 ---
@@ -159,9 +159,9 @@ See the [full README](https://github.com/ProofFrog/examples/blob/main/applicatio
 
 | Proof | Description | |
 |:------|:------------|-|
-| [KEMCombinerCorrectness](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombinerCorrectness.proof) | The [KEM combiner](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombiner.scheme) is correct |
-| [KEMCombinerINDCPA1](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombinerINDCPA1.proof) | [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/KEM/CPAKEM.game) security from security of the first component KEM | <span class="label label-purple">Rich example</span> |
-| [KEMCombinerINDCPA2](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombinerINDCPA2.proof) | [IND-CPA](https://github.com/ProofFrog/examples/blob/main/Games/KEM/CPAKEM.game) security from security of the second component KEM | <span class="label label-purple">Rich example</span> |
+| [GHP18_Correctness](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/GHP18_Correctness.proof) | The [KEM combiner](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/KEMCombiner.scheme) is correct |
+| [GHP18_INDCPA1](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/GHP18_INDCPA1.proof) | [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/KEM/INDCPA_MultiChal.game) security from security of the first component KEM | <span class="label label-purple">Rich example</span> |
+| [GHP18_INDCPA2](https://github.com/ProofFrog/examples/blob/main/applications/KEMCombiner-GHP18/GHP18_INDCPA2.proof) | [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/KEM/INDCPA_MultiChal.game) security from security of the second component KEM | <span class="label label-purple">Rich example</span> |
 {: .table-labels }
 
 ---

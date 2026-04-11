@@ -21,7 +21,7 @@ We prove that {% katex %}\mathsf{KEMDEM}(K, E){% endkatex %} satisfies CPA secur
 
 This worked example introduces three patterns beyond chained encryption: **multi-primitive composition** (a KEM and a SymEnc combine into a PKE), **reductions in opposite directions** (the same assumption is invoked twice, once forward and once backward), and **bridging between key distributions with a key-uniformity assumption**.
 
-The full proof is available at [`Proofs/PubEnc/KEMDEMCPA.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/KEMDEMCPA.proof).
+The full proof is available at [`Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof).
 
 ---
 
@@ -94,7 +94,7 @@ c \gets E.\mathsf{Enc}(k, m_R) \\
 \end{array}
 {% endkatex %}
 
-The FrogLang security game file is [`Games/SymEnc/OneTimeSecrecy.game`](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeSecrecy.game):
+The FrogLang security game file is [`Games/SymEnc/INDOT.game`](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDOT.game):
 
 ```prooffrog
 import '../../Primitives/SymEnc.primitive';
@@ -115,11 +115,11 @@ Game Right(SymEnc E) {
     }
 }
 
-export as OneTimeSecrecy;
+export as INDOT;
 ```
 
 {: .note }
-**Try it.** From the `examples/` directory, run `proof_frog check Games/SymEnc/OneTimeSecrecy.game`, or open the file in the web editor and click **Type Check**.
+**Try it.** From the `examples/` directory, run `proof_frog check Games/SymEnc/INDOT.game`, or open the file in the web editor and click **Type Check**.
 
 ### Key uniformity game
 
@@ -218,7 +218,7 @@ CPA security for a KEM captures the indistinguishability of real and random shar
 \end{array}
 {% endkatex %}
 
-(`Initialize` is shared between both sides.) The FrogLang security game file is [`Games/KEM/CPAKEM.game`](https://github.com/ProofFrog/examples/blob/main/Games/KEM/CPAKEM.game):
+(`Initialize` is shared between both sides.) The FrogLang security game file is [`Games/KEM/INDCPA_MultiChal.game`](https://github.com/ProofFrog/examples/blob/main/Games/KEM/INDCPA_MultiChal.game):
 
 ```prooffrog
 import '../../Primitives/KEM.primitive';
@@ -261,11 +261,11 @@ Game Random(KEM K) {
     }
 }
 
-export as CPAKEM;
+export as KEM_INDCPA_MultiChal;
 ```
 
 {: .note }
-**Try it.** From the `examples/` directory, run `proof_frog check Games/KEM/CPAKEM.game`, or open the file in the web editor and click **Type Check**.
+**Try it.** From the `examples/` directory, run `proof_frog check Games/KEM/INDCPA_MultiChal.game`, or open the file in the web editor and click **Type Check**.
 
 ### PKE primitive
 
@@ -319,7 +319,7 @@ The PKE CPA game is, like SymEnc one-time secrecy here, a left/right indistingui
 \end{array}
 {% endkatex %}
 
-The FrogLang security game file is [`Games/PubKeyEnc/CPA.game`](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/CPA.game):
+The FrogLang security game file is [`Games/PubKeyEnc/INDCPA_MultiChal.game`](https://github.com/ProofFrog/examples/blob/main/Games/PubKeyEnc/INDCPA_MultiChal.game):
 
 ```prooffrog
 import '../../Primitives/PubKeyEnc.primitive';
@@ -356,11 +356,11 @@ Game Right(PubKeyEnc E) {
     }
 }
 
-export as CPA;
+export as INDCPA_MultiChal;
 ```
 
 {: .note }
-**Try it.** From the `examples/` directory, run `proof_frog check Games/PubKeyEnc/CPA.game`, or open the file in the web editor and click **Type Check**.
+**Try it.** From the `examples/` directory, run `proof_frog check Games/PubKeyEnc/INDCPA_MultiChal.game`, or open the file in the web editor and click **Type Check**.
 
 ---
 
@@ -398,7 +398,7 @@ k_{\mathsf{sym}} \gets K.\mathsf{Decaps}(\mathit{sk}, c_{\mathsf{kem}}) \\
 \end{array}
 {% endkatex %}
 
-`KeyGen` simply delegates to the KEM. `Enc` encapsulates under the public key to produce the shared secret {% katex %}k_{\mathsf{sym}}{% endkatex %} and KEM ciphertext {% katex %}c_{\mathsf{kem}}{% endkatex %}, then uses that shared secret directly as the DEM key to encrypt the message. `Dec` reverses the process. The FrogLang scheme file is [`Schemes/PubEnc/KEMDEM.scheme`](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/KEMDEM.scheme):
+`KeyGen` simply delegates to the KEM. `Enc` encapsulates under the public key to produce the shared secret {% katex %}k_{\mathsf{sym}}{% endkatex %} and KEM ciphertext {% katex %}c_{\mathsf{kem}}{% endkatex %}, then uses that shared secret directly as the DEM key to encrypt the message. `Dec` reverses the process. The FrogLang scheme file is [`Schemes/PubKeyEnc/HybridKEMDEM.scheme`](https://github.com/ProofFrog/examples/blob/main/Schemes/PubKeyEnc/HybridKEMDEM.scheme):
 
 ```prooffrog
 import '../../Primitives/KEM.primitive';
@@ -435,7 +435,7 @@ Scheme KEMDEM(KEM K, SymEnc E) extends PubKeyEnc {
 ```
 
 {: .note }
-**Try it.** From the `examples/` directory, run `proof_frog check Schemes/PubEnc/KEMDEM.scheme`, or open the file in the web editor and click **Type Check**.
+**Try it.** From the `examples/` directory, run `proof_frog check Schemes/PubKeyEnc/HybridKEMDEM.scheme`, or open the file in the web editor and click **Type Check**.
 
 The `requires K.SharedSecret subsets E.Key;` clause is an essential part of the entire construction. It states that the KEM's shared secret space must be a subset of the SymEnc's key space. Without it, the assignment `E.Key k_sym = x[0];` in `Enc` would be a type error — `x[0]` has type `K.SharedSecret`, not `E.Key`. The `requires` clause makes the subtype relationship explicit, so the type checker can accept the code.
 
@@ -447,12 +447,12 @@ The ciphertext type `[K.Ciphertext, E.Ciphertext]` is a tuple. In FrogLang, `[T1
 
 The `games:` block lists twelve game steps, producing eleven hops. Five of those hops are assumption hops (one per reduction); the other six are interchangeability hops verified by the engine. Conceptually the proof moves through six games, which we'll call {% katex %}\mathsf{Game}_0{% endkatex %} through {% katex %}\mathsf{Game}_5{% endkatex %}:
 
-- {% katex %}\mathsf{Game}_0{% endkatex %} — the {% katex %}\mathsf{KEMDEM}{% endkatex %} scheme encrypting the *left* message {% katex %}m_L{% endkatex %} under the *real* KEM shared secret. This is `CPA(KD).Left` with the scheme inlined.
+- {% katex %}\mathsf{Game}_0{% endkatex %} — the {% katex %}\mathsf{KEMDEM}{% endkatex %} scheme encrypting the *left* message {% katex %}m_L{% endkatex %} under the *real* KEM shared secret. This is `INDCPA_MultiChal(KD).Left` with the scheme inlined.
 - {% katex %}\mathsf{Game}_1{% endkatex %} — encrypting {% katex %}m_L{% endkatex %} under a DEM key sampled *uniformly* from {% katex %}K.\mathcal{S} = E.\mathcal{K}{% endkatex %}, while the KEM ciphertext is still produced by a real `Encaps` call.
 - {% katex %}\mathsf{Game}_2{% endkatex %} — encrypting {% katex %}m_L{% endkatex %} under a DEM key produced by `E.KeyGen()`.
 - {% katex %}\mathsf{Game}_3{% endkatex %} — encrypting the *right* message {% katex %}m_R{% endkatex %} under a DEM key produced by `E.KeyGen()`.
 - {% katex %}\mathsf{Game}_4{% endkatex %} — encrypting {% katex %}m_R{% endkatex %} under a DEM key sampled uniformly from {% katex %}K.\mathcal{S}{% endkatex %}.
-- {% katex %}\mathsf{Game}_5{% endkatex %} — encrypting {% katex %}m_R{% endkatex %} under the *real* KEM shared secret. This is `CPA(KD).Right` with the scheme inlined.
+- {% katex %}\mathsf{Game}_5{% endkatex %} — encrypting {% katex %}m_R{% endkatex %} under the *real* KEM shared secret. This is `INDCPA_MultiChal(KD).Right` with the scheme inlined.
 
 Five reductions bridge these six games:
 
@@ -464,7 +464,7 @@ Five reductions bridge these six games:
 
 Reductions {% katex %}R_1{% endkatex %} and {% katex %}R_5{% endkatex %} both reduce to KEM CPA security, but they invoke it in opposite directions: {% katex %}R_1{% endkatex %} goes Real → Random, {% katex %}R_5{% endkatex %} goes Random → Real. Similarly {% katex %}R_2{% endkatex %} and {% katex %}R_4{% endkatex %} invoke key uniformity in opposite directions. Both directions of each assumption are valid because indistinguishability is symmetric: if no adversary can distinguish the two sides in one direction, no adversary can distinguish them in the other.
 
-This proof file does **not** write out explicit intermediate game definitions. Each conceptual {% katex %}\mathsf{Game}_i{% endkatex %} appears in the `games:` list only as a composed form — either `AssumptionGame compose Reduction` or as an inlined side of `CPA(KD)`. The engine verifies the interchangeability hops by canonicalizing the adjacent composed forms directly. You can add these intermediate game definitions if you find it helpful; ProofFrog will check they match their neighbouring games.
+This proof file does **not** write out explicit intermediate game definitions. Each conceptual {% katex %}\mathsf{Game}_i{% endkatex %} appears in the `games:` list only as a composed form — either `AssumptionGame compose Reduction` or as an inlined side of `INDCPA_MultiChal(KD)`. The engine verifies the interchangeability hops by canonicalizing the adjacent composed forms directly. You can add these intermediate game definitions if you find it helpful; ProofFrog will check they match their neighbouring games.
 
 The proof's `let:` block binds {% katex %}K.\mathcal{S}{% endkatex %} and {% katex %}E.\mathcal{K}{% endkatex %} to the *same* `Set` variable (`KEMSharedSecretSpace`), imposing the equality {% katex %}K.\mathcal{S} = E.\mathcal{K}{% endkatex %} that the proof relies on whenever a uniform sample from one side must match a uniform sample from the other.
 
@@ -483,7 +483,7 @@ c_{\mathsf{sym}} \gets E.\mathsf{Enc}(k_{\mathsf{sym}}, m_L) \\
 \end{array}
 {% endkatex %}
 
-Note that {% katex %}R_1{% endkatex %} has no `Initialize` method of its own: the compose machinery automatically forwards `Initialize` from the outer game to the inner `CPAKEM(K)` challenger, so the challenger's `Initialize` — which generates the KEM key pair and returns `pk` — becomes the `Initialize` of the composed game.
+Note that {% katex %}R_1{% endkatex %} has no `Initialize` method of its own: the compose machinery automatically forwards `Initialize` from the outer game to the inner `KEM_INDCPA_MultiChal(K)` challenger, so the challenger's `Initialize` — which generates the KEM key pair and returns `pk` — becomes the `Initialize` of the composed game.
 
 When the external challenger is {% katex %}\mathsf{Real}_K{% endkatex %}, {% katex %}k_{\mathsf{sym}}{% endkatex %} is the genuine shared secret produced by `Encaps`, and {% katex %}R_1 \circ \mathsf{Real}_K{% endkatex %} produces the same distribution as {% katex %}\mathsf{Game}_0{% endkatex %}: the {% katex %}\mathsf{KEMDEM}{% endkatex %} scheme encrypting {% katex %}m_L{% endkatex %} under a real shared secret. When the challenger switches to {% katex %}\mathsf{Random}_K{% endkatex %}, {% katex %}k_{\mathsf{sym}}{% endkatex %} becomes a uniformly random sample from {% katex %}K.\mathcal{S}{% endkatex %}, independent of {% katex %}c_{\mathsf{kem}}{% endkatex %}, and {% katex %}R_1 \circ \mathsf{Random}_K{% endkatex %} produces the same distribution as {% katex %}\mathsf{Game}_1{% endkatex %}.
 
@@ -493,7 +493,7 @@ In FrogLang:
 // Reduction for hop from Game 0 to Game 1
 // - Reduction to CPA security of the KEM. The reduction uses the shared secret
 //   from the KEM CPA challenger, which is either real (= Game 0) or random (= Game 1).
-Reduction R1(SymEnc E, KEM K, KEMDEM KD) compose CPAKEM(K) against CPA(KD).Adversary {
+Reduction R1(SymEnc E, KEM K, KEMDEM KD) compose KEM_INDCPA_MultiChal(K) against INDCPA_MultiChal(KD).Adversary {
     KD.Ciphertext Challenge(KD.Message mL, KD.Message mR) {
         [K.SharedSecret, K.Ciphertext] y = challenger.Challenge();
         K.SharedSecret k_sym = y[0];
@@ -505,7 +505,7 @@ Reduction R1(SymEnc E, KEM K, KEMDEM KD) compose CPAKEM(K) against CPA(KD).Adver
 ```
 
 {: .note }
-**Try it.** {% katex %}R_1{% endkatex %} lives inside `KEMDEMCPA.proof` along with the rest of the proof. From the `examples/` directory, run `proof_frog prove Proofs/PubEnc/KEMDEMCPA.proof` to verify the whole proof, or open the file in the web editor and click **Run Proof**. See [§11 Verifying](#11-verifying) for the expected output.
+**Try it.** {% katex %}R_1{% endkatex %} lives inside `HybridKEMDEM_INDCPA_MultiChal.proof` along with the rest of the proof. From the `examples/` directory, run `proof_frog prove Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof` to verify the whole proof, or open the file in the web editor and click **Run Proof**. See [§11 Verifying](#11-verifying) for the expected output.
 
 Notice that {% katex %}R_1{% endkatex %} has no state fields: all key material lives inside the {% katex %}\mathsf{CPAKEM}(K){% endkatex %} challenger that {% katex %}R_1{% endkatex %} composes against. This contrasts with {% katex %}R_2{% endkatex %} through {% katex %}R_4{% endkatex %} below, which have to manage their own KEM key pair because they compose against a different challenger.
 
@@ -542,7 +542,7 @@ In FrogLang:
 // - Reduction to key uniformity of the symmetric encryption scheme. The reduction uses
 //   the symmetric key from the key uniformity challenger, which is either real (= Game 2)
 //   or random (= Game 1).
-Reduction R2(SymEnc E, KEM K, KEMDEM KD) compose KeyUniformity(E) against CPA(KD).Adversary {
+Reduction R2(SymEnc E, KEM K, KEMDEM KD) compose KeyUniformity(E) against INDCPA_MultiChal(KD).Adversary {
     K.PublicKey pk;
     K.SecretKey sk;
 
@@ -594,7 +594,7 @@ In FrogLang:
 // Reduction for hop from Game 2 to Game 3
 // - Reduction to one-time secrecy of the symmetric encryption scheme. The reduction uses the
 //   challenger to encrypt either mL (= Game 2) or mR (= Game 3).
-Reduction R3(SymEnc E, KEM K, KEMDEM KD) compose OneTimeSecrecy(E) against CPA(KD).Adversary {
+Reduction R3(SymEnc E, KEM K, KEMDEM KD) compose INDOT(E) against INDCPA_MultiChal(KD).Adversary {
     K.PublicKey pk;
     K.SecretKey sk;
 
@@ -645,7 +645,7 @@ In FrogLang:
 // - Reduction to key uniformity of the symmetric encryption scheme. The reduction uses
 //   the symmetric key from the key uniformity challenger, which is either real (= Game 3)
 //   or random (= Game 4).
-Reduction R4(SymEnc E, KEM K, KEMDEM KD) compose KeyUniformity(E) against CPA(KD).Adversary {
+Reduction R4(SymEnc E, KEM K, KEMDEM KD) compose KeyUniformity(E) against INDCPA_MultiChal(KD).Adversary {
     K.PublicKey pk;
     K.SecretKey sk;
 
@@ -681,7 +681,7 @@ c_{\mathsf{sym}} \gets E.\mathsf{Enc}(k_{\mathsf{sym}}, m_R) \\
 \end{array}
 {% endkatex %}
 
-When the KEM challenger is in {% katex %}\mathsf{Random}{% endkatex %} mode, {% katex %}k_{\mathsf{sym}}{% endkatex %} is a random shared secret and {% katex %}R_5 \circ \mathsf{Random}_K{% endkatex %} matches {% katex %}\mathsf{Game}_4{% endkatex %}. When the challenger switches to {% katex %}\mathsf{Real}_K{% endkatex %}, {% katex %}k_{\mathsf{sym}}{% endkatex %} is the genuine shared secret and {% katex %}R_5 \circ \mathsf{Real}_K{% endkatex %} matches {% katex %}\mathsf{Game}_5{% endkatex %}, which is in turn interchangeable with `CPA(KD).Right`.
+When the KEM challenger is in {% katex %}\mathsf{Random}{% endkatex %} mode, {% katex %}k_{\mathsf{sym}}{% endkatex %} is a random shared secret and {% katex %}R_5 \circ \mathsf{Random}_K{% endkatex %} matches {% katex %}\mathsf{Game}_4{% endkatex %}. When the challenger switches to {% katex %}\mathsf{Real}_K{% endkatex %}, {% katex %}k_{\mathsf{sym}}{% endkatex %} is the genuine shared secret and {% katex %}R_5 \circ \mathsf{Real}_K{% endkatex %} matches {% katex %}\mathsf{Game}_5{% endkatex %}, which is in turn interchangeable with `INDCPA_MultiChal(KD).Right`.
 
 This is the **Random → Real direction** of the KEM CPA assumption: the proof has finished using the random-key intermediate world and is restoring the real KEM shared secret, but on the right-message side. Both directions of the assumption are valid because indistinguishability is symmetric.
 
@@ -691,7 +691,7 @@ In FrogLang:
 // Reduction for hop from Game 4 to Game 5
 // - Reduction to CPA security of the KEM. The reduction uses the shared secret
 //   from the KEM CPA challenger, which is either real (= Game 5) or random (= Game 4).
-Reduction R5(SymEnc E, KEM K, KEMDEM KD) compose CPAKEM(K) against CPA(KD).Adversary {
+Reduction R5(SymEnc E, KEM K, KEMDEM KD) compose KEM_INDCPA_MultiChal(K) against INDCPA_MultiChal(KD).Adversary {
     KD.Ciphertext Challenge(KD.Message mL, KD.Message mR) {
         [K.SharedSecret, K.Ciphertext] y = challenger.Challenge();
         K.SharedSecret k_sym = y[0];
@@ -706,35 +706,35 @@ Reduction R5(SymEnc E, KEM K, KEMDEM KD) compose CPAKEM(K) against CPA(KD).Adver
 
 ## 10. The full games block
 
-Putting all twelve game steps together, the `games:` section of `KEMDEMCPA.proof` reads:
+Putting all twelve game steps together, the `games:` section of `HybridKEMDEM_INDCPA_MultiChal.proof` reads:
 
 ```prooffrog
 games:
     // Game 0
-    CPA(KD).Left against CPA(KD).Adversary;
-    CPAKEM(K).Real compose R1(E, K, KD) against CPA(KD).Adversary;
+    INDCPA_MultiChal(KD).Left against INDCPA_MultiChal(KD).Adversary;
+    KEM_INDCPA_MultiChal(K).Real compose R1(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
     // Game 1
-    CPAKEM(K).Random compose R1(E, K, KD) against CPA(KD).Adversary;
-    KeyUniformity(E).Random compose R2(E, K, KD) against CPA(KD).Adversary;
+    KEM_INDCPA_MultiChal(K).Random compose R1(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
+    KeyUniformity(E).Random compose R2(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
     // Game 2
-    KeyUniformity(E).Real compose R2(E, K, KD) against CPA(KD).Adversary;
-    OneTimeSecrecy(E).Left compose R3(E, K, KD) against CPA(KD).Adversary;
+    KeyUniformity(E).Real compose R2(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
+    INDOT(E).Left compose R3(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
     // Game 3
-    OneTimeSecrecy(E).Right compose R3(E, K, KD) against CPA(KD).Adversary;
-    KeyUniformity(E).Real compose R4(E, K, KD) against CPA(KD).Adversary;
+    INDOT(E).Right compose R3(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
+    KeyUniformity(E).Real compose R4(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
     // Game 4
-    KeyUniformity(E).Random compose R4(E, K, KD) against CPA(KD).Adversary;
-    CPAKEM(K).Random compose R5(E, K, KD) against CPA(KD).Adversary;
+    KeyUniformity(E).Random compose R4(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
+    KEM_INDCPA_MultiChal(K).Random compose R5(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
     // Game 5
-    CPAKEM(K).Real compose R5(E, K, KD) against CPA(KD).Adversary;
-    CPA(KD).Right against CPA(KD).Adversary;
+    KEM_INDCPA_MultiChal(K).Real compose R5(E, K, KD) against INDCPA_MultiChal(KD).Adversary;
+    INDCPA_MultiChal(KD).Right against INDCPA_MultiChal(KD).Adversary;
 ```
 
 The twelve entries produce eleven hops. Five are assumption hops — one per reduction — at positions 2 → 3 ({% katex %}R_1{% endkatex %}, CPAKEM Real → Random), 4 → 5 ({% katex %}R_2{% endkatex %}, KeyUniformity Random → Real), 6 → 7 ({% katex %}R_3{% endkatex %}, OneTimeSecrecy Left → Right), 8 → 9 ({% katex %}R_4{% endkatex %}, KeyUniformity Real → Random), and 10 → 11 ({% katex %}R_5{% endkatex %}, CPAKEM Random → Real). The other six transitions (1 → 2, 3 → 4, 5 → 6, 7 → 8, 9 → 10, 11 → 12) are interchangeability hops verified by the engine.
 
-Notice how each reduction occupies two consecutive entries in the games list — one for each side of the composed assumption game — and interchangeability hops connect adjacent reductions at their conceptual boundary {% katex %}\mathsf{Game}_i{% endkatex %}. The interchangeability hop at positions 3 → 4, for example, is the engine verifying that `CPAKEM(K).Random compose R1` and `KeyUniformity(E).Random compose R2` both canonicalize to {% katex %}\mathsf{Game}_1{% endkatex %}, even though they get there via very different-looking source programs.
+Notice how each reduction occupies two consecutive entries in the games list — one for each side of the composed assumption game — and interchangeability hops connect adjacent reductions at their conceptual boundary {% katex %}\mathsf{Game}_i{% endkatex %}. The interchangeability hop at positions 3 → 4, for example, is the engine verifying that `KEM_INDCPA_MultiChal(K).Random compose R1` and `KeyUniformity(E).Random compose R2` both canonicalize to {% katex %}\mathsf{Game}_1{% endkatex %}, even though they get there via very different-looking source programs.
 
-The full `let:`, `assume:`, and `theorem:` blocks, together with the five reductions above, complete the proof file, which you can find at [`Proofs/PubEnc/KEMDEMCPA.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/KEMDEMCPA.proof).
+The full `let:`, `assume:`, and `theorem:` blocks, together with the five reductions above, complete the proof file, which you can find at [`Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof).
 
 ---
 
@@ -746,7 +746,7 @@ The full `let:`, `assume:`, and `theorem:` blocks, together with the five reduct
 From the `examples/` directory:
 
 ```bash
-proof_frog prove Proofs/PubEnc/KEMDEMCPA.proof
+proof_frog prove Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof
 ```
 
 Expected output:
@@ -757,7 +757,7 @@ Proof Succeeded!
 
 The full step-by-step output shows 11 hops over 12 game steps: 6 interchangeability hops (verified by code canonicalization) and 5 assumption hops (one for each of {% katex %}R_1{% endkatex %} through {% katex %}R_5{% endkatex %}).
 
-In the web editor, open `Proofs/PubEnc/KEMDEMCPA.proof` and click **Run Proof**. The output panel turns green with the same step-by-step report.
+In the web editor, open `Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof` and click **Run Proof**. The output panel turns green with the same step-by-step report.
 
 ---
 
@@ -771,7 +771,7 @@ In the web editor, open `Proofs/PubEnc/KEMDEMCPA.proof` and click **Run Proof**.
 
 - **Generic construction parameter handling.** The {% katex %}\mathsf{KEMDEM}{% endkatex %} scheme is parameterized by {% katex %}(K, E){% endkatex %}, and the proof is parameterized by the same values in its `let:` block. Every reduction carries `(E, K, KD)` as parameters. This is how ProofFrog proves theorems about generic constructions rather than concrete instantiations: the proof holds for any choice of {% katex %}K{% endkatex %} and {% katex %}E{% endkatex %} satisfying the stated assumptions and the {% katex %}K.\mathcal{S} = E.\mathcal{K}{% endkatex %} constraint.
 
-- **Proofs without explicit intermediate games.** Unlike proofs that write out each {% katex %}\mathsf{Game}_i{% endkatex %} as a standalone `Game` definition, this proof keeps its intermediate games implicit — every entry in the `games:` list is either a side of `CPA(KD)` or a `compose` expression. The engine verifies the interchangeability hops by canonicalizing adjacent composed forms directly. This keeps the proof file shorter, at the cost of making each conceptual game only visible in the reader's head (or in the line comments that label them). You can add them if you want, or you can use the web editor's game hop detail view to see what the intermediate games are.
+- **Proofs without explicit intermediate games.** Unlike proofs that write out each {% katex %}\mathsf{Game}_i{% endkatex %} as a standalone `Game` definition, this proof keeps its intermediate games implicit — every entry in the `games:` list is either a side of `INDCPA_MultiChal(KD)` or a `compose` expression. The engine verifies the interchangeability hops by canonicalizing adjacent composed forms directly. This keeps the proof file shorter, at the cost of making each conceptual game only visible in the reader's head (or in the line comments that label them). You can add them if you want, or you can use the web editor's game hop detail view to see what the intermediate games are.
 
 ---
 

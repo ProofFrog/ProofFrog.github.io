@@ -29,8 +29,7 @@ There is no enforced naming convention for the two sides. Common choices from th
 |---|---|
 | `Left` / `Right` | General indistinguishability |
 | `Real` / `Random` | PRG, PRF security |
-| `Real` / `Fake` | Various simulation-based definitions |
-| `Real` / `Ideal` | Composable security |
+| `Real` / `Ideal` | Simulation-based security, correctness |
 
 Pick names that make sense for the property in question, and consider how the security property is stated in the relevant literature. Neither side is "preferred": your game hopping proof can go from left to right or right to left; all that matters is that in a proof's `games:` list, the sequence must start on one side and end on the other.
 
@@ -127,29 +126,29 @@ ProofFrog's convention, following Joy of Cryptography, allows all game oracles (
 The last line of every `.game` file is an `export as` statement that assigns a name to the security property:
 
 ```prooffrog
-export as OneTimeSecrecy;
+export as INDOT;
 ```
 
 This name is how the rest of the tool chain refers to the security property. In a proof file, after importing the game file, you write:
 
-- `OneTimeSecrecy(E).Left` — the left game instantiated with scheme `E`
-- `OneTimeSecrecy(E).Right` — the right game instantiated with `E`
-- `OneTimeSecrecy(E).Adversary` — the type of adversary for this property
+- `INDOT(E).Left` — the left game instantiated with scheme `E`
+- `INDOT(E).Right` — the right game instantiated with `E`
+- `INDOT(E).Adversary` — the type of adversary for this property
 
-The `export as` name is also what appears in the proof's `theorem:` and `assume:` sections. The name must be a valid identifier; by convention it matches the file name (e.g., `OneTimeSecrecy.game` exports `OneTimeSecrecy`).
+The `export as` name is also what appears in the proof's `theorem:` and `assume:` sections. The name must be a valid identifier; by convention it matches the file name (e.g., `INDOT.game` exports `INDOT`).
 
 ---
 
 ## Helper games as a special case
 
-Not every `.game` file has to define a *cryptographic security property*. Game files can be used to capture facts that ProofFrog's engine is not able to reason about, such as mathematical properties, statistical claims, or additional program equivalence properties. The [`Games/Misc/`](https://github.com/ProofFrog/examples/tree/main/Games/Misc) directory contains several *helper games*.
+Not every `.game` file has to define a *cryptographic security property*. Game files can be used to capture facts that ProofFrog's engine is not able to reason about, such as mathematical properties, statistical claims, or additional program equivalence properties. The [`Games/Helpers/`](https://github.com/ProofFrog/examples/tree/main/Games/Helpers) directory contains several *helper games*.
  
 Here are some helper games that capture mathematical facts:
 
-- **`UniqueSampling`** ([`UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/UniqueSampling.game)): sampling uniformly from a set `S` is indistinguishable from sampling from `S` with exclusion of a bookkeeping set (rejection sampling).
-- **`HashOnUniform`** ([`HashOnUniform.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/HashOnUniform.game)): applying a hash to a uniformly random input yields a uniform output.
-- **`RandomTargetGuessing`** ([`RandomTargetGuessing.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/RandomTargetGuessing.game)): guessing a random target is no easier than guessing any fixed value.
-- **`ROMProgramming`** ([`ROMProgramming.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/ROMProgramming.game)): facts about programming random oracles.
+- **`UniqueSampling`** ([`UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/UniqueSampling.game)): sampling uniformly from a set `S` is indistinguishable from sampling from `S` with exclusion of a bookkeeping set (rejection sampling).
+- **`Regularity`** ([`Regularity.game`](https://github.com/ProofFrog/examples/blob/main/Games/Hash/Regularity.game)): applying a hash to a uniformly random input yields a uniform output.
+- **`RandomTargetGuessing`** ([`RandomTargetGuessing.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/RandomTargetGuessing.game)): guessing a random target is no easier than guessing any fixed value.
+- **`ROMProgramming`** ([`ROMProgramming.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/ROMProgramming.game)): facts about programming random oracles.
 
 Helper games are structurally identical to security-property games — they are pairs of games with `export as` — but they appear in a proof's `assume:` block rather than the `theorem:` block. They can be assumed freely because they hold unconditionally or statistically, not by reduction to a computational hardness assumption. For the full catalog of available helper games and when to use each, see the [Canonicalization]({% link manual/canonicalization.md %}) page.
 
@@ -161,7 +160,7 @@ When a mathematical fact is encoded via a helper game and used to bridge a step 
 
 ### One-time secrecy
 
-[`Games/SymEnc/OneTimeSecrecy.game`](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/OneTimeSecrecy.game)
+[`Games/SymEnc/INDOT.game`](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDOT.game)
 
 ```prooffrog
 import '../../Primitives/SymEnc.primitive';
@@ -182,14 +181,14 @@ Game Right(SymEnc E) {
     }
 }
 
-export as OneTimeSecrecy;
+export as INDOT;
 ```
 
 The adversary submits two equal-length messages and receives an encryption of either the left or the right one. A fresh key is sampled per query, so no key reuse is implied. One-time secrecy holds if the adversary cannot tell which message was encrypted.
 
 ### CPA security (stateful game)
 
-[`Games/SymEnc/CPA.game`](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/CPA.game)
+[`Games/SymEnc/INDCPA_MultiChal.game`](https://github.com/ProofFrog/examples/blob/main/Games/SymEnc/INDCPA_MultiChal.game)
 
 ```prooffrog
 import '../../Primitives/SymEnc.primitive';
@@ -214,14 +213,14 @@ Game Right(SymEnc E) {
     }
 }
 
-export as CPA;
+export as INDCPA_MultiChal;
 ```
 
 Like one-time secrecy, but the key is sampled once in `Initialize` and reused across all oracle calls. The state field `k` persists from one `Eavesdrop` call to the next, modelling the chosen-plaintext attack setting where the adversary may request many encryptions under the same key.
 
 ### A helper game
 
-[`Games/Misc/UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/UniqueSampling.game)
+[`Games/Helpers/Probability/UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/UniqueSampling.game)
 
 ```prooffrog
 // Assumption: sampling uniformly from a set S is indistinguishable from

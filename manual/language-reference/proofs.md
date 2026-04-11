@@ -106,14 +106,14 @@ Game G_RF(PRF F, SymEnc se) {
 proof:
 // ...
 games:
-    CPA(S).Real against CPA(S).Adversary;
-    G_RF(F, se) against CPA(S).Adversary;          // intermediate step
-    CPA(S).Random against CPA(S).Adversary;
+    INDCPA_MultiChal(S).Real against INDCPA_MultiChal(S).Adversary;
+    G_RF(F, se) against INDCPA_MultiChal(S).Adversary;          // intermediate step
+    INDCPA_MultiChal(S).Random against INDCPA_MultiChal(S).Adversary;
 ```
 
 The engine checks that each adjacent pair of games is interchangeable or justified by an assumption, just as it would for any other game step.
 
-Intermediate games can take parameters from the proof's `let:` block. Common naming conventions include `G_` prefixes (e.g., `G_RF`, `G_RandKey`), `Intermediate` names (e.g., `Intermediate1`, `Intermediate2`), or descriptive names like `Hyb`. For real-world examples, see [`SymEncPRFOTUC.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFOTUC.proof) (which defines `G0`, `G_RF`, and `G_Uniq`) and [`Hybrid.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/Hybrid.proof) (which defines `Intermediate1` and `Intermediate2`).
+Intermediate games can take parameters from the proof's `let:` block. Common naming conventions include `G_` prefixes (e.g., `G_RF`, `G_RandKey`), `Intermediate` names (e.g., `Intermediate1`, `Intermediate2`), or descriptive names like `Hyb`. For real-world examples, see [`SymEncPRF_INDOT$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDOT%24.proof) (which defines `G0`, `G_RF`, and `G_Uniq`) and [`HybridPKEDEM_INDCPA_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HybridPKEDEM_INDCPA_MultiChal.proof) (which defines `Intermediate1` and `Intermediate2`).
 
 ---
 
@@ -136,7 +136,7 @@ let:
 ```
 
 ```prooffrog
-// OTUCimpliesOTS.proof: abstract sets, then a primitive instance built from them
+// INDOT$_implies_INDOT.proof: abstract sets, then a primitive instance built from them
 let:
     Set ProofMessageSpace;
     Set ProofCiphertextSpace;
@@ -145,7 +145,7 @@ let:
 ```
 
 ```prooffrog
-// TriplingPRGSecure.proof: one integer, two chained scheme instances
+// TriplingPRG_PRGSecurity.proof: one integer, two chained scheme instances
 let:
     Int lambda;
     PRG G = PRG(lambda, lambda);
@@ -176,7 +176,7 @@ An assumption `Prop(params)` means: the two sides of the game pair `Prop` are co
 assume:
 ```
 
-**Helper games from `Games/Misc/`.** The [`Games/Misc/`](https://github.com/ProofFrog/examples/tree/main/Games/Misc) directory contains game pairs that capture simple probabilistic facts rather than cryptographic hardness assumptions — for example, [`UniqueSampling`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/UniqueSampling.game) (sampling uniformly from a set is indistinguishable from sampling with exclusion of a bookkeeping set) and [`HashOnUniform`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/HashOnUniform.game) (applying a hash to a uniformly random input yields a uniform output). These hold unconditionally and can be listed in `assume:` freely to enable certain game hops.
+**Helper games from `Games/Helpers/`.** The [`Games/Helpers/`](https://github.com/ProofFrog/examples/tree/main/Games/Helpers) directory contains game pairs that capture simple probabilistic facts rather than cryptographic hardness assumptions — for example, [`UniqueSampling`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/UniqueSampling.game) (sampling uniformly from a set is indistinguishable from sampling with exclusion of a bookkeeping set) and [`Regularity`](https://github.com/ProofFrog/examples/blob/main/Games/Hash/Regularity.game) (applying a hash to a uniformly random input yields a uniform output). These hold unconditionally and can be listed in `assume:` freely to enable certain game hops.
 
 An assumption entry can be used in the `games:` sequence as a hop justification as many times as needed.
 
@@ -188,7 +188,7 @@ The optional `lemma:` block appears between `assume:` and `theorem:`. Each entry
 
 ```prooffrog
 lemma:
-    OTUCimpliesOTS(proofE) by 'path/to/OTUCimpliesOTS.proof';
+    INDOT$_implies_INDOT(proofE) by 'path/to/INDOT$_implies_INDOT.proof';
 ```
 
 The engine verifies the referenced proof file (recursively), checks that all of its `assume:` entries are satisfied by the current proof's own assumptions, and then treats the lemma's theorem as an additional assumption. This allows large proofs to be decomposed into smaller verified pieces.
@@ -253,25 +253,25 @@ GameProperty(params).Side compose ReductionName(params)
 
 In a composed step, `GameProperty(params).Side` is the assumed game (the challenger the adversary inside the reduction talks to), and `ReductionName(params)` is a `Reduction` defined in the helpers section. The adversary in `against ...` is the adversary for the theorem game.
 
-The full six-step sequence from [`OTUCimpliesOTS.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesOTS.proof) illustrates both forms:
+The full six-step sequence from [`INDOT$_implies_INDOT.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/INDOT%24_implies_INDOT.proof) illustrates both forms:
 
 ```prooffrog
 games:
-    OneTimeSecrecy(proofE).Left against OneTimeSecrecy(proofE).Adversary;
+    INDOT(proofE).Left against INDOT(proofE).Adversary;
 
-    OneTimeUniformCiphertexts(proofE).Real compose R1(proofE)
-        against OneTimeSecrecy(proofE).Adversary;
+    INDOT$(proofE).Real compose R1(proofE)
+        against INDOT(proofE).Adversary;
 
-    OneTimeUniformCiphertexts(proofE).Random compose R1(proofE)
-        against OneTimeSecrecy(proofE).Adversary;
+    INDOT$(proofE).Random compose R1(proofE)
+        against INDOT(proofE).Adversary;
 
-    OneTimeUniformCiphertexts(proofE).Random compose R2(proofE)
-        against OneTimeSecrecy(proofE).Adversary;
+    INDOT$(proofE).Random compose R2(proofE)
+        against INDOT(proofE).Adversary;
 
-    OneTimeUniformCiphertexts(proofE).Real compose R2(proofE)
-        against OneTimeSecrecy(proofE).Adversary;
+    INDOT$(proofE).Real compose R2(proofE)
+        against INDOT(proofE).Adversary;
 
-    OneTimeSecrecy(proofE).Right against OneTimeSecrecy(proofE).Adversary;
+    INDOT(proofE).Right against INDOT(proofE).Adversary;
 ```
 
 Steps 1 and 6 are direct; steps 2 through 5 are composed with reductions `R1` and `R2`.
@@ -296,19 +296,19 @@ Inside a reduction body:
 
 The reduction acts as a simulator: from the theorem-game adversary's point of view, it is interacting with the theorem game; in reality, it is forwarding calls to the assumed game and translating inputs and outputs as needed.
 
-Here is `R1` from [`OTUCimpliesOTS.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/OTUCimpliesOTS.proof), a complete reduction:
+Here is `R1` from [`INDOT$_implies_INDOT.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/INDOT%24_implies_INDOT.proof), a complete reduction:
 
 ```prooffrog
-// R1 forwards the left message to the OTUC oracle
-Reduction R1(SymEnc se) compose OneTimeUniformCiphertexts(se)
-    against OneTimeSecrecy(se).Adversary {
+// R1 forwards the left message to the INDOT$ oracle
+Reduction R1(SymEnc se) compose INDOT$(se)
+    against INDOT(se).Adversary {
     se.Ciphertext Eavesdrop(se.Message mL, se.Message mR) {
         return challenger.CTXT(mL);
     }
 }
 ```
 
-`R1` receives two messages from the `OneTimeSecrecy` adversary (the `Eavesdrop` oracle), forwards only `mL` to the `OTUC` challenger's `CTXT` oracle, and returns the result. When `OTUC.Real` is composed with `R1`, the result is interchangeable with `OneTimeSecrecy.Left` (which encrypts `mL`). When `OTUC.Random` is composed with `R1`, the result is interchangeable with `OTUC.Random compose R2` (because neither `R1` nor `R2` uses the message when the ciphertext is random).
+`R1` receives two messages from the `INDOT` adversary (the `Eavesdrop` oracle), forwards only `mL` to the `INDOT$` challenger's `CTXT` oracle, and returns the result. When `INDOT$.Real` is composed with `R1`, the result is interchangeable with `INDOT.Left` (which encrypts `mL`). When `INDOT$.Random` is composed with `R1`, the result is interchangeable with `INDOT$.Random compose R2` (because neither `R1` nor `R2` uses the message when the ciphertext is random).
 
 ---
 
@@ -319,7 +319,7 @@ Reduction R1(SymEnc se) compose OneTimeUniformCiphertexts(se)
 >
 > If a parameter required to instantiate `AssumedGame(params)` is missing from the reduction's parameter list, you will get a confusing instantiation error at the game step that uses the reduction — not at the reduction definition itself. The error message may not point clearly to the missing parameter.
 >
-> Example: a reduction that composes with `UniqueSampling(BitString<F.in>)` must take a parameter that exposes `F.in` (such as a `PRF F` instance), even if `F` is not otherwise referenced in the reduction body. See `R_Uniq` in [`SymEncPRFCPA$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof) for an example.
+> Example: a reduction that composes with `UniqueSampling(BitString<F.in>)` must take a parameter that exposes `F.in` (such as a `PRF F` instance), even if `F` is not otherwise referenced in the reduction body. See `R_Uniq` in [`SymEncPRF_INDCPA$_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDCPA%24_MultiChal.proof) for an example.
 
 ---
 
@@ -336,19 +336,19 @@ So the assumption hop (steps 2 → 3) is sandwiched between two engine-verified 
 
 **Assumption hops are bidirectional.** A hop from `Side1` to `Side2` and a hop from `Side2` to `Side1` are both valid — indistinguishability is symmetric. In a symmetric proof, the forward half often uses `Real -> Random` hops and the reverse half uses `Random -> Real` hops.
 
-**Merging adjacent patterns.** When two four-step patterns are chained — one assumption hop followed by another — {% katex %}G_B{% endkatex %} of the first pattern often doubles as {% katex %}G_A{% endkatex %} of the second, compressing eight steps down to seven (or fewer if additional boundary games coincide). The [`TriplingPRGSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRGSecure.proof) example shows the four-step pattern applied twice (once per application of the underlying PRG), with the shared boundary compressed:
+**Merging adjacent patterns.** When two four-step patterns are chained — one assumption hop followed by another — {% katex %}G_B{% endkatex %} of the first pattern often doubles as {% katex %}G_A{% endkatex %} of the second, compressing eight steps down to seven (or fewer if additional boundary games coincide). The [`TriplingPRG_PRGSecurity.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRG_PRGSecurity.proof) example shows the four-step pattern applied twice (once per application of the underlying PRG), with the shared boundary compressed:
 
 ```
 games:
-    Security(T).Real against Security(T).Adversary;                    //  }
-                                                                       //  } 1st four-step
-    Security(G).Real compose R1(G, T) against Security(T).Adversary;   //  } pattern
-    Security(G).Random compose R1(G, T) against Security(T).Adversary; //  }   ]
-                                                                       //  }   ]
-    Security(G).Real compose R3(G, T) against Security(T).Adversary;   //  }   ] 2nd
-    Security(G).Random compose R3(G, T) against Security(T).Adversary; //      ] four-step
-                                                                       //      ] pattern
-    Security(T).Random against Security(T).Adversary;                  //      ]
+    PRGSecurity(T).Real against PRGSecurity(T).Adversary;                    //  }
+                                                                            //  } 1st four-step
+    PRGSecurity(G).Real compose R1(G, T) against PRGSecurity(T).Adversary;   //  } pattern
+    PRGSecurity(G).Random compose R1(G, T) against PRGSecurity(T).Adversary; //  }   ]
+                                                                             //  }   ]
+    PRGSecurity(G).Real compose R3(G, T) against PRGSecurity(T).Adversary;   //  }   ] 2nd
+    PRGSecurity(G).Random compose R3(G, T) against PRGSecurity(T).Adversary; //      ] four-step
+                                                                             //      ] pattern
+    PRGSecurity(T).Random against PRGSecurity(T).Adversary;                  //      ]
 ```
 
 For a detailed walkthrough of the four-step pattern applied to a concrete proof, see the [Chained Encryption worked example]({% link manual/worked-examples/chained-encryption.md %}).
@@ -398,13 +398,13 @@ Some hops inside an induction block (or adjacent to it) require facts about game
 assume R_Hybrid(F, 1).count >= 1;
 
 induction(i from 1 to q) {
-    PRFSecurity(F).Real compose R_Hybrid(F, i) against MultiKeyPRFSecurity(F).Adversary;
-    PRFSecurity(F).Random compose R_Hybrid(F, i) against MultiKeyPRFSecurity(F).Adversary;
+    PRFSecurity(F).Real compose R_Hybrid(F, i) against PRFSecurity_MultiKey(F).Adversary;
+    PRFSecurity(F).Random compose R_Hybrid(F, i) against PRFSecurity_MultiKey(F).Adversary;
 }
 
 assume R_Hybrid(F, q).count < q + 1;
 
-MultiKeyPRFSecurity(F).Random against MultiKeyPRFSecurity(F).Adversary;
+PRFSecurity_MultiKey(F).Random against PRFSecurity_MultiKey(F).Adversary;
 ```
 
 The expression in `assume` can reference game or reduction fields using dot notation (e.g., `R_Hybrid(F, 1).count`). The engine resolves these field references against the games in the adjacent hop and passes the assertion to Z3 as an additional constraint. Step assumptions placed immediately before an `induction` block apply to the entry hop; those placed at the end of the block (after the last game step) apply to the rollover check.
@@ -414,29 +414,29 @@ Step assumptions are **not verified** by the engine — they are trusted asserti
 
 ### Example: multi-key PRF security
 
-The proof that multi-key PRF security follows from single-key PRF security ([`MultiKeyFromPRF.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRF/MultiKeyFromPRF.proof)) is a clean example of induction. The reduction `R_Hybrid` uses a counter to select the `i`-th call for delegation to the PRF challenger:
+The proof that multi-key PRF security follows from single-key PRF security ([`PRFSecurity_implies_PRFSecurity_MultiKey.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRF/PRFSecurity_implies_PRFSecurity_MultiKey.proof)) is a clean example of induction. The reduction `R_Hybrid` uses a counter to select the `i`-th call for delegation to the PRF challenger:
 
 ```prooffrog
 games:
-    MultiKeyPRFSecurity(F).Real against MultiKeyPRFSecurity(F).Adversary;
+    PRFSecurity_MultiKey(F).Real against PRFSecurity_MultiKey(F).Adversary;
 
     assume R_Hybrid(F, 1).count >= 1;
 
     induction(i from 1 to q) {
         PRFSecurity(F).Real compose R_Hybrid(F, i)
-            against MultiKeyPRFSecurity(F).Adversary;
+            against PRFSecurity_MultiKey(F).Adversary;
         PRFSecurity(F).Random compose R_Hybrid(F, i)
-            against MultiKeyPRFSecurity(F).Adversary;
+            against PRFSecurity_MultiKey(F).Adversary;
     }
 
     assume R_Hybrid(F, q).count < q + 1;
 
-    MultiKeyPRFSecurity(F).Random against MultiKeyPRFSecurity(F).Adversary;
+    PRFSecurity_MultiKey(F).Random against PRFSecurity_MultiKey(F).Adversary;
 ```
 
 Each iteration replaces one PRF call with a random output via the standard assumption hop pattern. The rollover check ensures that iteration `i`'s final game (where calls `1` through `i` are random) matches iteration `i + 1`'s first game (where calls `1` through `i` are also random).
 
-For a more complex example with intermediate games inside the induction body, see [`CounterPRGSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/CounterPRGSecure.proof).
+For a more complex example with intermediate games inside the induction body, see [`CounterPRG_PRGSecurity.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/CounterPRG_PRGSecurity.proof).
 
 ---
 
@@ -449,13 +449,13 @@ ProofFrog offers two ways to verify proofs: the command-line interface (CLI) and
 To verify a proof from the terminal:
 
 ```bash
-proof_frog prove examples/Proofs/PRG/TriplingPRGSecure.proof
+proof_frog prove examples/Proofs/PRG/TriplingPRG_PRGSecurity.proof
 ```
 
 Use `-v` for verbose output showing canonical forms of each game, or `-vv` for very verbose output including detailed canonicalization information:
 
 ```bash
-proof_frog prove -v examples/Proofs/PRG/TriplingPRGSecure.proof
+proof_frog prove -v examples/Proofs/PRG/TriplingPRG_PRGSecurity.proof
 ```
 
 The engine reports each hop as `ok` or failing and prints the step type (`equivalence` or `assumption`). When a hop fails, the verbose output shows the canonical form of both sides so you can see where they diverge.
@@ -463,7 +463,7 @@ The engine reports each hop as `ok` or failing and prints the step type (`equiva
 You can also type-check a proof file without running the full proof verification:
 
 ```bash
-proof_frog check examples/Proofs/PRG/TriplingPRGSecure.proof
+proof_frog check examples/Proofs/PRG/TriplingPRG_PRGSecurity.proof
 ```
 
 See the [CLI reference]({% link manual/cli-reference.md %}) for the full set of commands.

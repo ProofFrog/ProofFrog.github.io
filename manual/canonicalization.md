@@ -73,7 +73,7 @@ E.Ciphertext Eavesdrop(E.Message mL, E.Message mR) {
 ```
 
 Real-proof pointer: every proof in the distribution relies on inlining.
-[`examples/Proofs/PRG/TriplingPRGSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRGSecure.proof) is a clean illustration -- the
+[`examples/Proofs/PRG/TriplingPRG_PRGSecurity.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRG_PRGSecurity.proof) is a clean illustration -- the
 `TriplingPRG` scheme composes calls to an underlying `PRG`, and those calls are inlined
 before the PRG reduction hops.
 
@@ -114,7 +114,7 @@ return u;
 slice boundaries align with the component widths, saving a round-trip through
 concatenation and slicing.
 
-Real-proof pointer: [`examples/Proofs/SymEnc/SymEncPRFCPA$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof) -- the final
+Real-proof pointer: [`examples/Proofs/SymEnc/SymEncPRF_INDCPA$_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDCPA%24_MultiChal.proof) -- the final
 merge of two independent uniform samples into the CPA$ random game relies on XOR
 absorption after the PRF is replaced by a random function.
 
@@ -146,7 +146,7 @@ ModInt<q> u <- ModInt<q>;
 return u;
 ```
 
-Real-proof pointer: [`examples/Proofs/SymEnc/ModOTPSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/ModOTPSecure.proof) uses the ModInt
+Real-proof pointer: [`examples/Proofs/SymEnc/ModOTP_INDOT.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/ModOTP_INDOT.proof) uses the ModInt
 one-time-pad argument directly.
 
 {: .note }
@@ -183,7 +183,7 @@ return (h ^ b) * (h ^ c);
 return G.generator ^ (a * b + a * c);
 ```
 
-Real-proof pointer: [`examples/Proofs/PubEnc/ElGamalCPA.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/ElGamalCPA.proof) uses the
+Real-proof pointer: [`examples/Proofs/PubKeyEnc/ElGamal_INDCPA_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/ElGamal_INDCPA_MultiChal.proof) uses the
 group masking move (the DDH `Right` game replaces `pk ^ r` with a random group element `c`,
 and the uniform-absorbs rule fires to simplify `mL * c` to `c`, making the ciphertext
 independent of the message).
@@ -230,7 +230,7 @@ BitString<m> z_1 <- BitString<m>;
 return [z_0, z_1];
 ```
 
-Real-proof pointer: [`examples/Proofs/PRG/TriplingPRGSecure.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRGSecure.proof) uses sample split
+Real-proof pointer: [`examples/Proofs/PRG/TriplingPRG_PRGSecurity.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PRG/TriplingPRG_PRGSecurity.proof) uses sample split
 to decompose a single PRG output into its two halves (each half is then used
 independently as a new seed or output value, and the split enables the per-component
 uniform reasoning).
@@ -272,7 +272,7 @@ BitString<n> r <-uniq[RF.domain] BitString<n>;
 BitString<m> z <- BitString<m>;
 ```
 
-Real-proof pointer: [`examples/Proofs/PubEnc/HashedElGamalCPAROM.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPAROM.proof) -- the proof
+Real-proof pointer: [`examples/Proofs/PubKeyEnc/HashedElGamal_INDCPA_ROM_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HashedElGamal_INDCPA_ROM_MultiChal.proof) -- the proof
 uses `FreshInputRFToUniform` (after the DDH hop places a uniform group element `c` in
 the exclusion set) to collapse `H(c)` into a fresh uniform bitstring, which then masks
 the message via XOR.
@@ -370,7 +370,7 @@ return k + m;
 Real-proof pointer: dead code elimination is exercised in almost every proof. The
 elimination of the random-function field after `UniqueRFSimplification` replaces all
 its calls with uniform samples is a good representative case; see
-[`examples/Proofs/SymEnc/SymEncPRFCPA$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof).
+[`examples/Proofs/SymEnc/SymEncPRF_INDCPA$_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDCPA%24_MultiChal.proof).
 
 {: .note }
 **If a branch is not being eliminated:** The engine folds `if (true)` and `if (false)`
@@ -396,7 +396,7 @@ The `RemoveUnreachable` pass also uses Z3 to determine whether a statement after
 guarded return is reachable, allowing dead branches under non-trivially-false conditions
 to be removed.
 
-Real-proof pointer: [`examples/Proofs/SymEnc/EncryptThenMACCCA.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/EncryptThenMACCCA.proof) uses phased
+Real-proof pointer: [`examples/Proofs/SymEnc/EncryptThenMAC_INDCCA_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/EncryptThenMAC_INDCCA_MultiChal.proof) uses phased
 games with guard conditions that require Z3 to confirm equivalence after inlining.
 
 {: .note }
@@ -413,7 +413,7 @@ already in the simplified form.
 Some probabilistic facts cannot be derived purely from program structure: they require
 an external statistical argument (typically a birthday bound or a random oracle
 property). ProofFrog handles these via *helper games* -- ordinary `.game` files in
-`examples/Games/Misc/` that state a statistical equivalence as a security assumption.
+`examples/Games/Helpers/` that state a statistical equivalence as a security assumption.
 The user invokes a helper game as an assumption hop in the same way as any other
 assumption; the difference is that the helper game is not a hardness assumption but a
 statistical argument that the proof author vouches for.
@@ -422,7 +422,7 @@ Four helper games currently in the distribution are:
 
 ### UniqueSampling
 
-**File:** [`examples/Games/Misc/UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/UniqueSampling.game)
+**File:** [`examples/Games/Helpers/Probability/UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/UniqueSampling.game)
 
 **What it states:** Sampling uniformly with replacement from a set `S` is
 indistinguishable from sampling without replacement (exclusion sampling, `<-uniq`).
@@ -447,12 +447,12 @@ UniqueSampling.NoReplacement compose R_Uniq against Adversary; // by UniqueSampl
 G_after against Adversary;                               // interchangeability
 ```
 
-Real-proof pointer: used in [`examples/Proofs/SymEnc/SymEncPRFCPA$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRFCPA%24.proof),
-[`examples/Proofs/PubEnc/HashedElGamalCPAROM.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubEnc/HashedElGamalCPAROM.proof), [`examples/Proofs/Group/DDHMultiChalImpliesHashedDDHMultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHMultiChalImpliesHashedDDHMultiChal.proof).
+Real-proof pointer: used in [`examples/Proofs/SymEnc/SymEncPRF_INDCPA$_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDCPA%24_MultiChal.proof),
+[`examples/Proofs/PubKeyEnc/HashedElGamal_INDCPA_ROM_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HashedElGamal_INDCPA_ROM_MultiChal.proof), [`examples/Proofs/Group/DDHMultiChal_implies_HashedDDHMultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHMultiChal_implies_HashedDDHMultiChal.proof).
 
-### HashOnUniform
+### Regularity
 
-**File:** [`examples/Games/Misc/HashOnUniform.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/HashOnUniform.game)
+**File:** [`examples/Games/Hash/Regularity.game`](https://github.com/ProofFrog/examples/blob/main/Games/Hash/Regularity.game)
 
 **What it states:** Applying a hash function `H : D -> BitString<n>` to a uniformly
 sampled input from `D` is indistinguishable from sampling `BitString<n>` uniformly.
@@ -465,11 +465,11 @@ block without sampling, so not a random oracle), and the proof requires treating
 output of `H` on a uniform input as uniformly random. This is the standard-model
 counterpart to what `FreshInputRFToUniform` does automatically in the ROM.
 
-Real-proof pointer: used in [`examples/Proofs/Group/DDHImpliesHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesHashedDDH.proof).
+Real-proof pointer: used in [`examples/Proofs/Group/DDH_implies_HashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDH_implies_HashedDDH.proof).
 
 ### ROMProgramming
 
-**File:** [`examples/Games/Misc/ROMProgramming.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/ROMProgramming.game)
+**File:** [`examples/Games/Helpers/Probability/ROMProgramming.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/ROMProgramming.game)
 
 **What it states:** Programming a random function at a single target point with a fresh
 uniform value is statistically equivalent to evaluating it naturally. The `Natural` game
@@ -482,11 +482,11 @@ challenge point -- replacing `H(target)` with an independently sampled value so 
 challenge ciphertext becomes statistically independent of the adversary's hash queries.
 This is a standard technique in ROM proofs.
 
-Real-proof pointer: used in [`examples/Proofs/Group/CDHImpliesHashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/CDHImpliesHashedDDH.proof).
+Real-proof pointer: used in [`examples/Proofs/Group/CDH_implies_HashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/CDH_implies_HashedDDH.proof).
 
 ### RandomTargetGuessing
 
-**File:** [`examples/Games/Misc/RandomTargetGuessing.game`](https://github.com/ProofFrog/examples/blob/main/Games/Misc/RandomTargetGuessing.game)
+**File:** [`examples/Games/Helpers/Probability/RandomTargetGuessing.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/RandomTargetGuessing.game)
 
 **What it states:** Comparing an adversary-supplied value against a hidden, uniformly
 sampled target is indistinguishable from always returning false. The `Real` game samples
@@ -498,7 +498,7 @@ game always returns `false`. Any adversary distinguishes the two with advantage 
 uniform value, and the proof argues that such a guess succeeds only with negligible
 probability.
 
-Real-proof pointer: used in [`examples/Proofs/Group/DDHImpliesCDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHImpliesCDH.proof).
+Real-proof pointer: used in [`examples/Proofs/Group/DDH_implies_CDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDH_implies_CDH.proof).
 
 {: .important }
 Using a helper game adds to the trust base -- see the [Soundness]({% link researchers/soundness.md %}) page in the For Researchers area.
@@ -565,7 +565,7 @@ fired asymmetrically).
 
 - *Add a helper assumption.* If the gap corresponds to a statistical fact (birthday
   bound, hash-on-uniform, ROM programming), introduce the appropriate helper game from
-  `examples/Games/Misc/` and use the four-step reduction pattern to cross the gap.
+  `examples/Games/Helpers/` and use the four-step reduction pattern to cross the gap.
 
 - *Restructure existing code.* If the canonical forms differ only in ordering --
   operand order in a concatenation, field declaration order, branch order in an

@@ -334,12 +334,12 @@ import 'relative/path/to/File.primitive';
 
 **Paths are file-relative**: the path is resolved relative to the directory containing the importing file, not relative to the directory where the CLI is invoked.
 
-**Example.** The proof `examples/Proofs/SymEnc/OTUCimpliesOTS.proof` imports:
+**Example.** The proof `examples/Proofs/SymEnc/INDOT$_implies_INDOT.proof` imports:
 
 ```prooffrog
 import '../../Primitives/SymEnc.primitive';
-import '../../Games/SymEnc/OneTimeSecrecy.game';
-import '../../Games/SymEnc/OneTimeUniformCiphertexts.game';
+import '../../Games/SymEnc/INDOT.game';
+import '../../Games/SymEnc/INDOT$.game';
 ```
 
 From `examples/Proofs/SymEnc/`, `../..` navigates up to `examples/`, and the paths then descend into `Primitives/` and `Games/SymEnc/`.

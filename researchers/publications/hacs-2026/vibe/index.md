@@ -16,6 +16,9 @@ redirect_from:
 
 Claude Code (Opus 4.6) was able to construct a valid ProofFrog scheme file and proof from a natural language input describing the scheme and the idea of each game hop. The runtime was about 5 minutes.
 
+{: .note }
+This example relied on [ProofFrog version 0.3.1](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.3.1) with [examples repository commit 668a9b9](https://github.com/ProofFrog/examples/tree/668a9b97b1475aba1dbefe998b8b2fa252d3bd88).
+
 **Input:** 
 - [Prompt](prompt.html)
 

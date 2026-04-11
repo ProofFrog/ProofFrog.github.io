@@ -272,7 +272,7 @@ The key is a tuple `[E.Key, M.Key]` and the ciphertext is a tuple `[E.Ciphertext
 
 ### KEM-DEM — Hybrid Public-Key Encryption
 
-[`Schemes/PubEnc/KEMDEM.scheme`](https://github.com/ProofFrog/examples/blob/main/Schemes/PubEnc/KEMDEM.scheme) — a hybrid public-key encryption scheme that combines a key encapsulation mechanism with a symmetric encryption scheme.
+[`Schemes/PubKeyEnc/HybridKEMDEM.scheme`](https://github.com/ProofFrog/examples/blob/main/Schemes/PubKeyEnc/HybridKEMDEM.scheme) — a hybrid public-key encryption scheme that combines a key encapsulation mechanism with a symmetric encryption scheme.
 
 ```prooffrog
 import '../../Primitives/KEM.primitive';
