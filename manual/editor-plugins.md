@@ -81,9 +81,9 @@ ProofFrog does not yet ship a dedicated Emacs plugin. The LSP server (`proof_fro
 
 ---
 
-## (Future) JetBrains
+## JetBrains
 
-ProofFrog does not yet ship a dedicated JetBrains plugin. JetBrains IDEs support generic LSP integration via the LSP4IJ plugin (for IDEs running on the 2023.2 platform or later). You can configure it to launch `python3 -m proof_frog lsp` as the server process for the four FrogLang file extensions. Feature availability will vary depending on the IDE and plugin version. See the [Engine Internals]({% link researchers/engine-internals.md %}) page for LSP protocol details.
+There's a plugin available for JetBrains IDE-s which provides syntax validation and highlighting, custom color settings, import statement file path references, context-menu actions and other features for the ProofFrog language. You can obtain the plugin from the JetBrains Marketplace inside the IDE. The project is hosted in [this GitHub repository](https://github.com/aabmets/proof-frog-ide-plugin).
 
 ---
 
