@@ -177,10 +177,10 @@
   <line x1="600" y1="1000" x2="600" y2="1030" class="connector"/>
 
   <!-- Canonical form boxes -->
-  <rect x="120" y="1030" width="200" height="35" class="box-green"/>
+  <rect x="120" y="1030" width="200" height="35" class="box"/>
   <text x="220" y="1053" text-anchor="middle" class="label">Canonical form A</text>
 
-  <rect x="500" y="1030" width="200" height="35" class="box-green"/>
+  <rect x="500" y="1030" width="200" height="35" class="box"/>
   <text x="600" y="1053" text-anchor="middle" class="label">Canonical form B</text>
 
   <!-- Both canonical forms converge into comparison diamond -->
