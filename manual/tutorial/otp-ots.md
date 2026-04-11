@@ -9,7 +9,7 @@ nav_order: 2
 # Tutorial Part 2 — One-time pad has one-time secrecy
 {: .no_toc }
 
-In Tutorial Part 1, you ran an existing proof that that the one-time pad has one-time secrecy, broke it on purpose, and fixed it again. Now you will write that proof from scratch — all four files of it. By the end of this tutorial you will have defined a cryptographic primitive, a security game, a concrete scheme, and a game-hopping proof file, and you will have seen each one type-check or prove green as you finish it. We follow [Joy of Cryptography Section 2.5](https://joyofcryptography.com/provsec/#sec.abstract-defs) closely; if you have Rosulek's textbook handy, keep it open. Everything you write here is already in the `examples/joy/` directory, so you can always peek at the finished version if you get stuck.
+In Tutorial Part 1, you ran an existing proof that the one-time pad has one-time secrecy, broke it on purpose, and fixed it again. Now you will write that proof from scratch — all four files of it. By the end of this tutorial you will have defined a cryptographic primitive, a security game, a concrete scheme, and a game-hopping proof file, and you will have seen each one type-check or prove green as you finish it. We follow [Joy of Cryptography Section 2.5](https://joyofcryptography.com/provsec/#sec.abstract-defs) closely; if you have Rosulek's textbook handy, keep it open. Everything you write here is already in the `examples/joy/` directory, so you can always peek at the finished version if you get stuck.
 
 {: .important }
 **Activate your virtual environment first.** Before running any `proof_frog` command in a fresh terminal, activate the Python virtual environment you created during [installation]({% link manual/installation.md %}): `source .venv/bin/activate` on macOS/Linux (bash/zsh), `source .venv/bin/activate.fish` on fish, or `.venv\Scripts\Activate.ps1` on Windows PowerShell. Your prompt should show `(.venv)` once it is active.
@@ -76,7 +76,7 @@ Primitives declare **method signatures only** — there are no method bodies her
 Two new language features appear here:
 
 - `Message?` — the `?` suffix denotes a **nullable** (optional) type. In a symmetric encryption scheme, the decryption algorithm  `Dec` returns either a `Message` or `None`; decryption is allowed to fail if the ciphertext is invalid. If we later create a scheme returning just plain `Message` where the primitive declared `Message?`, we will get a type mismatch that the engine will catch.
-- `deterministic` — this modifier on `Dec` tells the engine that `Dec` is a deterministic algorithm that always returns the same output for the same inputs. In general, algorithms in FrogLang are assumed to be probabilistics, unless explicitly declared to be deterministic. We will come back to why this matters in Step 4 when the proof engine uses it to justify certain algebraic simplifications.
+- `deterministic` — this modifier on `Dec` tells the engine that `Dec` is a deterministic algorithm that always returns the same output for the same inputs. In general, algorithms in FrogLang are assumed to be probabilistic, unless explicitly declared to be deterministic. We will come back to why this matters in Step 4 when the proof engine uses it to justify certain algebraic simplifications.
 
 Finally, add a brace to close the block:
 
@@ -407,7 +407,7 @@ Scheme OTP(Int lambda) extends SymEnc {
 Click **Type Check** in the web editor, or run:
 
 ```bash
-proof_frog OTP.scheme
+proof_frog check OTP.scheme
 ```
 
 Expected output:
@@ -569,7 +569,7 @@ Because `k` is sampled uniformly from `BitString<lambda>` and used exactly once 
 
 ### Diving into the canonical forms
 
-ProofFrog's engine works by trying to convert a game in to a "canonical form", by renaming variables to have standard names, removing unused statements, sorting the lines into a canonical order, and applying other mathematical and logical transformations. It then compares the canonical forms of the two games that are being checked for interchangeability.
+ProofFrog's engine works by trying to convert a game into a "canonical form", by renaming variables to have standard names, removing unused statements, sorting the lines into a canonical order, and applying other mathematical and logical transformations. It then compares the canonical forms of the two games that are being checked for interchangeability.
 
 In the web editor, you can drill down into the canonical forms derived at each step. When you clicked "Run Proof" above, the Game Hop panel in the bottom left should have been updated to have one line highlighted in green: `OneTimeSecrecy(E).Random ✅`. Click on this green line, and you will see four different chunks of source code appear:
 
@@ -577,7 +577,7 @@ In the web editor, you can drill down into the canonical forms derived at each s
 
 - Top left: The previous game (`OneTimeSecrecy(E).Real`), with the code of the one-time pad scheme `E` inlined. Notice that the variables from the OTP scheme have a prefix to avoid any collisions between variable names when inserted.
 - Middle left: The current game (`OneTimeSecrecy(E).Random`), with the code of the one-time pad scheme `E` inlined.
-- Top right: The canonicalized form of the previous game, `OneTimeSecrecy(E).Real`. Notice that the variable names have been replaced with canonical versions (`v1`) and that the engine has simplified the program by applyinh a mathematical identity it knows: that the XOR of a uniform random bit string with any bit string is equivalent to just sampling a uniform random bit string.
+- Top right: The canonicalized form of the previous game, `OneTimeSecrecy(E).Real`. Notice that the variable names have been replaced with canonical versions (`v1`) and that the engine has simplified the program by applying a mathematical identity it knows: that the XOR of a uniform random bit string with any bit string is equivalent to just sampling a uniform random bit string.
 - Bottom right: The canonicalized form of the current game, `OneTimeSecrecy(E).Random`. The canonicalization here is more obvious, and no extra transforms were applied.
 
 As you can see, the two canonicalized forms are exactly the same: this is why ProofFrog concludes that the hop is valid.
@@ -593,7 +593,7 @@ If you really want to dive into the details of every transformation ProofFrog ap
 
 **Proof Failed! Individual hops verified, but the proof is incomplete.** If the first and last game steps use the same side of the theorem (both `Real`, or both `Random`), the engine accepts all individual hops but reports that the overall sequence is incomplete. This is the error you saw in Tutorial Part 1 when you commented out the second game step. Make sure the sequence starts at `Real` and ends at `Random` (or vice versa).
 
-**A hop fails.** If the engine cannot verify a hop as an equivalence, it will report which step failed and show a diagnostic. For a proof as small as this one, a failing hop usually means the scheme file has a typo — for example, `k * m` instead of `k + m` in `Enc`. See the [troubleshooting page]({ %link manual/troubleshooting.md %}) for a deeper guide to diagnosing failing steps.
+**A hop fails.** If the engine cannot verify a hop as an equivalence, it will report which step failed and show a diagnostic. For a proof as small as this one, a failing hop usually means the scheme file has a typo — for example, `k * m` instead of `k + m` in `Enc`. See the [troubleshooting page]({% link manual/troubleshooting.md %}) for a deeper guide to diagnosing failing steps.
 
 ---
 

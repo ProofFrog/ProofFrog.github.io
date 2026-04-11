@@ -71,7 +71,7 @@ After registering, type `/mcp` inside Claude Code to confirm the server appears 
 
 ### What the MCP server exposes
 
-The MCP server exposes the main ProofFrog commands (`parse`, `check`, `prove`) to the coding agent, along with several extra commands that allow it to inspect the game hop canonicalization in greater detail to diagnose bugs.  The full list of commands is available in []`CLAUDE_MCP.md` in the ProofFrog repository](https://github.com/ProofFrog/ProofFrog/blob/main/CLAUDE_MCP.md). Some of the extra commands available include:
+The MCP server exposes the main ProofFrog commands (`parse`, `check`, `prove`) to the coding agent, along with several extra commands that allow it to inspect the game hop canonicalization in greater detail to diagnose bugs.  The full list of commands is available in [`CLAUDE_MCP.md` in the ProofFrog repository](https://github.com/ProofFrog/ProofFrog/blob/main/CLAUDE_MCP.md). Some of the extra commands available include:
 
 - **`get_step_detail`** -- returns the canonical (fully simplified) form of one proof step by index. This is the primary diagnostic tool for a failing hop: compare the canonical forms of two adjacent steps to see exactly what differs. Read the `canonical` field, not `output` (which contains mangled internal names).
 - **`get_inlined_game`** -- returns the canonical form of an arbitrary game step expression without requiring the step to appear in the proof's `games:` list, and robust to stub reductions that would otherwise block verification. Use this when writing intermediate games: it shows exactly what a game looks like after inlining against the proof's `let:`/`assume:` context, so you can write a matching `Game` definition.
@@ -82,7 +82,7 @@ The MCP server exposes the main ProofFrog commands (`parse`, `check`, `prove`) t
 
 ## What works well
 
-Take a look at the [HACS 2026 demo](({% link researchers/publications/hacs-2026/vibe/index.md %})) to see an example: from an English language prompt outlining a basic scheme (symmetric encryption build from a PRG), Claude Code was able to produce a working scheme and proof in roughly five minutes of wall time. That is a useful data point, but the task was chosen to be representative of examples already in the repository -- not a stress test. 
+Take a look at the [HACS 2026 demo]({% link researchers/publications/hacs-2026/vibe/index.md %}) to see an example: from an English language prompt outlining a basic scheme (symmetric encryption build from a PRG), Claude Code was able to produce a working scheme and proof in roughly five minutes of wall time. That is a useful data point, but the task was chosen to be representative of examples already in the repository -- not a stress test. 
 
 With that context, here are some things that can work okay:
 

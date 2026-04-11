@@ -192,4 +192,4 @@ The [`examples/joy_old`](https://github.com/ProofFrog/examples/tree/main/joy_old
 
 ## External Uses of ProofFrog
 
-A list of external projects and papers using ProofFrog is maintained on the [external uses page]{% link researchers/external-uses.md %}.
+A list of external projects and papers using ProofFrog is maintained on the [external uses page]({% link researchers/external-uses.md %}).

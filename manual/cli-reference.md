@@ -37,7 +37,7 @@ The ProofFrog command-line interface (`proof_frog`) lets you parse, type-check, 
 ### Synopsis
 
 ```
-python -m proof_frog version [OPTIONS]
+proof_frog version [OPTIONS]
 ```
 
 ### Behavior
@@ -48,7 +48,7 @@ Prints the installed ProofFrog version string to standard output and exits. The 
 
 ```bash
 # Print the installed version
-python -m proof_frog version
+proof_frog version
 ```
 
 Expected output (version may differ):
@@ -64,7 +64,7 @@ ProofFrog 0.4.0
 ### Synopsis
 
 ```
-python -m proof_frog parse [OPTIONS] FILE
+proof_frog parse [OPTIONS] FILE
 ```
 
 ### Behavior
@@ -81,13 +81,13 @@ Parses any FrogLang source file (`.primitive`, `.scheme`, `.game`, or `.proof`) 
 
 ```bash
 # Parse a primitive definition
-python -m proof_frog parse examples/Primitives/PRG.primitive
+proof_frog parse examples/Primitives/PRG.primitive
 
 # Parse a scheme and get JSON output
-python -m proof_frog parse --json examples/joy/Schemes/SymEnc/OTP.scheme
+proof_frog parse --json examples/joy/Schemes/SymEnc/OTP.scheme
 
 # Parse a proof file
-python -m proof_frog parse examples/joy/Proofs/Ch2/OTPSecure.proof
+proof_frog parse examples/joy/Proofs/Ch2/OTPSecure.proof
 ```
 
 ### Common Errors
@@ -101,7 +101,7 @@ python -m proof_frog parse examples/joy/Proofs/Ch2/OTPSecure.proof
 ### Synopsis
 
 ```
-python -m proof_frog check [OPTIONS] FILE
+proof_frog check [OPTIONS] FILE
 ```
 
 ### Behavior
@@ -118,13 +118,13 @@ Type-checks and performs semantic analysis on any FrogLang file. This goes beyon
 
 ```bash
 # Type-check a symmetric encryption scheme
-python -m proof_frog check examples/joy/Schemes/SymEnc/OTP.scheme
+proof_frog check examples/joy/Schemes/SymEnc/OTP.scheme
 
 # Type-check a primitive definition
-python -m proof_frog check examples/Primitives/SymEnc.primitive
+proof_frog check examples/Primitives/SymEnc.primitive
 
 # Check a proof file and emit JSON diagnostics
-python -m proof_frog check --json examples/joy/Proofs/Ch2/OTPSecure.proof
+proof_frog check --json examples/joy/Proofs/Ch2/OTPSecure.proof
 ```
 
 ### Common Errors
@@ -140,7 +140,7 @@ python -m proof_frog check --json examples/joy/Proofs/Ch2/OTPSecure.proof
 ### Synopsis
 
 ```
-python -m proof_frog prove [OPTIONS] FILE
+proof_frog prove [OPTIONS] FILE
 ```
 
 ### Behavior
@@ -168,16 +168,16 @@ Pass `-v` once to print the canonical game form after each hop, which is invalua
 
 ```bash
 # Verify the OTP security proof from Joy of Cryptography examples
-python -m proof_frog prove examples/joy/Proofs/Ch2/OTPSecure.proof
+proof_frog prove examples/joy/Proofs/Ch2/OTPSecure.proof
 
 # Verbose: print canonical game forms at each hop
-python -m proof_frog prove -v examples/joy/Proofs/Ch2/OTPSecure.proof
+proof_frog prove -v examples/joy/Proofs/Ch2/OTPSecure.proof
 
 # Very verbose: also show transformation rule firings
-python -m proof_frog prove -vv examples/joy/Proofs/Ch2/OTPSecure.proof
+proof_frog prove -vv examples/joy/Proofs/Ch2/OTPSecure.proof
 
 # Verify a PRG security proof, skipping lemma re-verification
-python -m proof_frog prove --skip-lemmas examples/Proofs/PRG/CounterPRG_PRGSecurity.proof
+proof_frog prove --skip-lemmas examples/Proofs/PRG/CounterPRG_PRGSecurity.proof
 ```
 
 ### Common Errors
@@ -195,7 +195,7 @@ python -m proof_frog prove --skip-lemmas examples/Proofs/PRG/CounterPRG_PRGSecur
 ### Synopsis
 
 ```
-python -m proof_frog describe [OPTIONS] FILE
+proof_frog describe [OPTIONS] FILE
 ```
 
 ### Behavior
@@ -212,13 +212,13 @@ Prints a concise, human-readable summary of any FrogLang file's interface — th
 
 ```bash
 # Describe a primitive
-python -m proof_frog describe examples/Primitives/PRG.primitive
+proof_frog describe examples/Primitives/PRG.primitive
 
 # Describe a scheme
-python -m proof_frog describe examples/joy/Schemes/SymEnc/OTP.scheme
+proof_frog describe examples/joy/Schemes/SymEnc/OTP.scheme
 
 # Describe with JSON output (useful for tooling)
-python -m proof_frog describe --json examples/Primitives/SymEnc.primitive
+proof_frog describe --json examples/Primitives/SymEnc.primitive
 ```
 
 ---
@@ -228,7 +228,7 @@ python -m proof_frog describe --json examples/Primitives/SymEnc.primitive
 ### Synopsis
 
 ```
-python -m proof_frog download-examples [OPTIONS] [DIRECTORY]
+proof_frog download-examples [OPTIONS] [DIRECTORY]
 ```
 
 ### Behavior
@@ -246,16 +246,16 @@ Downloads the [ProofFrog examples repository](https://github.com/ProofFrog/examp
 
 ```bash
 # Download the examples matching your version of ProofFrog into an "examples" directory
-python -m proof_frog download-examples
+proof_frog download-examples
 
 # Download into a custom directory
-python -m proof_frog download-examples my-examples
+proof_frog download-examples my-examples
 
 # Download the latest main branch instead of the pinned version
-python -m proof_frog download-examples --ref main
+proof_frog download-examples --ref main
 
 # Overwrite an existing examples directory
-python -m proof_frog download-examples --force
+proof_frog download-examples --force
 ```
 
 ---
@@ -265,7 +265,7 @@ python -m proof_frog download-examples --force
 ### Synopsis
 
 ```
-python -m proof_frog web [OPTIONS] [DIRECTORY]
+proof_frog web [OPTIONS] [DIRECTORY]
 ```
 
 ### Behavior
@@ -279,13 +279,13 @@ The web interface provides the same verification engine as the CLI. It is partic
 
 ```bash
 # Start the editor using the current directory as the file root
-python -m proof_frog web
+proof_frog web
 
 # Start the editor rooted at the bundled examples directory
-python -m proof_frog web examples/
+proof_frog web examples/
 
 # Start the editor rooted at a specific project directory
-python -m proof_frog web /path/to/my/proofs
+proof_frog web /path/to/my/proofs
 ```
 
 ---

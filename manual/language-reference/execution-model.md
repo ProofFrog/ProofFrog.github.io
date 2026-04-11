@@ -32,7 +32,7 @@ The security model is **left/right indistinguishability**: a scheme is considere
 
 ## Game execution model
 
-One execution of a game `G` with an adversary `A` proceeds in three stages:
+One execution of a game `G` with an adversary `A` proceeds in four stages:
 
 1. **Field initialization.** All state fields are set up. Fields declared with an explicit initializer (`Type x = expr;`) are assigned the value of `expr`. Fields declared without an initializer (`Type x;`) are left in an undefined state until the first assignment.
 

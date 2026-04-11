@@ -134,12 +134,12 @@ FrogLang does not allow.
 **Symptom:** `<file>:<line>: imported file not found: '<path>'`
 
 **Likely cause:** The path in an `import` statement does not resolve to an
-existing file relative to the directory where the CLI was invoked.
+existing file relative to the importing file's directory.
 
 **Fix:** Confirm the file exists at the given path and that the import is
-relative to the directory from which you are running `proof_frog`, not
-relative to the source file. Import paths in FrogLang are resolved from the
-working directory of the CLI invocation.
+relative to the directory containing the source file that has the `import`
+statement, not relative to the directory where the CLI is invoked. Import
+paths in FrogLang are resolved relative to the importing file's directory.
 
 **See also:** [Language Reference: Basics]({% link manual/language-reference/basics.md %})
 

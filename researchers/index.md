@@ -9,7 +9,7 @@ permalink: /researchers/
 
 # For Researchers
 
-This area of the site is for people who want to *understand* ProofFrog's design, primaril from a scientific perspective.
+This area of the site is for people who want to *understand* ProofFrog's design, primarily from a scientific perspective.
 
 If you are learning provable security or are new to ProofFrog, we recommend starting with the [manual]({% link manual/index.md %}).
 

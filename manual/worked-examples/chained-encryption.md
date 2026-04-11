@@ -135,7 +135,7 @@ One subtlety to remember is that the semantics of security experiments in Joy of
 
 {% katex %}\mathsf{ChainedEncryption}{% endkatex %} takes two symmetric encryption schemes {% katex %}E_1, E_2{% endkatex %} and produces a new symmetric encryption scheme whose keys come from {% katex %}E_1{% endkatex %}, whose messages come from {% katex %}E_2{% endkatex %}, and whose ciphertexts are pairs. It requires {% katex %}E_2.\mathcal{K} \subseteq E_1.\mathcal{M}{% endkatex %} so that a freshly sampled {% katex %}E_2{% endkatex %} key can be encrypted as a message under {% katex %}E_1{% endkatex %}:
 
-The sets need for the scheme definition are:
+The sets needed for the scheme definition are:
 
 {% katex display %}
 \begin{array}{l}
@@ -223,13 +223,13 @@ For the full syntax of `Scheme`, the `requires` clause, tuple types, and method 
 The `games:` block lists six game steps, producing five hops. The overall shape:
 
 - **Step 1**: `OneTimeSecrecy(CE).Real against OneTimeSecrecy(CE).Adversary`
-  The starting point: the Real side of the `OneTimeSecrecy` experiment for `CE`, omposed with a generic adversary.
+  The starting point: the Real side of the `OneTimeSecrecy` experiment for `CE`, composed with a generic adversary.
 
 - **Step 2**: `OneTimeSecrecy(E1).Real compose R1(CE, E1, E2) against OneTimeSecrecy(CE).Adversary`
   Interchangeability hop. The game from step 1 is rewritten in terms of reduction `R1` composed with the Real side of `E1`'s one-time secrecy game. The engine verifies that these two representations are code-equivalent.
 
 - **Step 3**: `OneTimeSecrecy(E1).Random compose R1(CE, E1, E2) against OneTimeSecrecy(CE).Adversary`
-  Assumption hop (Real to Random for `E1`). Justified by `OneTimeSecrecy(E1)` in `assume:`. The engine accepts this without code-equivalence checking since it's anassumption listed in the theorem preconditions.
+  Assumption hop (Real to Random for `E1`). Justified by `OneTimeSecrecy(E1)` in `assume:`. The engine accepts this without code-equivalence checking since it's an assumption listed in the theorem preconditions.
 
 - **Step 4**: `OneTimeSecrecy(E2).Real compose R2(CE, E1, E2) against OneTimeSecrecy(CE).Adversary`
   Interchangeability hop. After `E1`'s encryption has been replaced with random, the code is reorganized through reduction `R2`, which hands `E2`'s encryption off to the `E2` challenger. Again engine-verified by code equivalence.
@@ -403,7 +403,7 @@ Unlike `R1`, `R2` does not have any `E1` challenger in scope — the proof has a
 
 The body then asks the `E2` challenger to encrypt `m` (via `challenger.ENC(m)`) and returns `[c1, c2]`. When the `E2` challenger is in Real mode, `c2 = E2.Enc(k_fresh, m)` for a freshly sampled key, so the overall output matches the halfway state where `c1` is random and `c2` is a real encryption of `m`. When the `E2` challenger switches to Random mode, `c2` becomes a uniform `E2.Ciphertext`, and the output matches the final game `OneTimeSecrecy(CE).Random` where both components are uniformly random.
 
-**A note on `c2prime`.** Line 28 of the proof file samples `E2.Ciphertext c2prime <- E2.Ciphertext;` but never uses the result — `c2prime` is not returned, and no subsequent statement reads it. This is dead code and has no effect on the proof; the canonicalization pipeline eliminates unused samples when comparing the reduction's output to the surrounding games. You can mentally ignore the line when reading the reduction.
+**A note on `c2prime`.** Line 28 of the proof file samples `E2.Ciphertext c2prime <- E2.Ciphertext;` but never uses the result — `c2prime` is not returned, and no subsequent statement reads it. This is dead code left over from an earlier draft of this example and has no effect on the proof; the canonicalization pipeline eliminates unused samples when comparing the reduction's output to the surrounding games. You can mentally ignore the line when reading the reduction.
 
 ---
 

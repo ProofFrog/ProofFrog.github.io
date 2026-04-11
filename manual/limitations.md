@@ -55,10 +55,9 @@ polynomially many independent samples), that argument lives outside what ProofFr
 verifies.
 
 **Recursive computation.** FrogLang methods cannot call themselves recursively, and
-there is no loop construct. The language is not Turing-complete. Proofs that require
-reasoning about an inductively defined sequence of games (for example, a hybrid argument
-over n independent challenges) must be structured using the `lemma:` mechanism to reason
-about a single step, with the inductive argument stated externally.
+loops are bounded (numeric `for` loops have a fixed range and generic `for` loops iterate
+over a finite collection; there is no general while loop or unbounded iteration). The
+language is not Turing-complete.
 
 **Side channels.** Timing, power, cache, and other physical side-channel attacks are not
 modeled. All games are defined solely by the sequence of return values their oracles
@@ -233,6 +232,6 @@ If you encounter a case where the engine rejects a proof step that you believe i
 mathematically valid, please open an issue at
 [https://github.com/ProofFrog/ProofFrog/issues](https://github.com/ProofFrog/ProofFrog/issues).
 Include the smallest proof file that reproduces the problem, the full output of
-`python -m proof_frog prove -v <your-file.proof>` (which shows the canonical form of
+`proof_frog prove -v <your-file.proof>` (which shows the canonical form of
 each game and the point of failure), and a brief description of what you expected the
 engine to accept and why.
