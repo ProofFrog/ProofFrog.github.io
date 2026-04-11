@@ -5,4 +5,5 @@ gem "just-the-docs", "0.12.0"
 
 group :jekyll_plugins do
   gem 'jekyll-katex'
+  gem 'jekyll-redirect-from'
 end

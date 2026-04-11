@@ -1,0 +1,262 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 1565" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#444"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#c0392b"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#27ae60"/>
+    </marker>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" flood-opacity="0.1"/>
+    </filter>
+    <style>
+      .box { fill: #fff; stroke: #bbb; stroke-width: 1.2; rx: 8; ry: 8; filter: url(#shadow); }
+      .box-blue { fill: #e8f0fe; stroke: #4a86c8; stroke-width: 1.5; rx: 8; ry: 8; filter: url(#shadow); }
+      .box-green { fill: #e6f4ea; stroke: #27ae60; stroke-width: 1.5; rx: 8; ry: 8; filter: url(#shadow); }
+      .box-red { fill: #fce8e6; stroke: #c0392b; stroke-width: 1.5; rx: 8; ry: 8; filter: url(#shadow); }
+      .box-yellow { fill: #fef7e0; stroke: #f39c12; stroke-width: 1.5; rx: 8; ry: 8; filter: url(#shadow); }
+      .box-purple { fill: #f3e8fd; stroke: #8e44ad; stroke-width: 1.5; rx: 8; ry: 8; filter: url(#shadow); }
+      .box-gray { fill: #f5f5f5; stroke: #999; stroke-width: 1.2; rx: 8; ry: 8; filter: url(#shadow); }
+      .title { font-weight: 600; font-size: 14px; fill: #222; }
+      .subtitle { font-weight: 600; font-size: 12px; fill: #555; }
+      .label { font-size: 12px; fill: #444; }
+      .label-small { font-size: 11px; fill: #666; }
+      .label-mono { font-size: 11px; fill: #555; font-family: 'SF Mono', 'Menlo', 'Monaco', monospace; }
+      .diamond { fill: #fff; stroke: #bbb; stroke-width: 1.2; filter: url(#shadow); }
+      .connector { fill: none; stroke: #444; stroke-width: 1.5; marker-end: url(#arrow); }
+      .connector-noarrow { fill: none; stroke: #444; stroke-width: 1.5; }
+      .connector-red { fill: none; stroke: #c0392b; stroke-width: 1.5; marker-end: url(#arrow-red); }
+      .connector-green { fill: none; stroke: #27ae60; stroke-width: 1.5; marker-end: url(#arrow-green); }
+      .loop-arrow { fill: none; stroke: #8e44ad; stroke-width: 1.5; stroke-dasharray: 6,3; marker-end: url(#arrow); }
+      .brace { fill: none; stroke: #8e44ad; stroke-width: 1.5; }
+      .section-bg { fill: #fafafa; stroke: #ddd; stroke-width: 1; rx: 12; ry: 12; }
+      .section-title { font-weight: 700; font-size: 11px; fill: #888; letter-spacing: 1px; text-transform: uppercase; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="820" height="1565" fill="#fff" rx="0"/>
+
+  <!-- ========== INPUT ========== -->
+  <rect x="260" y="20" width="300" height="50" class="box-gray"/>
+  <text x="410" y="40" text-anchor="middle" class="title">FrogLang Source Files</text>
+  <text x="410" y="56" text-anchor="middle" class="label-mono">.primitive  .scheme  .game  .proof</text>
+
+  <line x1="410" y1="70" x2="410" y2="95" class="connector"/>
+
+  <!-- ========== PARSING ========== -->
+  <rect x="230" y="95" width="360" height="55" class="box-blue"/>
+  <text x="410" y="116" text-anchor="middle" class="title">Parsing</text>
+  <text x="410" y="133" text-anchor="middle" class="label">ANTLR grammars &#x2192; AST nodes (frog_ast)</text>
+
+  <line x1="410" y1="150" x2="410" y2="175" class="connector"/>
+
+  <!-- ========== SEMANTIC ANALYSIS ========== -->
+  <rect x="230" y="175" width="360" height="55" class="box-blue"/>
+  <text x="410" y="196" text-anchor="middle" class="title">Semantic Analysis</text>
+  <text x="410" y="213" text-anchor="middle" class="label">Type checking, name resolution, import resolution</text>
+
+  <line x1="410" y1="230" x2="410" y2="255" class="connector"/>
+
+  <!-- ========== PROOF ENGINE ========== -->
+  <rect x="30" y="255" width="760" height="1220" class="section-bg"/>
+  <text x="60" y="278" class="section-title">PROOF ENGINE</text>
+
+  <!-- Setup Phase -->
+  <rect x="230" y="290" width="360" height="70" class="box"/>
+  <text x="410" y="311" text-anchor="middle" class="title">Proof Setup</text>
+  <text x="410" y="328" text-anchor="middle" class="label-small">Load let bindings, definitions, assumptions</text>
+  <text x="410" y="343" text-anchor="middle" class="label-small">Build namespace, type maps, method lookup</text>
+
+  <line x1="410" y1="360" x2="410" y2="390" class="connector"/>
+
+  <!-- Step iteration -->
+  <rect x="215" y="390" width="390" height="40" class="box-yellow"/>
+  <text x="410" y="415" text-anchor="middle" class="title">For each adjacent pair of games in proof</text>
+
+  <line x1="410" y1="430" x2="410" y2="460" class="connector"/>
+
+  <!-- ========== EQUIVALENCE CHECKING SECTION ========== -->
+  <rect x="55" y="460" width="710" height="930" style="fill:#f8f8fc; stroke:#ccc; stroke-width:1; rx:10; ry:10;"/>
+  <text x="85" y="483" class="section-title">EQUIVALENCE CHECKING (per hop)</text>
+
+  <!-- Two game boxes side by side -->
+  <rect x="120" y="495" width="200" height="40" class="box"/>
+  <text x="220" y="520" text-anchor="middle" class="label">Current game AST</text>
+
+  <rect x="500" y="495" width="200" height="40" class="box"/>
+  <text x="600" y="520" text-anchor="middle" class="label">Next game AST</text>
+
+  <line x1="220" y1="535" x2="220" y2="555" class="connector"/>
+  <line x1="600" y1="535" x2="600" y2="555" class="connector"/>
+
+  <!-- Inline + Assumptions -->
+  <rect x="120" y="555" width="580" height="45" class="box"/>
+  <text x="410" y="575" text-anchor="middle" class="title">Inline Methods &amp; Apply Assumptions</text>
+  <text x="410" y="590" text-anchor="middle" class="label-small">Substitute method bodies; apply user-supplied equivalences</text>
+
+  <line x1="410" y1="600" x2="410" y2="625" class="connector"/>
+
+  <!-- ========== CORE PIPELINE ========== -->
+  <rect x="80" y="625" width="660" height="310" style="fill:#f0ecf8; stroke:#c5b3e6; stroke-width:1; rx:8; ry:8;"/>
+  <text x="410" y="648" text-anchor="middle" class="section-title">CORE PIPELINE &#x2014; loop until AST unchanging (max 200 iterations)</text>
+
+  <!-- Top brace: tip points UP to receive input/repeat arrow, arms open down toward boxes -->
+  <!--   tip at y=680, arms at y=690 -->
+  <path d="M 98,690 L 98,686 L 403,686 L 410,680 L 417,686 L 722,686 L 722,690" class="brace"/>
+
+  <!-- Transform category boxes - 4x2 centered grid -->
+  <!-- Row 1 (y=700) -->
+  <rect x="100" y="700" width="145" height="44" class="box-purple"/>
+  <text x="172" y="718" text-anchor="middle" class="subtitle">Sampling</text>
+  <text x="172" y="734" text-anchor="middle" class="label-small">Merge/split/sink samples</text>
+
+  <rect x="255" y="700" width="145" height="44" class="box-purple"/>
+  <text x="327" y="718" text-anchor="middle" class="subtitle">Random Functions</text>
+  <text x="327" y="734" text-anchor="middle" class="label-small">RF &#x2192; uniform</text>
+
+  <rect x="410" y="700" width="145" height="44" class="box-purple"/>
+  <text x="482" y="718" text-anchor="middle" class="subtitle">Inlining</text>
+  <text x="482" y="734" text-anchor="middle" class="label-small">Inline, deduplicate, alias</text>
+
+  <rect x="565" y="700" width="155" height="44" class="box-purple"/>
+  <text x="642" y="718" text-anchor="middle" class="subtitle">Algebraic</text>
+  <text x="642" y="734" text-anchor="middle" class="label-small">XOR/ModInt/Group</text>
+
+  <!-- Row 2 (y=754) -->
+  <rect x="100" y="754" width="145" height="44" class="box-purple"/>
+  <text x="172" y="772" text-anchor="middle" class="subtitle">Structural</text>
+  <text x="172" y="788" text-anchor="middle" class="label-small">Topo sort, field pruning</text>
+
+  <rect x="255" y="754" width="145" height="44" class="box-purple"/>
+  <text x="327" y="772" text-anchor="middle" class="subtitle">Control Flow</text>
+  <text x="327" y="788" text-anchor="middle" class="label-small">Branch elimination</text>
+
+  <rect x="410" y="754" width="145" height="44" class="box-purple"/>
+  <text x="482" y="772" text-anchor="middle" class="subtitle">Types &amp; Tuples</text>
+  <text x="482" y="788" text-anchor="middle" class="label-small">Null guards, folding</text>
+
+  <rect x="565" y="754" width="155" height="44" class="box-purple"/>
+  <text x="642" y="772" text-anchor="middle" class="subtitle">Symbolic</text>
+  <text x="642" y="788" text-anchor="middle" class="label-small">Z3 + SymPy</text>
+
+  <!-- Bottom brace: tip points DOWN toward diamond, arms at box bottoms -->
+  <!--   arms at y=808, tip at y=818 -->
+  <path d="M 98,808 L 98,812 L 403,812 L 410,818 L 417,812 L 722,812 L 722,808" class="brace"/>
+
+  <!-- Arrow from bottom brace center to diamond -->
+  <line x1="410" y1="818" x2="410" y2="845" class="connector"/>
+
+  <!-- Convergence check diamond: center at (410,875) -->
+  <polygon points="410,845 480,875 410,905 340,875" class="diamond"/>
+  <text x="410" y="872" text-anchor="middle" class="label-small">AST</text>
+  <text x="410" y="885" text-anchor="middle" class="label-small">changed?</text>
+
+  <!-- "yes" label on the right exit (loop back) -->
+  <text x="490" y="870" class="label-small" style="fill:#8e44ad;">yes</text>
+
+  <!-- Loop back arrow: right of diamond → up right margin → across top → down into top brace tip -->
+  <path d="M 480,875 L 750,875 L 750,658 L 410,658 L 410,680" class="loop-arrow"/>
+  <text x="762" y="772" text-anchor="start" class="label-small" transform="rotate(-90,762,772)" style="fill:#8e44ad;">repeat</text>
+
+  <!-- "no" label on the bottom exit (converged) -->
+  <text x="420" y="923" class="label-small" style="fill:#27ae60;">no</text>
+
+  <!-- Fixed point reached: exit downward -->
+  <line x1="410" y1="905" x2="410" y2="945" class="connector"/>
+
+  <!-- ========== STANDARDIZATION ========== -->
+  <rect x="180" y="945" width="460" height="55" class="box"/>
+  <text x="410" y="966" text-anchor="middle" class="title">Standardization (single pass)</text>
+  <text x="410" y="983" text-anchor="middle" class="label-small">Rename variables/fields to canonical IDs, sort statements</text>
+
+  <line x1="220" y1="1000" x2="220" y2="1030" class="connector"/>
+  <line x1="600" y1="1000" x2="600" y2="1030" class="connector"/>
+
+  <!-- Canonical form boxes -->
+  <rect x="120" y="1030" width="200" height="35" class="box"/>
+  <text x="220" y="1053" text-anchor="middle" class="label">Canonical form A</text>
+
+  <rect x="500" y="1030" width="200" height="35" class="box"/>
+  <text x="600" y="1053" text-anchor="middle" class="label">Canonical form B</text>
+
+  <!-- Both canonical forms converge into comparison diamond -->
+  <line x1="220" y1="1065" x2="220" y2="1090" class="connector-noarrow"/>
+  <line x1="600" y1="1065" x2="600" y2="1090" class="connector-noarrow"/>
+  <line x1="220" y1="1090" x2="600" y2="1090" class="connector-noarrow"/>
+  <line x1="410" y1="1090" x2="410" y2="1120" class="connector"/>
+
+  <!-- A ≡ B diamond: center at (410,1150) -->
+  <polygon points="410,1120 490,1150 410,1180 330,1150" class="diamond"/>
+  <text x="410" y="1147" text-anchor="middle" class="label-small">A &#x2261; B ?</text>
+  <text x="410" y="1160" text-anchor="middle" class="label-small">(structurally)</text>
+
+  <!-- A≡B yes: left exit → down to Accept -->
+  <text x="275" y="1143" text-anchor="middle" class="label-small" style="fill:#27ae60;">yes</text>
+  <line x1="330" y1="1150" x2="220" y2="1150" class="connector-noarrow" style="stroke:#27ae60;"/>
+
+  <!-- A≡B no: downward to Z3 -->
+  <text x="420" y="1198" class="label-small" style="fill:#c0392b;">no</text>
+  <line x1="410" y1="1180" x2="410" y2="1210" class="connector"/>
+
+  <!-- Z3 diamond: center at (410,1240), wider for label -->
+  <polygon points="410,1210 500,1240 410,1270 320,1240" class="diamond"/>
+  <text x="410" y="1237" text-anchor="middle" class="label-small">Branch conditions</text>
+  <text x="410" y="1250" text-anchor="middle" class="label-small">equiv? (Z3)</text>
+
+  <!-- Z3 yes: left exit → meets vertical green line down to Accept -->
+  <text x="270" y="1233" text-anchor="middle" class="label-small" style="fill:#27ae60;">yes</text>
+  <line x1="320" y1="1240" x2="220" y2="1240" class="connector-noarrow" style="stroke:#27ae60;"/>
+
+  <!-- Green vertical collecting both yes paths → down to Accept -->
+  <line x1="220" y1="1150" x2="220" y2="1300" class="connector-green"/>
+
+  <!-- Z3 no: right exit → horizontal then vertical down to Diagnostics -->
+  <text x="555" y="1233" text-anchor="middle" class="label-small" style="fill:#c0392b;">no</text>
+  <line x1="500" y1="1240" x2="600" y2="1240" class="connector-noarrow" style="stroke:#c0392b;"/>
+  <line x1="600" y1="1240" x2="600" y2="1300" class="connector-red"/>
+
+  <!-- Accept and Diagnostics side by side, symmetric about center -->
+  <rect x="145" y="1300" width="150" height="80" class="box-green"/>
+  <text x="220" y="1345" text-anchor="middle" class="title" style="fill:#27ae60;">Accept</text>
+
+  <rect x="450" y="1300" width="300" height="80" class="box-red"/>
+  <text x="600" y="1325" text-anchor="middle" class="title" style="fill:#c0392b;">Diagnostics</text>
+  <text x="600" y="1343" text-anchor="middle" class="label-small">Classify diff hunks between</text>
+  <text x="600" y="1358" text-anchor="middle" class="label-small">canonical forms; match near-misses;</text>
+  <text x="600" y="1373" text-anchor="middle" class="label-small">detect engine limitations</text>
+
+  <!-- Both Accept and Diagnostics feed into HopResult -->
+  <line x1="220" y1="1380" x2="220" y2="1400" class="connector-noarrow"/>
+  <line x1="600" y1="1380" x2="600" y2="1400" class="connector-noarrow"/>
+  <line x1="220" y1="1400" x2="600" y2="1400" class="connector-noarrow"/>
+  <line x1="410" y1="1400" x2="410" y2="1420" class="connector"/>
+
+  <!-- Results -->
+  <rect x="215" y="1420" width="390" height="50" class="box-yellow"/>
+  <text x="410" y="1442" text-anchor="middle" class="title">HopResult per step</text>
+  <text x="410" y="1458" text-anchor="middle" class="label-small">Valid/invalid status + diagnostic report</text>
+
+  <!-- ========== INTERFACES ========== -->
+  <!-- Trunk down from HopResult, then horizontal bar, then three vertical arrows -->
+  <line x1="410" y1="1470" x2="410" y2="1490" class="connector-noarrow"/>
+  <line x1="140" y1="1490" x2="680" y2="1490" class="connector-noarrow"/>
+  <line x1="140" y1="1490" x2="140" y2="1510" class="connector"/>
+  <line x1="410" y1="1490" x2="410" y2="1510" class="connector"/>
+  <line x1="680" y1="1490" x2="680" y2="1510" class="connector"/>
+
+  <rect x="60" y="1510" width="160" height="45" class="box-gray"/>
+  <text x="140" y="1531" text-anchor="middle" class="subtitle">CLI</text>
+  <text x="140" y="1545" text-anchor="middle" class="label-small">proof_frog prove</text>
+
+  <rect x="330" y="1510" width="160" height="45" class="box-gray"/>
+  <text x="410" y="1531" text-anchor="middle" class="subtitle">Web Editor</text>
+  <text x="410" y="1545" text-anchor="middle" class="label-small">proof_frog web</text>
+
+  <rect x="600" y="1510" width="160" height="45" class="box-gray"/>
+  <text x="680" y="1531" text-anchor="middle" class="subtitle">LSP / MCP</text>
+  <text x="680" y="1545" text-anchor="middle" class="label-small">VSCode, Claude</text>
+</svg>

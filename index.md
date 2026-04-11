@@ -12,31 +12,41 @@ nav_order: 1
 
 **A tool for checking transitions in cryptographic game-hopping proofs.**
 
-ProofFrog checks the validity of transitions in game-hopping proofs — the standard technique in provable security for showing that a cryptographic scheme satisfies a security property. Proofs are written in FrogLang, a domain-specific language for defining primitives, schemes, security games, and proofs. ProofFrog is [designed]({% link design.md %}) to handle introductory-level proofs, trading expressivity and power for ease of use. The ProofFrog engine checks each hop by manipulating abstract syntax trees into a canonical form, with some help from Z3 and SymPy. ProofFrog's engine does not have any formal guarantees: the soundness of its transformations has not been verified.
+ProofFrog checks the validity of game hops for cryptographic game-hopping proofs in the reduction-based security paradigm: it checks that the starting and ending games match the security definition, and that each adjacent pair of games is either interchangeable (by code equivalence) or justified by a stated assumption. Proofs are written in FrogLang, a small C/Java-style domain-specific language designed to look like a pen-and-paper proof. ProofFrog can be used from the command line, a browser-based editor, or an MCP server for integration with AI coding assistants. ProofFrog is suitable for introductory level proofs, but is not as expressive for advanced concepts as other verification tools like EasyCrypt.
 
-ProofFrog can be used via a command-line interface, a browser-based editor, or an MCP server for integration with AI coding assistants.
+## Getting started
 
-## Getting Started
+**[Read the manual]({% link manual/index.md %})** for [installation]({% link manual/installation.md %}), [tutorials]({% link manual/tutorial/index.md %}), [worked examples]({% link manual/worked-examples/index.md %}), and a complete [language reference]({% link manual/language-reference/index.md %}).
 
-ProofFrog is implemented in Python (3.11+) and can be installed using `pip`:
+**[Browse the examples page]({% link examples.md %})** for a catalogue of proofs ProofFrog can currently analyze.
 
-```txt
+**Researchers**: see [the research section of this website]({% link researchers/index.md %}) for the scientific background, engine internals, soundness story, publications, and links to presentations/demos from past events.
+
+Checking your first proof is as easy as:
+
+```bash
 pip install proof_frog
-git clone https://github.com/ProofFrog/examples        # optionally download examples
+git clone https://github.com/ProofFrog/examples
+proof_frog prove examples/Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof
 ```
 
-See the [getting started page]({% link getting-started.md %}) for detailed installation options, the web interface, and CLI usage, or the [guide to writing proofs in ProofFrog]({% link guide.md %}).
+See the [installation instructions]({% link manual/installation.md %}) for details.
 
-A list of examples is given on the [Examples]({% link examples.md %}) page.
+## Participate on GitHub
 
-## Development
+[ProofFrog's GitHub site](https://github.com/ProofFrog) is the place to go to download the ProofFrog source code and examples, [ask questions](https://github.com/orgs/ProofFrog/discussions), and contribute issues or pull requests. ProofFrog is released under the [MIT License](https://github.com/ProofFrog/ProofFrog/blob/main/LICENSE).
 
-See the [GitHub repo](https://github.com/ProofFrog/ProofFrog) for source code and development information. ProofFrog is released under the MIT License.
+## Recent updates
 
-## Publications
+- Mar. 6, 2026: [ProofFrog discussions and demos at HACS 2026](http://prooffrog.github.io/researchers/publications/hacs-2026/)
+- **Mar. 5, 2026: Release of [ProofFrog version 0.3.1](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.3.1)** featuring a web interface and engine updates
+
+## Acknowledgements
 
 ProofFrog was created by Ross Evans and Douglas Stebila, building on the pygamehop tool created by Douglas Stebila and Matthew McKague. For more information about ProofFrog's design, see [Ross Evans' master's thesis](https://uwspace.uwaterloo.ca/bitstream/handle/10012/20441/Evans_Ross.pdf) and [eprint 2025/418](https://eprint.iacr.org/2025/418).
 
-<img src="https://github.com/ProofFrog/ProofFrog/blob/main/media/NSERC.jpg?raw=true" alt="NSERC logo" width="750"/>
+ProofFrog's syntax and approach to modelling is heavily inspired by Mike Rosulek's excellent book [*The Joy of Cryptography*](https://joyofcryptography.com/).
 
 We acknowledge the support of the Natural Sciences and Engineering Research Council of Canada (NSERC).
+
+<img src="https://github.com/ProofFrog/ProofFrog/blob/main/media/NSERC.jpg?raw=true" alt="NSERC logo" style="max-width: 500px;" />

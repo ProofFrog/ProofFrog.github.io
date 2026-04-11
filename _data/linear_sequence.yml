@@ -1,0 +1,11 @@
+# Ordered reading sequence for the "Getting Started" linear path of the manual.
+# Only pages using `layout: linear` will show prev/next navigation, and they
+# must appear in this list for the links to resolve. Order here is the order
+# in which readers are expected to move through the pages.
+- manual/installation.md
+- manual/tutorial/index.md
+- manual/tutorial/hello-frog.md
+- manual/tutorial/otp-ots.md
+- manual/worked-examples/index.md
+- manual/worked-examples/chained-encryption.md
+- manual/worked-examples/kemdem-cpa.md
