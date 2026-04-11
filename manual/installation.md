@@ -138,16 +138,13 @@ Do not use `sudo pip install` to work around a `command not found` error. Instal
 
 ## Get the examples
 
-ProofFrog has a companion repository of example proof files. To download it, run:
+ProofFrog has a companion repository of example proof files. The easiest way to get them is with the built-in `download-examples` command:
 
 ```bash
-git clone https://github.com/ProofFrog/examples
+proof_frog download-examples
 ```
 
-This creates an `examples/` directory in your current location containing primitives, schemes, games, and proofs from introductory cryptography.
-
-{: .note }
-If you do not have git installed, you can download the examples as a ZIP file from GitHub: go to [github.com/ProofFrog/examples](https://github.com/ProofFrog/examples), click the green **Code** button, and choose **Download ZIP**.
+This creates an `examples/` directory in your current location containing primitives, schemes, games, and proofs from introductory cryptography. The command downloads the exact version of the examples that matches your installed ProofFrog release.
 
 ## First run
 

@@ -7,7 +7,7 @@ nav_order: 60
 
 # CLI Reference
 
-The ProofFrog command-line interface (`proof_frog`) lets you parse, type-check, and verify cryptographic game-hopping proofs entirely from the terminal. Six public commands cover the full workflow from inspecting files to running complete proof verification. If you prefer a graphical environment, a browser-based editor is also available via the `web` command described below.
+The ProofFrog command-line interface (`proof_frog`) lets you parse, type-check, and verify cryptographic game-hopping proofs entirely from the terminal. Seven public commands cover the full workflow from inspecting files to running complete proof verification. If you prefer a graphical environment, a browser-based editor is also available via the `web` command described below.
 
 > **Activate your Python virtual environment first.** All of the commands below assume that the virtual environment in which ProofFrog was installed is activated in the current terminal session. If you opened a new terminal, re-activate it before running any `proof_frog` (or `python -m proof_frog`) command: 
 >
@@ -27,6 +27,7 @@ The ProofFrog command-line interface (`proof_frog`) lets you parse, type-check, 
 | [`check`](#check) | Type-check and semantically analyze a FrogLang file. |
 | [`prove`](#prove) | Run proof verification on a `.proof` file. |
 | [`describe`](#describe) | Print a concise interface description of a FrogLang file. |
+| [`download-examples`](#download-examples) | Download the examples repository. |
 | [`web`](#web) | Start the ProofFrog web interface. |
 
 ---
@@ -218,6 +219,43 @@ python -m proof_frog describe examples/joy/Schemes/SymEnc/OTP.scheme
 
 # Describe with JSON output (useful for tooling)
 python -m proof_frog describe --json examples/Primitives/SymEnc.primitive
+```
+
+---
+
+## download-examples
+
+### Synopsis
+
+```
+python -m proof_frog download-examples [OPTIONS] [DIRECTORY]
+```
+
+### Behavior
+
+Downloads the [ProofFrog examples repository](https://github.com/ProofFrog/examples) into the specified directory (default: `examples`). By default the command downloads the version of the examples that was pinned when your copy of ProofFrog was built, ensuring the examples are compatible with your installed version. Use `--ref` to override this and download a specific commit, tag, or branch instead. If the target directory already exists, the command exits with an error unless `--force` is passed.
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `--force` | Overwrite the target directory if it already exists. |
+| `--ref REF` | Git ref (commit SHA, tag, or branch) to download. Defaults to the version pinned at build time. |
+
+### Examples
+
+```bash
+# Download the examples matching your version of ProofFrog into an "examples" directory
+python -m proof_frog download-examples
+
+# Download into a custom directory
+python -m proof_frog download-examples my-examples
+
+# Download the latest main branch instead of the pinned version
+python -m proof_frog download-examples --ref main
+
+# Overwrite an existing examples directory
+python -m proof_frog download-examples --force
 ```
 
 ---

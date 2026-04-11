@@ -24,16 +24,13 @@ Make sure you've [installed ProofFrog]({% link manual/installation.md %}).
 
 ## Get the examples
 
-Clone the ProofFrog examples repository:
+Download the ProofFrog examples:
 
 ```bash
-git clone https://github.com/ProofFrog/examples
+proof_frog download-examples
 ```
 
-This creates an `examples/` directory containing primitives, schemes, games, and proofs from introductory cryptography. The rest of this tutorial assumes you cloned it in your current working directory, so that the path `examples/joy/` exists.
-
-{: .note }
-If you do not have git, you can download a zip file containing the examples from the **Code** button on the [examples GitHub page](https://github.com/ProofFrog/examples).
+This creates an `examples/` directory containing primitives, schemes, games, and proofs from introductory cryptography. The rest of this tutorial assumes you ran this command in your current working directory, so that the path `examples/joy/` exists.
 
 ## Launch the web editor
 
