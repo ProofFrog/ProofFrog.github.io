@@ -235,6 +235,8 @@ Game Replacement(Set S) {
 
 Game NoReplacement(Set S) {
     S Samp(Set<S> bookkeeping) {
+        // <-uniq[bookkeeping] implicitly adds val to bookkeeping, so
+        // repeated calls accumulate all prior outputs automatically.
         S val <-uniq[bookkeeping] S;
         return val;
     }
