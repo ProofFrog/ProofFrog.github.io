@@ -301,7 +301,7 @@ grouped by source file. The authoritative ordering is in
 - `ChallengeExclusionRFToUniform` — recognizes challenge-exclusion even through an injective encoding wrapper.
 - `LocalRFToUniform` — a single-oracle-local random function called on a fresh input becomes a uniform sample.
 - `DistinctConstRFToUniform` — statically distinct constant inputs yield independent uniform samples.
-- `FreshInputRFToUniform` — a `<-uniq` input used only in one RF call becomes a uniform sample.
+- `FreshInputRFToUniform` — a `<-uniq` input used only in one RF call (bare, in a tuple, or in a concatenation) becomes a uniform sample.
 
 **[`inlining.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/inlining.py)**
 

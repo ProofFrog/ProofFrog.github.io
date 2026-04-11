@@ -258,9 +258,11 @@ not been queried before on `RF`, which is exactly the precondition this transfor
 requires. See [Function<D, R>]({% link manual/language-reference/basics.md %}#functiond-r)
 for details on `.domain`.
 
-A related transform, `FreshInputRFToUniform`, fires when the argument `v` to `H(v)` is
-a `<-uniq`-sampled variable used solely in that single call: in that case the input is
-structurally guaranteed to be fresh, and the RF call is replaced by a uniform sample.
+A related transform, `FreshInputRFToUniform`, fires when the argument to an RF call
+contains a `<-uniq`-sampled variable used solely in that single call. The argument may
+be a bare variable `H(v)`, a tuple `H([v, x, ...])`, or a concatenation `H(v || x)` ---
+in all cases the `<-uniq` component ensures the full argument is fresh, and the RF call
+is replaced by a uniform sample.
 
 ```prooffrog
 // Before: RF on uniquely-sampled input
@@ -269,6 +271,17 @@ BitString<m> z = RF(r);
 
 // After: independent uniform sample
 BitString<n> r <-uniq[RF.domain] BitString<n>;
+BitString<m> z <- BitString<m>;
+```
+
+This also works with composite arguments:
+
+```prooffrog
+// Before: RF on tuple with uniquely-sampled component
+BitString<n> ss <-uniq[seen] BitString<n>;
+BitString<m> z = H([ss, pk]);
+
+// After: independent uniform sample
 BitString<m> z <- BitString<m>;
 ```
 
@@ -281,9 +294,11 @@ the message via XOR.
 **If this is not firing:** The exclusion set must be a game field, not a local variable
 (a local set is re-initialized on each oracle call, losing the cross-call freshness
 guarantee). All calls to the RF must use the same exclusion set. If the argument
-variable appears more than once (including a second call to the same RF with the same
-variable), the transform is blocked. The `<-uniq` sampling must be present; plain `<-`
-does not trigger this rule.
+variable appears more than once (including inside a tuple or concatenation and elsewhere),
+the transform is blocked. The `<-uniq` sampling must be present; plain `<-`
+does not trigger this rule. For composite arguments, only top-level tuple elements and
+flattened concatenation leaves are checked --- nested sub-expressions like `H([f(v), x])`
+are not matched.
 
 ### `deterministic` and `injective` annotations
 
