@@ -38,6 +38,7 @@ See the [installation instructions]({% link manual/installation.md %}) for detai
 
 ## Recent updates
 
+- **Apr. 11, 2026: Release of [ProofFrog version 0.4.0](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.4.0)** featuring significant language additions, many engine soundness fixes and new transforms, a redesigned web interface, and new tooling features
 - Apr. 11, 2025: Release of [ProofFrog VS Code Extension version 0.1.0](https://marketplace.visualstudio.com/items?itemName=ProofFrog.prooffrog) on VS Code Extension Marketplace
 - Mar. 6, 2026: [ProofFrog discussions and demos at HACS 2026](http://prooffrog.github.io/researchers/publications/hacs-2026/)
 - **Mar. 5, 2026: Release of [ProofFrog version 0.3.1](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.3.1)** featuring a web interface and engine updates
