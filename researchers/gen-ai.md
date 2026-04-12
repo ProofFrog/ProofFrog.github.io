@@ -33,10 +33,10 @@ pip install proof_frog[mcp]
 
 (The rest of this document assumes that you ran the above commands in the directory `/path/to/working/directory`)
 
-To give the server a useful set of examples to draw on, clone the examples repository into the same working directory before continuing:
+To give the server a useful set of examples to draw on, download the examples repository into the same working directory before continuing:
 
 ```
-git clone https://github.com/ProofFrog/examples
+proof_frog download-examples
 ```
 
 Download the following guidance file from the ProofFrog repository into your working directory so that your coding agent can read it at the start of a session to get some hints on how to use the MCP server:

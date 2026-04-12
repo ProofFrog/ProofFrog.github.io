@@ -26,7 +26,7 @@ Checking your first proof is as easy as:
 
 ```bash
 pip install proof_frog
-git clone https://github.com/ProofFrog/examples
+proof_frog download-exmaples
 proof_frog prove examples/Proofs/PubKeyEnc/HybridKEMDEM_INDCPA_MultiChal.proof
 ```
 
