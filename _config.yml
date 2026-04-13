@@ -4,6 +4,9 @@ theme: just-the-docs
 
 url: https://prooffrog.github.io
 
+exclude:
+  - CLAUDE.md
+
 aux_links:
   ProofFrog GitHub: https://github.com/ProofFrog
 
