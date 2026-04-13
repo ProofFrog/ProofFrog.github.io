@@ -122,6 +122,9 @@ pip install proof_frog
 ```
 
 {: .note }
+If `pip` is not recognized, run `python3 -m ensurepip` (or `python -m ensurepip` on Windows) first, then retry the install command.
+
+{: .note }
 The virtual environment ensures that ProofFrog's dependencies do not conflict with other Python packages you have installed, and makes it straightforward to uninstall ProofFrog completely by simply deleting the `.venv` directory.
 
 ## Upgrade ProofFrog
