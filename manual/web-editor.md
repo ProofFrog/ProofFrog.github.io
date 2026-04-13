@@ -18,7 +18,7 @@ ProofFrog includes a browser-based editor that gives you a graphical environment
 ## Launching
 
 {: .important }
-**Activate your Python virtual environment first.** In every new terminal, run `source .venv/bin/activate` (macOS/Linux bash/zsh), `source .venv/bin/activate.fish` (fish), or `.venv\Scripts\Activate.ps1` (Windows PowerShell) before invoking `proof_frog`. See [Installation]({% link manual/installation.md %}).
+**Activate your Python virtual environment first.** In every new terminal, run `source .venv/bin/activate` (macOS/Linux bash/zsh), `source .venv/bin/activate.fish` (fish), `.venv\Scripts\Activate.ps1` (Windows PowerShell), or `.venv\Scripts\activate.bat` (Windows Command Prompt) before invoking `proof_frog`. See [Installation]({% link manual/installation.md %}).
 
 ```bash
 proof_frog web [directory]

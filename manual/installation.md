@@ -30,6 +30,9 @@ To check whether Python is already installed and which version you have, open a 
 python3 --version
 ```
 
+{: .note }
+On Windows, the command is typically `python` rather than `python3`. Use whichever works on your system. The rest of this guide uses `python3`, but Windows users should substitute `python` where needed.
+
 You should see output like `Python 3.11.9` or `Python 3.12.3`. Any version 3.11 or higher is fine. If the command is not found, or the version is older than 3.11, install Python using the instructions for your operating system below.
 
 ### macOS
@@ -89,16 +92,22 @@ python3 -m venv .venv
   ```fish
   source .venv/bin/activate.fish
   ```
+- Windows Command Prompt (`cmd.exe`):
+  ```
+  .venv\Scripts\activate.bat
+  ```
 - Windows PowerShell:
   ```powershell
   .venv\Scripts\Activate.ps1
   ```
 
-> On a fresh Windows install, PowerShell's default execution policy blocks running `.ps1` scripts. To allow it, run the following once in PowerShell — this only needs to be done once per user account and does not require administrator privileges:
+> On a fresh Windows install, PowerShell's default execution policy blocks running `.ps1` scripts. If you see an error like `Activate.ps1 cannot be loaded because running scripts is disabled on this system`, run the following command first:
 >
 > ~~~powershell
-> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 > ~~~
+>
+> This only affects the current PowerShell session and resets when you close the terminal. Then re-run `.venv\Scripts\Activate.ps1`. Alternatively, use Command Prompt (`cmd.exe`) with `.venv\Scripts\activate.bat` instead, which does not require changing the execution policy.
 {: .warning }
 
 Once activated, your prompt will show the name of the environment (e.g., `(.venv)`).
