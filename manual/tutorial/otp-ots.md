@@ -380,7 +380,7 @@ Finally, add a brace to close the block:
 // Encryption: C = K xor M
 // Decryption: M = K xor C
 
-import '../../Primitives/SymEnc.primitive';
+import 'Primitives/SymEnc.primitive';
 
 Scheme OTP(Int lambda) extends SymEnc {
     Set Key = BitString<lambda>;
