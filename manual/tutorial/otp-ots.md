@@ -208,6 +208,9 @@ The `export as` line gives the two-game pair a single name — `OneTimeSecrecy` 
 // a ciphertext indistinguishable from a uniformly random ciphertext.
 
 import 'SymEnc.primitive';
+// Remember that import uses paths relative to the current file's location,
+// so you may need something like '../Schemes/SymEnc.primitive' if you
+// move files around to different folders on your computer.
 
 Game Real(SymEnc E) {
     E.Ciphertext ENC(E.Message m) {
