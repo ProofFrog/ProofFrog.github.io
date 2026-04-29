@@ -161,7 +161,6 @@ From another file, after importing, a scheme or primitive instance `E` exposes t
 | `subsets` | `Set<T>`, `Set<T>` | `Bool` | Subset test |
 | `union` | `Set<T>`, `Set<T>` | `Set<T>` | Set union |
 | `\` | `Set<T>`, `Set<T>` | `Set<T>` | Set difference |
-| `|x|` | `Set<T>`, `Map<K,V>`, `BitString<n>`, `Array<T,n>` | `Int` | Cardinality / length |
 | `a[i]` | `Array<T,n>`, index `Int` | `T` | Array element at index `i` |
 | `a[i]` | `BitString<n>`, index `Int` | single bit | Bit at position `i` |
 | `a[i : j]` | `BitString<n>` | `BitString<j-i>` | Slice from `i` (inclusive) to `j` (exclusive) |
