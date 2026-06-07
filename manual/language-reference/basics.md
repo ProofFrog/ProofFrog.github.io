@@ -216,6 +216,14 @@ GroupElem<G> u <- GroupElem<G>;
 
 Draws a value uniformly at random from the full domain of the named type.
 
+**Sampling with exclusions:**
+
+```prooffrog
+BitString<n> x <- BitString<n> \ S;
+```
+
+Samples `x` uniformly at random from the type on the left, **excluding** the elements of the set `S` on the right (i.e., from `BitString<n> \ S`). This is useful when a value must differ from previously-seen values — for example, sampling a challenge that is guaranteed not to collide with earlier ones. Unlike `<-uniq` below, this form does *not* automatically update any bookkeeping set; you manage `S` yourself.
+
 **Unique sampling (rejection sampling):**
 
 ```prooffrog
@@ -270,6 +278,8 @@ Sampling is a statement form (see the Sampling section above):
 
 ```prooffrog
 Type x <- Type;         // sample variable x uniformly at random from set Type
+Type x <- Type \ S;     // sample variable x uniformly at random from Type \ S
+                        // (no automatic bookkeeping)
 Type x <-uniq[S] Type;  // sample variable x uniformly at random from Type \ S 
                         // and implicitly update bookkeeping set S
 M[k] <- Type;           // sample uniformly at random and assign to a map value
@@ -311,7 +321,19 @@ for (Type x in collection) {
 }
 ```
 
-Iterates over all elements of a `Set<T>`, all elements of an `Array<T, n>`, or the keys of a `Map<K, V>`. For sets, the iteration order is unspecified.
+Iterates over the elements of a collection. The `collection` may be:
+
+- a `Set<T>` or an `Array<T, n>`, in which case `x` ranges over the elements (type `T`);
+- a map's `.keys` (type `K`), `.values` (type `V`), or `.entries` of a `Map<K, V>`, where each entry is a `[K, V]` key/value tuple.
+
+For sets and maps, the iteration order is unspecified.
+
+```prooffrog
+// Iterate over a map's key/value entries
+for ([GroupElem<G>, BitString<n>] entry in HashTable.entries) {
+    ...
+}
+```
 
 ### Return
 

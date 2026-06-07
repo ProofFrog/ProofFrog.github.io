@@ -169,9 +169,16 @@ the discrepancy.
 ### `if`/`else if` branch reordering
 {: .no_toc }
 
-The engine does not normalize the order of `if`/`else if` branches. Two games that
-test the same conditions in a different order will not be recognized as equivalent, even
-if the branch bodies are identical.
+A family of [control-flow normalization passes]({% link manual/canonicalization.md %}#control-flow-normalization)
+canonicalizes many equivalent-but-differently-written conditional arrangements —
+unwrapping a redundant `else`, factoring a common guard, merging nested guards, and
+folding branches that return equivalent values. These cover a large fraction of the
+cases where two games arrange their `if`/`else` and early-return logic differently.
+
+The engine still does not, however, normalize an *arbitrary* reordering of
+mutually-exclusive `if`/`else if` branches: two games that test the same conditions in a
+genuinely different order may not be recognized as equivalent even when the branch bodies
+are identical.
 
 **Workaround.** Match the branch order from the previous game. When writing an
 intermediate game, check the canonical form from `prove -v` and copy the branch order

@@ -20,14 +20,15 @@ A `.proof` file is the central artifact in ProofFrog. It proves that a scheme sa
 
 A `.proof` file has two parts separated by the `proof:` keyword.
 
-**Helpers** (above `proof:`): zero or more `Reduction` definitions and intermediate `Game` definitions. These are used inside the `games:` block below.
+**Helpers** (`Reduction` and intermediate `Game` definitions): zero or more, used inside the `games:` block below. Helpers may be written either **before** the `proof:` block, **after** it, or split across both — the engine reads helpers on either side. Placing reductions and intermediate games after the proof block keeps the `let:`/`assume:`/`theorem:`/`games:` summary at the top of the file, which can make a long proof easier to read; the examples distribution adopts this layout.
 
-**Proof block** (below `proof:`): four sections in order:
+**Proof block** (below `proof:`): the following sections, in order:
 
 | Section | Required | Purpose |
 |---|---|---|
 | `let:` | yes | Declares sets, integers, primitive instances, and scheme instantiations |
 | `assume:` | yes (may be empty) | Lists security properties assumed to hold for underlying primitives or schemes |
+| `requires:` | no | Declares structural facts the proof depends on (e.g., that a group has prime order) |
 | `lemma:` | no | References other proof files whose theorems become available as assumptions |
 | `theorem:` | yes | The security property to be proved |
 | `games:` | yes | The ordered sequence of game steps |
@@ -70,12 +71,15 @@ games:
 
 ## Helpers section
 
-The region above `proof:` (after any `import` statements) holds:
+Helpers may be placed before the `proof:` block (after any `import` statements) or after it; both locations are read by the engine. They consist of:
 
 - **`Reduction` definitions** — adapters that translate between the theorem game's adversary interface and an assumed security game's interface. Detailed in the Reductions section below.
 - **Intermediate `Game` definitions** — explicit game definitions that appear as steps in the `games:` sequence but are not already defined in an imported `.game` file.
 
 Helpers are only meaningful when referenced from the `games:` block. They do not affect the `let:`, `assume:`, or `theorem:` sections. Reductions are documented later on this page; intermediate games are described in the next subsection.
+
+{: .note }
+Writing helpers **after** the `proof:` block lets a reader see the `let:`, `assume:`, `theorem:`, and `games:` overview first, then read the supporting reductions and intermediate games below. The examples in the [ProofFrog/examples](https://github.com/ProofFrog/examples) distribution use this convention.
 
 ### Intermediate games
 
@@ -179,6 +183,21 @@ assume:
 **Helper games from `Games/Helpers/`.** The [`Games/Helpers/`](https://github.com/ProofFrog/examples/tree/main/Games/Helpers) directory contains game pairs that capture simple probabilistic facts rather than cryptographic hardness assumptions — for example, [`UniqueSampling`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/UniqueSampling.game) (sampling uniformly from a set is indistinguishable from sampling with exclusion of a bookkeeping set) and [`Regularity`](https://github.com/ProofFrog/examples/blob/main/Games/Hash/Regularity.game) (applying a hash to a uniformly random input yields a uniform output). These hold unconditionally and can be listed in `assume:` freely to enable certain game hops.
 
 An assumption entry can be used in the `games:` sequence as a hop justification as many times as needed.
+
+---
+
+## The `requires:` block
+
+The optional `requires:` block declares **structural facts** about the objects in `let:` that the proof depends on. Unlike `assume:` (which lists cryptographic security properties), a `requires:` entry states a mathematical property of a parameter — the engine uses it when justifying interchangeability hops. It appears between `assume:` and `lemma:`:
+
+```prooffrog
+requires:
+    G.order is prime;
+```
+
+Currently the supported requirement is `expr is prime`, asserting that an integer expression (typically a group's order) is prime. This lets the engine apply rewrites that are only valid in a group of prime order — for instance, that every non-identity element is a generator, or that a non-zero exponent is invertible modulo the order.
+
+For example, the Hashed ElGamal KEM IND-CCA proof ([`HashedElGamalKEM_INDCCA.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/HashedElGamalKEM_INDCCA.proof)) declares `G.order is prime;` so that the engine can reason about exponents sampled from `ModInt<G.order> \ {0}`.
 
 ---
 

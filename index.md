@@ -38,9 +38,11 @@ See the [installation instructions]({% link manual/installation.md %}) for detai
 
 ## Recent updates
 
+- **Jun. 7, 2026: Release of [ProofFrog version 0.5.0](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.5.0)** featuring a large new case study (machine-checked proofs of the [CFRG hybrid KEM combiners](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-10) and a Hashed ElGamal KEM), new FrogLang features for random-oracle and group-based proofs (lazy-map random oracles, collection iteration, sampling with exclusions, and a `requires:` block), expanded canonicalization power, and several engine correctness fixes
+- Jun. 7, 2026: Release of [ProofFrog VS Code Extension version 0.1.1](https://marketplace.visualstudio.com/items?itemName=ProofFrog.prooffrog) on VS Code Extension Marketplace
 - **Apr. 16, 2026: Release of [ProofFrog version 0.4.1](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.4.1)** featuring proof engine improvements
 - **Apr. 11, 2026: Release of [ProofFrog version 0.4.0](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.4.0)** featuring significant language additions, many engine soundness fixes and new transforms, a redesigned web interface, and new tooling features
-- Apr. 11, 2025: Release of [ProofFrog VS Code Extension version 0.1.0](https://marketplace.visualstudio.com/items?itemName=ProofFrog.prooffrog) on VS Code Extension Marketplace
+- Apr. 11, 2026: Release of [ProofFrog VS Code Extension version 0.1.0](https://marketplace.visualstudio.com/items?itemName=ProofFrog.prooffrog) on VS Code Extension Marketplace
 - Mar. 6, 2026: [ProofFrog discussions and demos at HACS 2026](http://prooffrog.github.io/researchers/publications/hacs-2026/)
 - **Mar. 5, 2026: Release of [ProofFrog version 0.3.1](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.3.1)** featuring a web interface and engine updates
 

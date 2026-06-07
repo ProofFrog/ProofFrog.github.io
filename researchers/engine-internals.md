@@ -71,11 +71,13 @@ in the ProofFrog repository defines one or more transforms in a given category. 
 appendix at the bottom of this page gives a one-line summary of every individual
 transform.
 
-- **[Algebraic identities](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/algebraic.py)** — arithmetic and bitstring identities: XOR cancellation and identity, boolean simplification, commutative-chain normalization, modular arithmetic folding, group-element exponent arithmetic.
+- **[Algebraic identities](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/algebraic.py)** — arithmetic and bitstring identities: XOR cancellation and identity, boolean simplification, commutative-chain and concatenation-chain normalization, modular arithmetic folding, group-element exponent arithmetic, and decomposition of equalities between concatenations, injective-function calls, and tuples into their component parts.
 - **[Uniform sampling](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/sampling.py)** — uniform random sampling and splice normalization: merging and splitting samples, propagating slices through concatenation, sinking samples later in a block, and converting init-only or single-use fields into local variables.
-- **[Random functions](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/random_functions.py)** — `Function<D, R>` random-function elimination: lifting random-function calls into named temporaries, recognizing fresh/distinct/unique inputs, and replacing calls with uniform samples when the inputs are provably distinct (including through injective encoding wrappers).
-- **[Inlining and common-subexpression elimination](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/inlining.py)** — variable, field, and expression inlining; common-subexpression elimination; cross-method field aliasing.
-- **[Control flow](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/control_flow.py)** — branch and dead-code elimination; conditional merging; return-statement simplification; Z3-backed unreachability analysis.
+- **[Random functions](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/random_functions.py)** — `Function<D, R>` random-function elimination: lifting random-function calls into named temporaries, recognizing fresh/distinct/unique inputs, replacing calls with uniform samples when the inputs are provably distinct (including through injective encoding wrappers), and recognizing a `Map<K, V>` used as a lazily-populated random oracle and rewriting it into a sampled `Function<K, V>`.
+- **[Map iteration](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/map_iteration.py)** — rewriting a `for ... in M.entries` scan that looks up a matching key into a direct map lookup, so scan-style and index-style lazy tables canonicalize the same way.
+- **[Map re-indexing](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/map_reindex.py)** — re-keying a lazy map whose key is a consistent injective wrapping `w(x)` to use the inner value `x` directly (via the shared injective-wrapper recognizer protocol).
+- **[Inlining and common-subexpression elimination](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/inlining.py)** — variable, field, and expression inlining; common-subexpression elimination; cross-method field aliasing; and hoisting of group-exponent and deterministic-call computations into `Initialize`.
+- **[Control flow](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/control_flow.py)** — branch and dead-code elimination; conditional merging and guard factoring; normalization of equivalent `if`/`else` and early-return arrangements; return-statement simplification; Z3-backed unreachability and return-branch folding.
 - **[Structural ordering](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/structural.py)** — field and statement ordering: topological sort with dead-code elimination, field unification and pruning, uniform-bijection elimination.
 - **[Symbolic integer arithmetic](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/symbolic.py)** — integer sub-expression simplification via SymPy.
 - **[Type-driven simplifications](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/types.py)** — null-guard elimination and subset-type normalization.
@@ -276,12 +278,17 @@ grouped by source file. The authoritative ordering is in
 - `UniformGroupElemSimplification` — the group-element scalar-multiplication analogue.
 - `XorCancellation` — `x + x` becomes the zero bitstring.
 - `XorIdentity` — `x + 0^n` becomes `x`.
-- `ModIntSimplification` — folds constant modular arithmetic via SymPy.
-- `NormalizeCommutativeChains` — sorts XOR, `+`, and `*` operand chains into a canonical order.
+- `ModIntSimplification` — folds constant modular arithmetic (identity, zero, inverse) via SymPy.
+- `NormalizeCommutativeChains` — sorts XOR, `+`, and `*` operand chains into a canonical order; also normalizes `==`/`!=` operand order.
+- `FlattenConcatChain` — left-associates `||` chains (sound under both Boolean OR and BitString concatenation).
 - `ReflexiveComparison` — `x == x` → `true`, `x != x` → `false`.
 - `BooleanIdentity` — boolean AND/OR with literal `true`/`false`.
-- `SimplifyNotPass` — `!(a == b)` → `a != b`, `!(a != b)` → `a == b`.
-- `GroupElemSimplification`, `GroupElemCancellation`, `GroupElemExponentCombination` — group-element exponent arithmetic.
+- `BooleanAbsorption` — drops a conjunct `B` from an `A && B` chain when `A`'s flat OR-disjuncts are a subset of `B`'s.
+- `SimplifyNot` — `!(a == b)` → `a != b`, `!(a != b)` → `a == b`.
+- `GroupElemSimplification`, `GroupElemCancellation`, `GroupElemExponentCombination` — group-element exponent arithmetic (power-of-power, identity rules, term cancellation, and same-base exponent combination).
+- `InjectiveEqualitySimplify` — `f(a..) == f(b..)` → component-wise `&&` (and `!=` to the disjunction) when `f` is `deterministic injective`.
+- `ConcatEqualityDecompose` — decomposes an equality involving a concatenation into pairwise slice equalities when component lengths are derivable.
+- `TupleEqualityDecompose` — rewrites `a != b` on tuples to the per-component disjunction of `!=` (the `==` direction is intentionally left atomic).
 
 **[`sampling.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/sampling.py)**
 
@@ -293,6 +300,7 @@ grouped by source file. The authoritative ordering is in
 - `CounterGuardedFieldToLocal` — converts counter-guarded (write-once) fields into local variables.
 - `SinkUniformSample` — moves uniform samples as late as possible within a block to expose further simplifications.
 - `LocalizeInitOnlyFieldSample` — converts a field sampled only in `Initialize` and never written again into a local there.
+- `SliceOfInlineConcat` — rewrites a slice of a concatenated variable to the underlying component when the slice bounds line up with the concat boundaries.
 
 **[`random_functions.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/random_functions.py)**
 
@@ -302,28 +310,57 @@ grouped by source file. The authoritative ordering is in
 - `LocalRFToUniform` — a single-oracle-local random function called on a fresh input becomes a uniform sample.
 - `DistinctConstRFToUniform` — statically distinct constant inputs yield independent uniform samples.
 - `FreshInputRFToUniform` — a `<-uniq` input used only in one RF call (bare, in a tuple, or in a concatenation) becomes a uniform sample.
+- `LocalFunctionFieldToLet` — unifies a game-local sampled `Function<K, V>` field with an identically-typed let-bound random function when the latter is otherwise unused in the game.
+- `LazyMapToSampledFunction` — rewrites a `Map<K, V>` field used exclusively as a lazy random oracle into a sampled `Function<K, V>` field.
+- `LazyMapPairToSampledFunction` — generalizes the above to a pair of maps used jointly through the guarded-pair lazy-lookup idiom.
+
+**[`map_iteration.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/map_iteration.py)**
+
+- `LazyMapScan` — rewrites a `for e in M.entries { if e[0] == k { return e[1]; } }` scan over a lazy map into a direct `M[k]` lookup, given uniqueness of map keys.
+
+**[`map_reindex.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/map_reindex.py)**
+
+- `MapKeyReindex` — re-indexes a lazy map whose key is a consistent injective wrapper `w(x)` to use the inner value `x` directly; uses the shared `_wrappers.py` recognizer protocol.
 
 **[`inlining.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/inlining.py)**
 
 - `RedundantCopy` — removes `x = y` when `y` is not later modified.
+- `IfSplitBranchAssignment` — moves trailing statements into if/else branches when every branch assigns the same variable.
 - `InlineSingleUseVariable` — substitutes at the single use site and drops the binding.
 - `DeduplicateDeterministicCalls` — introduces a common temporary for duplicate calls to a `deterministic` method.
+- `HoistDuplicateBranchCall` — hoists a deterministic call duplicated across exclusive branch returns into one local before the branches.
 - `ForwardExpressionAlias` — forward-propagates a never-reassigned pure RHS to all uses.
 - `HoistFieldPureAlias` — replaces reads of a field always equal to a pure expression with the expression.
-- `InlineSingleUseField` — inlines the write into the read site when a field is written and read exactly once.
-- `InlineMultiUsePureExpression` — inlines a pure expression at multiple uses when it does not duplicate non-determinism.
-- `CollapseAssignment` — removes trivial `x = x`.
-- `RedundantFieldCopy` — removes field assignments that duplicate a field already holding the same value.
 - `CrossMethodFieldAlias` — propagates a `deterministic` call result stored in a field across oracle boundaries.
+- `HoistDeterministicCallToInitialize` — hoists a deterministic call out of oracles into `Initialize` and caches it in a new field.
+- `SplitOpaqueTupleField` — splits a tuple-typed field whose RHS is an opaque call and whose reads are constant-indexed projections into one field per used component.
+- `HoistGroupExpToInitialize` — hoists `base ^ k` group exponentiations into `Initialize` and caches them in a pinned field (requires a prime-order / nonzero-exponent `requires:` context).
+- `RefactorGroupElemFieldExp` — rewrites `base ^ (a * b)` as `Field2 ^ b` when a pinned field `Field2 = base ^ a` exists, exploiting `(g^a)^b = g^(a*b)`.
+- `InlineSingleUseField` — inlines the write into the read site when a field is written and read exactly once (skipping pinned fields); a cross-method variant extends this when the expression is pure with stable field free vars.
+- `ExtractRepeatedTupleAccess` — extracts repeated `var[constant]` accesses into named locals (CSE for tuple destructuring).
+- `InlineLocalTupleLiteral` — substitutes a `[..] v = [..]` tuple-literal local through its constant-index accesses.
+- `InlineMultiUsePureExpression` — inlines a pure expression at multiple uses when it does not duplicate non-determinism.
+- `CollapseAssignment` — collapses a declaration followed by a reassignment into one statement.
+- `RedundantFieldCopy` — removes intermediate locals used only to assign to a field.
 
 **[`control_flow.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/control_flow.py)**
 
+- `IfConditionAliasSubstitution` — substitutes field references with local aliases inside equality-guarded if-branches (including tuple-alias guards).
+- `GuardConditionSimplification` — replaces a deterministic guard `C` with `true` in its then-branch and `false` in its else-branch.
+- `IfToBooleanAssignment` — collapses `if (C) { x = true; } else { x = false; }` to `x = C;` (and the negated form).
+- `RedundantConditionalReturn` — removes `if (c) { B } B` when `B` unconditionally returns and is immediately followed by an identical copy.
+- `AbsorbRedundantEarlyReturn` — absorbs a duplicated early `return X;` into a following guard as a conjunction.
+- `FactorCommonGuard` — transposes a P-first nested guard into V-first form, factoring a shared inner guard (P deterministic, V write-free).
+- `MergeNestedGuard` — merges `if (P) { if (Q) {..} TAIL } TAIL` into `if (P && Q) {..} TAIL`.
+- `DeadGuardedAssignmentElimination` — replaces `v = E` with `v = false` when the store is reached only under conditions entailing a later guard `G`.
+- `IfFalseReturnToConjunction` — absorbs `if (P) { return false; } ... return Q;` into `... return Q && !P;`.
 - `BranchElimination` — eliminates branches whose conditions are literal `true`/`false`.
-- `SimplifyIf` — merges adjacent if/else-if branches with identical bodies under an OR condition.
+- `UniqExclusionBranchElimination` — statically eliminates `x in S` branches when `x` was sampled via `<-uniq[S]` and `S` is unchanged since.
+- `ElseUnwrap` — unwraps an else block when the if-branch unconditionally returns.
 - `SimplifyReturn` — collapses `Type v = expr; return v;` to `return expr;`.
+- `SimplifyIf` — merges adjacent if/else-if branches with identical (alpha-equivalent) bodies.
 - `RemoveUnreachable` — Z3-backed dead-statement elimination after unconditional returns.
-- `IfConditionAliasSubstitution` — substitutes a known alias inside an if condition.
-- `RedundantConditionalReturn` — drops the else branch when the then branch unconditionally returns.
+- `FoldEquivalentReturnBranch` — folds `if (P) { return X; } return Y;` to `return Y;` when Z3 proves `P ⇒ (X ↔ Y)` (refuses on non-deterministic calls).
 
 **[`structural.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/structural.py)**
 
@@ -351,9 +388,10 @@ grouped by source file. The authoritative ordering is in
 **[`standardization.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/standardization.py)**
 
 - `VariableStandardize` — renames locals to `v1`, `v2`, ... in order of first appearance.
-- `StandardizeFieldNames` — renames game fields to `field1`, `field2`, ... in order of first appearance.
+- `StandardizeFieldNames` — renames game fields to canonical names by oracle first-read order, then regroups by type so α-equivalent games agree on field numbering.
 - `BubbleSortFieldAssignments` — sorts the field assignment block into a stable canonical order.
-- `StabilizeIndependentStatements` — reorders independent statements canonically by stable string comparison.
+- `StabilizeIndependentStatements` — reorders independent statements canonically (Kahn topological sort).
+- `FieldLexMinByRHS` — within each same-type field group, picks the lex-smallest slot for the field with the smallest Initialize-RHS key; runs at the end of the pipeline (after the final `VariableStandardize`) so RHS keys see final local names.
 
 **[`assumptions.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/assumptions.py)**
 

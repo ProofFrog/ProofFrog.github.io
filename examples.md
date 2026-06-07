@@ -108,6 +108,7 @@ These proofs establish implications between Diffie–Hellman-type assumptions.
 | [DDH_implies_HashedDDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDH_implies_HashedDDH.proof) | [DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDH.game) implies [Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDH.game) (standard model) |
 | [CDH_implies_HashedDDH](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/CDH_implies_HashedDDH.proof) | [CDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/CDH.game) implies [Hashed DDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDH.game) (random oracle model) |
 | [DDHMultiChal_implies_HashedDDHMultiChal](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHMultiChal_implies_HashedDDHMultiChal.proof) | [DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/DDHMultiChal.game) implies [Hashed DDH (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/Group/HashedDDHMultiChal.game) (random oracle model) |
+| [GapCDH_implies_GapCDH_NZ](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/GapCDH_implies_GapCDH_NZ.proof) | [gap-CDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/GapCDH.game) implies its [non-zero-exponent variant](https://github.com/ProofFrog/examples/blob/main/Games/Group/GapCDH_NZ.game) (used as a lemma in the Hashed ElGamal KEM proof) |
 
 ---
 
@@ -145,11 +146,20 @@ The [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.
 | [KEMPRF_Correctness](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRF_Correctness.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [correct](https://github.com/ProofFrog/examples/blob/main/Games/KEM/Correctness.game) |
 | [KEMPRF_INDCPA](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRF_INDCPA.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [IND-CPA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/KEM/INDCPA_MultiChal.game) secure |
 | [KEMPRF_INDCCA](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/KEMPRF_INDCCA.proof) | [KEMPRF](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/KEMPRF.scheme) is [IND-CCA (multi-challenge)](https://github.com/ProofFrog/examples/blob/main/Games/KEM/INDCCA_MultiChal.game) secure | <span class="label label-purple">Rich example</span> |
+| [HashedElGamalKEM_INDCCA](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/HashedElGamalKEM_INDCCA.proof) | The [Hashed ElGamal KEM](https://github.com/ProofFrog/examples/blob/main/Schemes/KEM/HashedElGamalKEM.scheme) is [IND-CCA (multi-challenge, ROM)](https://github.com/ProofFrog/examples/blob/main/Games/KEM/INDCCA_MultiChal_ROM.game) secure under [gap-CDH](https://github.com/ProofFrog/examples/blob/main/Games/Group/GapCDH.game) in the random oracle model | <span class="label label-purple">Rich example</span> |
 {: .table-labels }
 
 ---
 
 ## Research Applications
+
+### CFRG Hybrid KEM Combiners (draft-irtf-cfrg-hybrid-kems-10)
+
+A ProofFrog formalization of the four hybrid PQ/T KEM combiners specified in the IRTF CFRG draft [*Hybrid PQ/T Key Encapsulation Mechanisms*](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-10). Each framework combines a post-quantum KEM with a "traditional" component — either another KEM or a nominal group — via a key-derivation function: **UG** and **CG** use a nominal group, **UK** and **CK** use a second KEM; **U**(niversal) and **C**(2PRI) name the two combiner constructions. Each is modelled in two variants (a seed-form matching the draft's primary definition and an expanded-form cache), giving machine-checked proofs of correctness, IND-CCA security (for both the post-quantum and traditional branches), and the LEAK-BIND and HON-BIND binding properties.
+
+This case study motivated much of the new lazy-map random-oracle and group-exponent machinery in the 0.5.0 engine. The [full README](https://github.com/ProofFrog/examples/blob/main/applications/cfrg-hybrid-kems/README.md) documents the modelling choices, the mapping from draft sections to files, and the assumptions each proof relies on (including important caveats about implicit rejection and the absence of a quantum-attacker model).
+
+See the [`applications/cfrg-hybrid-kems/`](https://github.com/ProofFrog/examples/tree/main/applications/cfrg-hybrid-kems) directory for all scheme definitions, games, and proofs.
 
 ### KEM Combiner (GHP18)
 

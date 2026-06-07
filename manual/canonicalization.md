@@ -169,6 +169,11 @@ The engine applies the following identities for group elements in `GroupElem<G>`
 - **Exponent combination:** `g ^ a * g ^ b` simplifies to `g ^ (a + b)`, and
   `g ^ a / g ^ b` to `g ^ (a - b)`, when the bases are structurally identical and
   deterministic.
+- **Exponent bridging:** when a field is defined as `f = g ^ a`, the engine can
+  rewrite a later `g ^ (a * b)` to `f ^ b` (and similar rewrites), connecting an
+  exponentiation written in terms of the base generator to one written in terms of a
+  derived public element. This is what lets Diffie-Hellman-style games whose
+  ciphertexts are written `pk ^ r` line up with the reduction's `g ^ (sk * r)` form.
 - **Uniform-absorbs (group masking):** When `u` is sampled uniformly from `GroupElem<G>`
   and is used exactly once, the expressions `u * m`, `m * u`, `u / m`, and `m / u`
   all simplify to `u`. Left and right multiplication (and their inverses under division)
@@ -194,6 +199,37 @@ excluded from the group masking move -- `u ^ n` is not necessarily uniform (for 
 if the group has even order and `n = 2`, squaring is not a bijection). Use only
 `*` and `/` to trigger this rule. Also note the static single-use requirement: `u`
 must not appear in both branches of a conditional.
+
+### Decomposing equalities
+
+When two compound values are compared for equality, the engine can break the comparison into its components, which often exposes simplifications that were hidden inside the compound form:
+
+- **Concatenations** (`ConcatEqualityDecompose`): an equality between two concatenations of matching widths decomposes into the conjunction of component-wise equalities.
+- **Injective functions** (`InjectiveEqualitySimplify`): for a method declared `injective`, `f(x) == f(y)` is equivalent to `x == y` (an injective function maps distinct inputs to distinct outputs), so the wrapper can be stripped from both sides.
+- **Tuples** (`TupleEqualityDecompose`): an inequality between two tuples decomposes into a disjunction of component-wise inequalities (`a != b` iff some `a[i] != b[i]`).
+
+These decompositions let guard conditions written over packaged values match guard conditions written over their parts, which arises frequently in the binding proofs of the [CFRG hybrid KEM case study](https://github.com/ProofFrog/examples/tree/main/applications/cfrg-hybrid-kems).
+
+### Control-flow normalization
+
+A range of passes normalize equivalent but differently-written conditional code, so that two games that differ only in how their `if`/`else` and early-return logic is arranged canonicalize to the same form. Examples include unwrapping an `else` whose sibling branch always returns, factoring a guard common to several branches, merging nested guards into a single conjunction, dropping assignments that are dead under a later guard, and folding two branches that return equivalent values. Collectively these passes mean you usually do not have to match the *exact* branch structure of the other side of a hop — only its behavior.
+
+```prooffrog
+// Before: redundant else after an early return
+if (c == ctStar) {
+    return ss;
+} else {
+    return H(c);
+}
+
+// After normalization (the else is unwrapped):
+if (c == ctStar) {
+    return ss;
+}
+return H(c);
+```
+
+These passes were significantly expanded to support the control-flow-heavy `Decaps` oracles in the KEM binding and IND-CCA proofs.
 
 ### Sample merge and sample split
 
@@ -299,6 +335,40 @@ the transform is blocked. The `<-uniq` sampling must be present; plain `<-`
 does not trigger this rule. For composite arguments, only top-level tuple elements and
 flattened concatenation leaves are checked --- nested sub-expressions like `H([f(v), x])`
 are not matched.
+
+### Random oracles as lazy maps
+
+A common way to write a random oracle is as a lazily-populated map: on each query, sample a fresh value if the input has not been seen and otherwise return the stored one. The engine now recognizes this idiom and rewrites such a `Map<K, V>` field into a sampled `Function<K, V>` field (`LazyMapToSampledFunction`), so that a hand-written lazy table and a `Function<D, R> H <- Function<D, R>;` random oracle canonicalize to the same form. This means you can write ROM proofs in the natural lazy-table style instead of massaging them into `Function` form by hand.
+
+```prooffrog
+// Before: a lazily-populated map used as a random oracle
+Map<GroupElem<G>, BitString<n>> T;
+
+BitString<n> Hash(GroupElem<G> x) {
+    if (!(x in T)) {
+        T[x] <- BitString<n>;
+    }
+    return T[x];
+}
+
+// After: recognized as a sampled random function
+Function<GroupElem<G>, BitString<n>> T <- Function<GroupElem<G>, BitString<n>>;
+
+BitString<n> Hash(GroupElem<G> x) {
+    return T(x);
+}
+```
+
+Two related transforms extend this recognition:
+
+- **Shared-table oracles** (`LazyMapPairToSampledFunction`): two oracle methods that read and write the *same* lazy table under mutually-disjoint guards are recognized together as one sampled function.
+- **Table-scan lookups** (`LazyMapScan`): a `for ([K, V] e in M.entries) { ... }` loop that scans the table to find a matching entry is rewritten to a direct lookup, so that scan-style and index-style lazy tables canonicalize the same way.
+- **Key re-indexing** (`MapKeyReindex`): a map keyed by one type can be re-indexed to an equivalent map keyed by an injective wrapping of that type, allowing tables that differ only in how their keys are packaged to match.
+
+These transforms underpin the random-oracle proofs in the [CFRG hybrid KEM case study](https://github.com/ProofFrog/examples/tree/main/applications/cfrg-hybrid-kems) and the [Hashed ElGamal KEM proof](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/HashedElGamalKEM_INDCCA.proof).
+
+{: .note }
+**If this is not firing:** The map field must be used *only* as a lazy lookup table — every reference must be part of the "sample-if-absent, else return" idiom. Explicitly initializing the map in `Initialize`, taking its cardinality (`|M|`), or iterating its `.keys`/`.values`/`.entries` for any purpose other than a recognized scan blocks the rewrite. The map must also default to empty (no initializer), matching the semantics of a freshly-sampled random function.
 
 ### `deterministic` and `injective` annotations
 
