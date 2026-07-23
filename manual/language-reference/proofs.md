@@ -31,6 +31,7 @@ A `.proof` file has two parts separated by the `proof:` keyword.
 | `requires:` | no | Declares structural facts the proof depends on (e.g., that a group has prime order) |
 | `lemma:` | no | References other proof files whose theorems become available as assumptions |
 | `theorem:` | yes | The security property to be proved |
+| `bound:` | no | The concrete advantage bound the author claims the proof establishes |
 | `games:` | yes | The ordered sequence of game steps |
 
 The overall skeleton of a `.proof` file is:
@@ -60,6 +61,9 @@ assume:
 
 theorem:
     TheoremGame(S);
+
+bound:
+    advantage(AssumedGame(someParam) compose R);
 
 games:
     TheoremGame(S).Side1 against TheoremGame(S).Adversary;
@@ -169,7 +173,7 @@ The `assume:` block lists the security properties that the proof takes as given.
 ```prooffrog
 assume:
     PRFSecurity(F);
-    UniqueSampling(BitString<F.in>);
+    DistinctSampling(BitString<F.in>);
 ```
 
 An assumption `Prop(params)` means: the two sides of the game pair `Prop` are computationally indistinguishable when instantiated with `params`. The proof is valid *conditional on* all stated assumptions being true.
@@ -180,7 +184,7 @@ An assumption `Prop(params)` means: the two sides of the game pair `Prop` are co
 assume:
 ```
 
-**Helper games from `Games/Helpers/`.** The [`Games/Helpers/`](https://github.com/ProofFrog/examples/tree/main/Games/Helpers) directory contains game pairs that capture simple probabilistic facts rather than cryptographic hardness assumptions — for example, [`UniqueSampling`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/UniqueSampling.game) (sampling uniformly from a set is indistinguishable from sampling with exclusion of a bookkeeping set) and [`Regularity`](https://github.com/ProofFrog/examples/blob/main/Games/Hash/Regularity.game) (applying a hash to a uniformly random input yields a uniform output). These hold unconditionally and can be listed in `assume:` freely to enable certain game hops.
+**Helper games from `Games/Helpers/`.** The [`Games/Helpers/`](https://github.com/ProofFrog/examples/tree/main/Games/Helpers) directory contains game pairs that capture simple probabilistic facts rather than cryptographic hardness assumptions — for example, [`DistinctSampling`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/DistinctSampling.game) (sampling uniformly with replacement is indistinguishable from sampling so that every value returned is distinct) and [`Regularity`](https://github.com/ProofFrog/examples/blob/main/Games/Hash/Regularity.game) (applying a hash to a uniformly random input yields a uniform output). These hold unconditionally or statistically rather than by reduction, and can be listed in `assume:` freely to enable certain game hops. A helper game may also declare the statistical loss it costs, in an [`advantage <= ...;` clause]({% link manual/language-reference/games.md %}#the-advantage-clause), which the engine then carries into the proof's [advantage bound]({% link manual/advantage-bounds.md %}).
 
 An assumption entry can be used in the `games:` sequence as a hop justification as many times as needed.
 
@@ -227,6 +231,72 @@ theorem:
 ```
 
 The parameter to the theorem must be a scheme instance declared in `let:` that satisfies the primitive expected by the security game. The engine checks at the start of proof verification that the first game step is one side of this theorem and the last game step is the other side.
+
+---
+
+## The `bound:` block
+
+Since version 0.6.0, every proof that verifies gets an advantage bound synthesized and printed for it, whether or not the proof says anything about bounds. The optional `bound:` block lets the proof *state* the bound its author believes it establishes, so that the engine can check the claim against the one it synthesized. It goes between `theorem:` and `games:`:
+
+```prooffrog
+theorem:
+    KEM_INDCCA_ROM(hybrid, BitString<hybrid.Nin>, BitString<hybrid.Nss>, H);
+
+bound:
+      advantage(PRGSec(G) compose R_PRG_L)
+    + advantage(KeyGenEquiv(KEM_PQ) compose R_KG_L)
+    + advantage(RandomScalarDist(NG) compose R_Dist_Real)
+    + advantage(SDH_SS(NG) compose R_Combined)
+    + advantage(RandomScalarDist(NG) compose R_Dist_Random)
+    + advantage(KeyGenEquiv(KEM_PQ) compose R_KG_R)
+    + advantage(PRGSec(G) compose R_PRG_R);
+
+games:
+    // ...
+```
+
+(from [`UG_seedbased_INDCCA_T.proof`](https://github.com/ProofFrog/examples/blob/main/applications/cfrg-hybrid-kems/proofs/UG/UG_seedbased_INDCCA_T.proof) in the CFRG hybrid KEM case study.)
+
+### Syntax
+
+The claim is numeric arithmetic — `+`, `-`, `*`, `/`, `^`, parentheses, and integer literals — over:
+
+| Form | Meaning |
+|---|---|
+| `advantage(Notion(args) compose R(args))` | The advantage against `Notion` of the adversary built by composing this proof's reduction `R` with the theorem adversary |
+| `advantage(Notion(args))` | The advantage against `Notion` for a hop played directly, with no reduction |
+| `count_<Oracle>` | The number of adversary queries to `<Oracle>` of the *theorem* game |
+| <code>&#124;T&#124;</code> | The cardinality of a type |
+| any name bound in `let:` | A proof parameter, e.g. `lambda` |
+
+A statistical term is written out directly rather than referred to symbolically. The corresponding clause in `CG_seedbased_LEAK_BIND_K_PK.proof` ends with a literal `2 ^ (1 - lambda)`:
+
+```prooffrog
+bound:
+      advantage(KeyGenEquiv(KEM_PQ) compose R_KG_L)
+    + advantage(LEAK_BIND_K_PK(KEM_PQ) compose R_PQ_Bind)
+    + advantage(KDFCollisionResistance(H) compose R_KDF)
+    + advantage(KeyGenEquiv(KEM_PQ) compose R_KG_R)
+    + 2 ^ (1 - lambda);
+```
+
+### Well-formedness
+
+The reduction named after `compose` must be one the proof file itself declares, and it must be the reduction that composes the named notion; `count_` must name a real oracle of the theorem game. These conditions are checked at type-check time, so a typo in a `bound:` clause is caught by `proof_frog check` rather than surfacing later as a mysterious mismatch.
+
+### The verdict
+
+The claim is checked only after the hop sequence verifies. The result is three-valued:
+
+| Verdict | Effect on `prove` |
+|---|---|
+| **verified** — the claim is a valid upper bound on the synthesized bound | Proof succeeds |
+| **NOT verified** — the claim was proved *smaller* than the synthesized bound | Proof **fails**, with a witness assignment, unless [`--skip-bound`]({% link manual/cli-reference.md %}#prove) is passed |
+| **undecided** — the engine could not settle the comparison | Warning only; proof succeeds |
+
+A "not verified" verdict means the author has claimed more security than the hop sequence supports, which is a real error in the proof document — hence the failure. A verified verdict does *not* mean the claim is tight: a claim looser than the synthesized bound verifies happily.
+
+See [Advantage Bounds]({% link manual/advantage-bounds.md %}) for the full story, including how the synthesized bound is built and how to write a claim against it.
 
 ---
 
@@ -338,7 +408,7 @@ Reduction R1(SymEnc se) compose INDOT$(se)
 >
 > If a parameter required to instantiate `AssumedGame(params)` is missing from the reduction's parameter list, you will get a confusing instantiation error at the game step that uses the reduction — not at the reduction definition itself. The error message may not point clearly to the missing parameter.
 >
-> Example: a reduction that composes with `UniqueSampling(BitString<F.in>)` must take a parameter that exposes `F.in` (such as a `PRF F` instance), even if `F` is not otherwise referenced in the reduction body. See `R_Uniq` in [`SymEncPRF_INDCPA$_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDCPA%24_MultiChal.proof) for an example.
+> Example: a reduction that composes with `DistinctSampling(BitString<F.in>)` must take a parameter that exposes `F.in` (such as a `PRF F` instance), even if `F` is not otherwise referenced in the reduction body. See `R_Uniq` in [`SymEncPRF_INDCPA$_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDCPA%24_MultiChal.proof) for an example.
 
 ---
 

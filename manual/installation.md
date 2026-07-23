@@ -145,7 +145,7 @@ To confirm that ProofFrog installed correctly, run:
 proof_frog version
 ```
 
-You should see a version number printed to the terminal, such as `ProofFrog 0.4.0` or `ProofFrog 0.4.0.dev0` on development builds.
+You should see a version number printed to the terminal, such as `ProofFrog 0.6.0`, or `ProofFrog 0.6.1.dev0` on development builds.
 
 ### Troubleshooting: "command not found"
 

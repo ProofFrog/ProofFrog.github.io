@@ -71,6 +71,7 @@ in the ProofFrog repository defines one or more transforms in a given category. 
 appendix at the bottom of this page gives a one-line summary of every individual
 transform.
 
+- **[Alpha-renaming](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/alpha_rename.py)** — a global pre-pipeline pass that gives every typed local binder a fresh, globally unique name. It runs first in `CORE_PIPELINE` and exists to make the passes after it safe; see [below](#why-alpha-renaming-runs-first).
 - **[Algebraic identities](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/algebraic.py)** — arithmetic and bitstring identities: XOR cancellation and identity, boolean simplification, commutative-chain and concatenation-chain normalization, modular arithmetic folding, group-element exponent arithmetic, and decomposition of equalities between concatenations, injective-function calls, and tuples into their component parts.
 - **[Uniform sampling](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/sampling.py)** — uniform random sampling and splice normalization: merging and splitting samples, propagating slices through concatenation, sinking samples later in a block, and converting init-only or single-use fields into local variables.
 - **[Random functions](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/random_functions.py)** — `Function<D, R>` random-function elimination: lifting random-function calls into named temporaries, recognizing fresh/distinct/unique inputs, replacing calls with uniform samples when the inputs are provably distinct (including through injective encoding wrappers), and recognizing a `Map<K, V>` used as a lazily-populated random oracle and rewriting it into a sampled `Function<K, V>`.
@@ -91,6 +92,44 @@ statements. The [assumption-application pass](https://github.com/ProofFrog/Proof
 is invoked by the proof engine only when an explicit assumption annotation appears
 between two games in a proof, and substitutes the user-supplied equivalence pairs
 between variables.
+
+### Why alpha-renaming runs first
+
+FrogLang's block scoping is **position-sensitive**: a name used before its local
+declaration binds to the enclosing scope — a game field, an outer local, or a
+parameter — and only from the declaration point onward does it bind to the local.
+So in
+
+```prooffrog
+Int out = x;      // reads the FIELD x (the local x is not declared yet)
+Int x = 0;        // declares the local x
+return out + x;   // reads the LOCAL x
+```
+
+the two occurrences of `x` denote different things. This mirrors the typechecker's
+scope stack, which adds a typed binder to the current scope only *after* visiting its
+right-hand side.
+
+That rule interacts badly with passes that rewrite code by splicing or reordering
+block-local declarations — `BranchElimination` splicing the body of an `if (true)`
+into its parent block, or `SimplifyIf` normalizing branches. If a body-local shadows
+an outer local or a field, a name-blind rewrite conflates the two bindings, and the
+engine can certify a hop that a distinguisher refutes. Two such soundness failures
+were found in the 2026 audit.
+
+`AlphaRename` removes the collision at the root rather than teaching each pass to
+avoid it. It gives every typed local binder a fresh globally-unique name, rewriting
+exactly the references that resolve to it under position-sensitive scope, so no later
+pass has a same-name collision to mishandle. Only *local* binders are touched: fields,
+method parameters, game parameters, and proof-`let:`/scheme/primitive names are left
+alone. Loop binders are not renamed but are masked in the loop body, so a same-named
+outer local cannot leak in. The pass skips names already carrying its reserved prefix,
+which makes it idempotent on its own output and safe to sit inside the fixed-point loop.
+
+Because every renamed binder is typed, the post-pipeline `VariableStandardize` pass
+re-washes them all to the canonical `v1`, `v2`, ... names. Canonical forms are therefore
+unchanged by the pass's presence — it buys soundness for the passes in between at no
+cost to what two games are compared as.
 
 ### Reporting failures to the user
 
@@ -115,6 +154,55 @@ matches the diff, the failure is reported as an engine limitation with a
 suggested workaround rather than being left unexplained. The full list of known
 limitations, together with their user-facing workarounds, is on the
 [Limitations]({% link manual/limitations.md %}) page.
+
+---
+
+## Advantage-bound synthesis
+
+[`proof_frog/advantage.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/advantage.py)
+implements the machinery behind the `Advantage bound:` line and the `bound:` clause. For
+the user-facing account, see [Advantage Bounds]({% link manual/advantage-bounds.md %}).
+Structurally it is three tiers.
+
+**Tier 1 — synthesis.** A pure fold over a verified proof's `hop_results` (or over the
+proof AST directly, via `synthesize_from_steps`), composing the triangle-inequality sum of
+per-hop losses into a SymPy expression over opaque `Adv_i` symbols. Equivalence hops
+contribute `0`; assumption and lemma hops contribute one term each, with repeats collapsing
+to `k * Adv^X(B)` and distinct reductions numbered `B1`, `B2`, and so on. The engine
+supplies the per-hop bookkeeping — `justification`, `reduction`, `direction` — on each
+`HopResult`. Tier 1 runs no transforms and calls neither Z3 nor SymPy's solver; it is
+arithmetic over data the proof run already produced. Inductive proofs are reported as
+unsupported rather than approximated.
+
+**Tier 2 — statistical helper bounds.** When a `by_assumption` hop's notion resolves to a
+helper `.game` file carrying a declared `advantage <= ...;` clause,
+`resolve_statistical` substitutes the clause's game parameters from the assumption
+instantiation and replaces the opaque term with the concrete expression. Set cardinalities
+stay opaque positive symbols. The clause's per-oracle query counts are *derived* rather than
+assumed: `_derive_oracle_count` statically counts how often the composed reduction invokes
+each oracle, with a call in `Initialize` counting once, a call in any other reduction method
+counting `count_<method>` times (that method being an oracle of the theorem game), loops
+multiplying, and `if` branches summing as an upper bound. The result is a bound stated in
+the theorem game's own query counts. An integer `calls <= N` cap in `assume:` pins the
+surviving counts to `N`, which is sound because these bounds are monotone in the counts.
+
+**Tier 3 — checking a claim.** `check_claimed_bound` matches each `advantage(...)`
+reference in the proof's `bound:` clause to a synthesized term by exact `(notion, reduction)`
+identity; an unmatched reference becomes a fresh nonnegative symbol, which can only add
+slack and so cannot produce a false pass. It then decides whether
+`claimed - synthesized >= 0` over the nonnegativity region, using SymPy for the easy cases
+and falling back to Z3 over the reals (`_sympy_to_z3`, `_decide_nonnegative`). The real
+region is a superset of the integer domain the quantities actually inhabit, so a
+non-negativity proof there is sound for the intended domain. Symbolic exponents, a Z3
+`unknown`, or a timeout yield `undecided` — never `verified`. The three-valued result is
+`verified` / `not_verified` (which fails `prove` unless `--skip-bound`, and prints a witness)
+/ `undecided` (which warns only).
+
+On the AST side, the parser wraps a claim in `frog_ast.ClaimedBound`, kept opaque to the
+generic name-resolution and type-check walk via `Visitor.should_descend` — the same
+treatment `AdvantageClause` gets. `NameResolutionVisitor._check_claimed_bound` validates
+well-formedness separately: that each named reduction is declared by the proof and composes
+the notion it is paired with, and that each `count_` names a real theorem oracle.
 
 ---
 
@@ -271,6 +359,10 @@ This appendix contains a one-line summary of every transform in
 grouped by source file. The authoritative ordering is in
 [`pipelines.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/pipelines.py).
 
+**[`alpha_rename.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/alpha_rename.py)**
+
+- `AlphaRename` — gives every typed local binder a fresh globally-unique name, under position-sensitive scope. Runs first in `CORE_PIPELINE`; see [Why alpha-renaming runs first](#why-alpha-renaming-runs-first).
+
 **[`algebraic.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/algebraic.py)**
 
 - `UniformXorSimplification` — uniform `BitString<n>` XOR'd with an expression used only in that one XOR becomes a fresh uniform sample (one-time pad).
@@ -384,9 +476,11 @@ grouped by source file. The authoritative ordering is in
 - `ExpandTuple` — rewrites a tuple into per-index variables when all accesses use constant indices.
 - `SimplifyTuple` — collapses `[a[0], a[1], ..., a[n-1]]` into `a`.
 - `CollapseSingleIndexTuple` — scalarizes a tuple accessed only at one constant index.
+- `NormalizeProductLiteral` — normalizes `ProductType` tuple literals appearing in expression (value) positions, fixing their Z3 encoding. Declared types — `the_type` slots, sample spaces, loop variable types — are deliberately left untouched.
 
 **[`standardization.py`](https://github.com/ProofFrog/ProofFrog/blob/main/proof_frog/transforms/standardization.py)**
 
+- `StandardizeParameters` — canonicalizes oracle parameter names, so that two games differing only in what an oracle calls its argument canonicalize together.
 - `VariableStandardize` — renames locals to `v1`, `v2`, ... in order of first appearance.
 - `StandardizeFieldNames` — renames game fields to canonical names by oracle first-read order, then regroups by type so α-equivalent games agree on field numbering.
 - `BubbleSortFieldAssignments` — sorts the field assignment block into a stable canonical order.

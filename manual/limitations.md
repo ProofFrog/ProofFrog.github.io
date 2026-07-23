@@ -43,16 +43,23 @@ These are not bugs or oversights; they are the boundary the language was designe
 
 **Computational complexity.** FrogLang does not model the running time of adversaries or
 scheme algorithms. The notion of "efficient adversary" is present as a conceptual
-assumption but is not tracked in the language. ProofFrog proofs establish qualitative
-reductions -- if the underlying assumption holds for all efficient adversaries, so does the
-theorem -- but do not bound how the advantage or running time scales with security
-parameters.
+assumption but is not tracked in the language. A reduction that blows up an adversary's
+running time by an unacceptable factor is indistinguishable, to ProofFrog, from a tight
+one: the engine tracks the advantage side of a reduction's cost (see below) but not the
+efficiency side.
 
-**Quantitative bounds.** Security loss and advantage bounds are not tracked. A successful
-proof says that a reduction exists; it does not say how tight the reduction is. If your
-proof requires a concrete tightness argument (for example, hybrid counting over
-polynomially many independent samples), that argument lives outside what ProofFrog
-verifies.
+**Tightness.** Since version 0.6.0 the engine does synthesize the advantage bound a
+verified proof establishes, and will check a bound the proof
+[claims]({% link manual/advantage-bounds.md %}) -- so security loss is no longer entirely
+outside the tool. What it does not establish is *tightness*: the synthesized bound is an
+upper bound obtained by summing the proof's hops via the triangle inequality, and a
+claimed bound verifies whenever it is at least the synthesized one. Neither result says
+that no better bound exists. Two further gaps are worth naming: bounds are not
+synthesized for proofs that use the
+[`induction` construct]({% link manual/language-reference/proofs.md %}#induction-hybrid-arguments)
+(such a proof still verifies, but `prove` reports that the bound was not synthesized),
+and the concrete probabilities declared by statistical helper games in an
+`advantage <= ...;` clause are trusted, not proved.
 
 **Recursive computation.** FrogLang methods cannot call themselves recursively, and
 loops are bounded (numeric `for` loops have a fixed range and generic `for` loops iterate
@@ -94,12 +101,17 @@ The engine verifies that the supplied reduction composed with each side of the a
 is interchangeable with the adjacent games in the proof sequence, but it does not propose
 or construct reductions automatically.
 
-**Probability bookkeeping.** The engine does not compute or track numerical advantage
-bounds. It verifies that a chain of interchangeable-or-reduction-justified hops connects
-the two sides of the security property, which establishes that the theorem follows from
-the stated assumptions. Quantifying the concrete advantage (for example, the probability
-of a collision in a birthday argument) is the user's responsibility and is stated as an
-external comment or separate argument outside the proof file.
+**Probability bookkeeping beyond the hop sum.** The engine's advantage bookkeeping is
+purely structural: it sums the losses of the hops the proof actually takes. It does not
+*derive* a probability from a game. Where a hop crosses a statistical gap -- the
+probability of a collision in a birthday argument, the chance of guessing a uniform
+target -- that number must still be supplied by a human, as an
+[`advantage <= ...;` clause]({% link manual/language-reference/games.md %}#the-advantage-clause)
+on the [helper game]({% link manual/canonicalization.md %}#helper-games--doing-things-manually)
+that encodes the gap. The engine checks such a clause only for well-formedness and then
+substitutes it into the synthesized bound; it does not prove that the stated probability
+is correct. See [Advantage Bounds]({% link manual/advantage-bounds.md %}) for the full
+picture of what is and is not computed.
 
 ---
 

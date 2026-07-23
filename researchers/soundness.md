@@ -64,8 +64,8 @@ proof.
 
 ## The trust base
 
-Every component listed below can harbor a bug that causes the engine to validate an
-invalid hop.
+Every component listed below can harbor a bug or an error that causes the engine to
+validate an invalid hop, or to report an advantage bound that does not in fact hold.
 
 **The parser** (`proof_frog/frog_parser.py` and the ANTLR grammars under
 `proof_frog/parsing/`). A parser bug could miscategorize a construct and feed the wrong
@@ -85,6 +85,16 @@ wrong on the 1000th -- could validate an incorrect hop without any diagnostic si
 current practice is to introduce both positive and negative unit tests when adding or
 modifying transforms, and to add near-miss instrumentation at precondition-failure points.
 This reduces the risk of wrong transforms going undetected, but does not eliminate it.
+
+**Declared statistical bounds** (the `advantage <= ...;` clause on a helper game). A
+[helper game]({% link manual/canonicalization.md %}#helper-games--doing-things-manually) may
+state the probability by which its two sides differ, and the engine substitutes that
+expression into the advantage bound it synthesizes. Nothing checks that the stated
+probability is correct: the semantic checker validates only that the expression is
+well-formed -- that its free names are real game parameters and real oracles. A wrong
+clause does not cause the engine to accept an invalid hop, but it does cause it to print a
+bound that is too small. Note that this is a distinct trust question from the helper game
+itself: the game asserts *that* two things are close, the clause asserts *how* close.
 
 **SMT integration** (Z3 calls, primarily in the symbolic transforms). Z3 is used to
 check logical equivalence of conditions when canonical forms are structurally close but
@@ -115,10 +125,16 @@ relationships. Such failures are capability limitations, not soundness issues --
 does not accept invalid hops just because it cannot verify valid ones. See the
 [Limitations]({% link manual/limitations.md %}) page for a catalogue of known gaps.
 
-**Tight security bounds.** ProofFrog reports whether a hop is valid, not how much
-advantage an adversary could gain. Concrete security bounds -- loss factors, collision
-probabilities, hybrid counts -- are the proof author's responsibility and are stated
-outside what ProofFrog verifies.
+**Tight security bounds.** Since version 0.6.0 ProofFrog does report an advantage bound:
+after a proof verifies, the engine sums the losses of the proof's hops via the triangle
+inequality and prints the result, and it will check a bound the proof itself claims. But
+that number carries no more assurance than the proof it summarizes. It inherits the entire
+trust base above; the statistical terms in it are read off human-written `advantage <= ...;`
+clauses rather than proved; and it is an *upper* bound, so neither a synthesized bound nor a
+verified claim is a tightness result -- a claim looser than what the proof establishes
+verifies just as happily as a sharp one. Bounds are also not synthesized at all for proofs
+that use the `induction` construct. See
+[Advantage Bounds]({% link manual/advantage-bounds.md %}) for what the number means.
 
 **Side-channel resistance, timing attacks, fault attacks.** None of these are modeled.
 All games are defined solely by the sequence of return values their oracles produce.
@@ -199,6 +215,18 @@ on the issue tracker. These are distinct from
 correctly rejects a valid hop because its current pipeline cannot show the hop is in
 fact valid.
 
+**Soundness fixes are not rare.** Version 0.6.0 closed a substantial batch of cases in
+which the engine could canonicalize two genuinely distinguishable games to the same form,
+and so report a hop as an equivalence when it was not one: a class of variable-capture bugs
+(fixed by the global alpha-renaming pass), several passes firing without their
+preconditions, passes reusing facts a later statement had invalidated, two control-flow
+errors, and four holes in the Z3 and equivalence layers. The
+[release notes](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.6.0) list them
+individually with links. The practical consequence for a reader of this page is the one
+the release notes state: a proof checked under v0.5.0 should be re-run under 0.6.0 or
+later, and the rate at which such fixes are still being found is itself a data point about
+how much a single ProofFrog validation is worth.
+
 ---
 
 ## Comparison with other tools
@@ -212,8 +240,22 @@ choice. ProofFrog's may be suitable for more preliminary work: exploration, educ
 iterative proof development where the ease of writing and checking a game-hopping proof
 is worth the weaker soundness guarantee.
 
-One concrete direction that could narrow this gap is an export functionality that encodes
-ProofFrog's automated transformations into the syntax of a more established engine such
-as EasyCrypt, so that individual hops could be discharged by a tool with a stronger
-logical foundation. While this is not yet implemented, we hope to explore this direction
-in the future.
+One concrete direction that could narrow this gap is to have a tool with a stronger logical
+foundation discharge the parts of a ProofFrog proof that ProofFrog itself only asserts.
+There are two ways to do that, and version 0.6.0 makes a start on both.
+
+The first is to check the assertions by hand, in the other tool. Each of the six
+random-oracle helper games used by the
+[CFRG hybrid KEM case study](https://github.com/ProofFrog/examples/tree/main/applications/cfrg-hybrid-kems)
+now ships with an EasyCrypt proof of the bound it declares, written directly in EasyCrypt
+and living beside the `.game` file. This narrows the trust base concretely: the statistical
+facts those proofs lean on are machine-checked, even though the hybrid KEM theorems built
+on top of them are not.
+
+The second is to export ProofFrog's own reasoning into the other tool's syntax, so that
+individual hops could be discharged there. A work-in-progress exporter along these lines
+exists but is **not part of the 0.6.0 release**; it lives on the `easycrypt` branches of the
+[engine](https://github.com/ProofFrog/ProofFrog/tree/easycrypt) and
+[examples](https://github.com/ProofFrog/examples/tree/easycrypt) repositories. Nothing in
+the released tool produces EasyCrypt output, and no hybrid KEM theorem in the released
+examples has a machine-checked proof.

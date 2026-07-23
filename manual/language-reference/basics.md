@@ -242,6 +242,15 @@ M[k] <- BitString<n>;
 
 Samples a value uniformly at random and stores it at key `k` of map `M`.
 
+**Sample a tuple and bind its components:**
+
+```prooffrog
+[BitString<n>, BitString<m>] [u, v] <- [BitString<n>, BitString<m>];
+[BitString<n>, BitString<m>] [u, v] <- [BitString<n>, BitString<m>] \ S;
+```
+
+Samples a tuple-typed value (optionally excluding the elements of a set `S`) and binds each component to its own name, rather than binding the whole tuple and indexing it afterwards. See [Tuple-destructuring bindings](#tuple-destructuring-bindings) under Statements.
+
 **Sample a random function (ROM):**
 
 ```prooffrog
@@ -284,6 +293,34 @@ Type x <-uniq[S] Type;  // sample variable x uniformly at random from Type \ S
                         // and implicitly update bookkeeping set S
 M[k] <- Type;           // sample uniformly at random and assign to a map value
 ```
+
+### Tuple-destructuring bindings
+
+A statement may bind the components of a tuple to separate names in one go, instead of binding the tuple and then reading it back by index. There are two forms:
+
+```prooffrog
+[T1, T2] [a, b] = expr;              // bind components of a tuple-valued expression
+[T1, T2] [u, v] <- [T1, T2] \ S;     // sample a tuple excluding the elements of S,
+                                     // and bind its components
+```
+
+In each case the type on the left must be a tuple type, and there must be two or more names. The names bind positionally: `a` gets component 0, `b` gets component 1. The most common use is a method that returns a pair:
+
+```prooffrog
+// Instead of:
+[E.PublicKey, E.SecretKey] kp = E.KeyGen();
+E.PublicKey pk = kp[0];
+E.SecretKey sk = kp[1];
+
+// Write:
+[E.PublicKey, E.SecretKey] [pk, sk] = E.KeyGen();
+```
+
+{: .note }
+This is pure syntactic sugar. The parser expands a destructuring binding into a temporary variable plus constant-index reads — exactly the longhand above — before semantic analysis runs. Canonicalization and the proof engine therefore never see a distinct construct, and a game written with destructuring canonicalizes identically to the same game written longhand. (The one component that opts out of the expansion is the [LaTeX exporter]({% link manual/latex-export.md %}), which renders the binding as written.)
+
+{: .warning }
+There is a third form in the grammar, `[T1, T2] [u, v] <- [T1, T2];` — sampling a tuple with no exclusion set — but it does not currently type-check: the right-hand side of a bare `<-` parses as a tuple *literal* rather than a tuple *type*, and the checker rejects it with `Right-hand side of '<-' must be a type`. The same is true of the non-destructuring `[T1, T2] t <- [T1, T2];`. Until this is fixed, sample the components separately, or use the exclusion form with an empty set.
 
 ### Conditional
 

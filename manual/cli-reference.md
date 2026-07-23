@@ -7,7 +7,7 @@ nav_order: 60
 
 # CLI Reference
 
-The ProofFrog command-line interface (`proof_frog`) lets you parse, type-check, and verify cryptographic game-hopping proofs entirely from the terminal. Seven public commands cover the full workflow from inspecting files to running complete proof verification. If you prefer a graphical environment, a browser-based editor is also available via the `web` command described below.
+The ProofFrog command-line interface (`proof_frog`) lets you parse, type-check, and verify cryptographic game-hopping proofs entirely from the terminal. Eight public commands cover the full workflow from inspecting files to running complete proof verification. If you prefer a graphical environment, a browser-based editor is also available via the `web` command described below.
 
 > **Activate your Python virtual environment first.** All of the commands below assume that the virtual environment in which ProofFrog was installed is activated in the current terminal session. If you opened a new terminal, re-activate it before running any `proof_frog` (or `python -m proof_frog`) command: 
 >
@@ -27,6 +27,7 @@ The ProofFrog command-line interface (`proof_frog`) lets you parse, type-check, 
 | [`check`](#check) | Type-check and semantically analyze a FrogLang file. |
 | [`prove`](#prove) | Run proof verification on a `.proof` file. |
 | [`describe`](#describe) | Print a concise interface description of a FrogLang file. |
+| [`export-latex`](#export-latex) | Render a FrogLang file as typeset LaTeX pseudocode. |
 | [`download-examples`](#download-examples) | Download the examples repository. |
 | [`web`](#web) | Start the ProofFrog web interface. |
 
@@ -42,7 +43,7 @@ proof_frog version [OPTIONS]
 
 ### Behavior
 
-Prints the installed ProofFrog version string to standard output and exits. The output format is `ProofFrog <version>`, for example `ProofFrog 0.4.0.dev0` on development builds. Use this to confirm which release is active in your environment or to include version information in bug reports.
+Prints the installed ProofFrog version string to standard output and exits. The output format is `ProofFrog <version>`, for example `ProofFrog 0.6.1.dev0` on development builds. Use this to confirm which release is active in your environment or to include version information in bug reports.
 
 ### Examples
 
@@ -54,7 +55,7 @@ proof_frog version
 Expected output (version may differ):
 
 ```
-ProofFrog 0.4.0
+ProofFrog 0.6.0
 ```
 
 ---
@@ -151,6 +152,14 @@ By default ProofFrog runs equivalence checks in parallel. Pass `--sequential` (o
 
 Pass `-v` once to print the canonical game form after each hop, which is invaluable for diagnosing why a step fails. Pass `-vv` to additionally show which transformation rules fire during canonicalization.
 
+After the hop summary table, a successful run prints the [advantage bound]({% link manual/advantage-bounds.md %}) the proof establishes:
+
+```
+Advantage bound: Adv^PRGSecurity(T)(A) <= Adv^PRGSecurity(G)(B1) + Adv^PRGSecurity(G)(B2)
+```
+
+If the proof file declares a `bound:` clause, a verdict line follows saying whether the claimed bound was verified against the synthesized one.
+
 ### Options
 
 | Flag | Description |
@@ -159,10 +168,14 @@ Pass `-v` once to print the canonical game form after each hop, which is invalua
 | `-j`, `--json` | Output JSON instead of the default text representation. |
 | `--no-diagnose` | Suppress diagnostic analysis on failure (print summary only). |
 | `--skip-lemmas` | Skip lemma proof verification (trust lemmas without re-checking). |
+| `--skip-bound` | Do not fail the proof when a claimed `bound:` cannot be verified. |
 | `--sequential` | Disable parallel equivalence checking (use a single process). Can also be forced via the `PROOFFROG_SEQUENTIAL` environment variable. |
 
 {: .important }
 `--skip-lemmas` bypasses verification of any lemmas referenced by the proof and trusts them unconditionally. Use this only during iterative development when you have already confirmed that the lemmas are correct and want faster turnaround on the main proof steps. Never use it as a substitute for verifying a complete proof.
+
+{: .important }
+`--skip-bound` downgrades a refuted `bound:` claim from an error to a warning. A refuted claim means the proof asserts *more* security than its hop sequence actually establishes, so this flag is for iterative development — while you work out which term the claim is missing — and not for a proof you intend to publish. It does not affect the synthesized bound, which is printed either way.
 
 ### Examples
 
@@ -219,6 +232,54 @@ proof_frog describe examples/joy/Schemes/SymEnc/OTP.scheme
 
 # Describe with JSON output (useful for tooling)
 proof_frog describe --json examples/Primitives/SymEnc.primitive
+```
+
+---
+
+## export-latex
+
+### Synopsis
+
+```
+proof_frog export-latex [OPTIONS] FILE
+```
+
+### Behavior
+
+Renders any FrogLang file (`.primitive`, `.scheme`, `.game`, or `.proof`) as typeset pseudocode, using the [`cryptocode`](https://www.ctan.org/pkg/cryptocode) LaTeX package. The command writes the result to a file and prints `Wrote <path>`; the default output path is the input path with its extension changed to `.tex`.
+
+By default the output is a complete, compilable `\documentclass{article}` document. Pass `--no-standalone` to get a fragment suitable for `\input`-ing into a larger paper instead.
+
+For the details of what the exporter produces — the macro preamble and how to override it, how a proof document is laid out, and the known gaps in this first version — see [LaTeX Export]({% link manual/latex-export.md %}).
+
+{: .warning }
+LaTeX export is preliminary. Expect to hand-adjust the output, and expect the output style to change in future versions.
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `-o`, `--output PATH` | Output path for the `.tex` file. Defaults to the input path with a `.tex` extension. |
+| `--backend NAME` | Pseudocode package backend. Only `cryptocode` is available in this version. |
+| <code>--composition [symbolic&#124;inlined]</code> | How reduction-based steps render (default: `symbolic`). |
+| `--standalone` / `--no-standalone` | Emit a complete document (default) or an `\input`-able fragment. |
+| `--diff` / `--no-diff` | In a proof, highlight the lines of each game that changed relative to the previous game (default: on; proof files only). |
+| <code>--diff-style [box&#124;color]</code> | How a changed line renders: gray box (default) or colored text. |
+
+### Examples
+
+```bash
+# Export a proof; writes examples/Proofs/PRG/TriplingPRG_PRGSecurity.tex
+proof_frog export-latex examples/Proofs/PRG/TriplingPRG_PRGSecurity.proof
+
+# Export a game to a chosen path
+proof_frog export-latex -o figures/indcpa.tex examples/Games/SymEnc/INDCPA_MultiChal.game
+
+# Produce a fragment to \input into a paper, with no change highlighting
+proof_frog export-latex --no-standalone --no-diff examples/Schemes/SymEnc/OTP.scheme
+
+# Highlight changed lines in color rather than with a gray box
+proof_frog export-latex --diff-style color examples/Proofs/PRG/TriplingPRG_PRGSecurity.proof
 ```
 
 ---

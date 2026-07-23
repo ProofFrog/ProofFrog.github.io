@@ -8,7 +8,7 @@ nav_order: 80
 # Editor Plugins
 {: .no_toc }
 
-ProofFrog ships a plugin for Visual Studio Code that provides rich editing support for FrogLang files. A plugin is also available for JetBrains IDEs. Any editor that supports the Language Server Protocol can be connected to ProofFrog's bundled LSP server; see the [Engine Internals]({% link researchers/engine-internals.md %}) page for details.
+ProofFrog ships a plugin for Visual Studio Code and a major mode for Emacs, both of which provide rich editing support for FrogLang files. A plugin is also available for JetBrains IDEs. Any editor that supports the Language Server Protocol can be connected to ProofFrog's bundled LSP server; see the [Engine Internals]({% link researchers/engine-internals.md %}) page for details.
 
 - TOC
 {:toc}
@@ -57,9 +57,58 @@ See [Installation]({% link manual/installation.md %}) for instructions on settin
 
 ---
 
-## (Future) Emacs
+## Emacs
 
-ProofFrog does not yet ship a dedicated Emacs plugin. The LSP server (`proof_frog lsp`) can be used directly with `eglot` or `lsp-mode` for syntax highlighting, diagnostics, and the basic LSP feature set. You would configure the server command as `python3 -m proof_frog lsp` (or the equivalent path for your environment) and associate it with the `.primitive`, `.scheme`, `.game`, and `.proof` extensions. See the [Engine Internals]({% link researchers/engine-internals.md %}) page for LSP protocol details.
+Since version 0.6.0 ProofFrog ships an Emacs major mode, `prooffrog-mode`, in the [`emacs/`](https://github.com/ProofFrog/ProofFrog/tree/main/emacs) directory of the repository.
+
+### Installation
+
+The package is not yet on MELPA or NonGNU ELPA, so install it from a checkout of the repository:
+
+```elisp
+(add-to-list 'load-path "/path/to/ProofFrog/emacs")
+(require 'prooffrog-mode)
+```
+
+Or, with `use-package`:
+
+```elisp
+(use-package prooffrog-mode
+  :load-path "/path/to/ProofFrog/emacs")
+```
+
+**Requirements.** Emacs 26.1 or later (27+ recommended), ProofFrog installed in a Python environment, and either `eglot` (built in since Emacs 29, and the recommended choice) or `lsp-mode` for the LSP features.
+
+The mode associates itself automatically with all four FrogLang extensions: `.primitive`, `.scheme`, `.game`, and `.proof`.
+
+### Features
+
+**Syntax highlighting.** Covers declaration keywords (`Primitive`, `Scheme`, `Game`, `Reduction`, `Phase`), the proof-structure labels (`proof:`, `let:`, `assume:`, `lemma:`, `theorem:`, `games:`, `by`), control flow, built-in types, constants and binary literals, the sampling operator, quoted import paths, and definition names.
+
+**Indentation.** Brace-based, with awareness of the proof section labels. The width is configurable via `prooffrog-indent-offset` (default 4).
+
+**Comments.** `//` line comments, wired to the standard Emacs commenting commands (`M-;`).
+
+**Electric pairs.** Auto-closing of `{}`, `[]`, and `<>`.
+
+**Imenu.** `M-x imenu` jumps to `Primitive`, `Scheme`, `Game`, and `Reduction` definitions.
+
+**LSP integration.** The full feature set of ProofFrog's language server is available: diagnostics, context-aware completion, hover, go-to-definition, rename, code lens showing proof verification status, document symbols, folding, and signature help. The client starts automatically when you open a FrogLang file — no per-project configuration needed.
+
+### Customization
+
+```elisp
+;; Change indentation width (default: 4)
+(setq prooffrog-indent-offset 2)
+
+;; Point the LSP server at a specific Python interpreter
+(setq prooffrog-python-path "/path/to/ProofFrog/.venv/bin/python3")
+
+;; Disable automatic LSP startup
+(setq prooffrog-lsp-enabled nil)
+```
+
+With automatic startup disabled, `M-x prooffrog-start-lsp` starts the client by hand. To use `lsp-mode` in place of `eglot`, add `:hook (prooffrog-mode . lsp)` to your `use-package` form.
 
 ---
 

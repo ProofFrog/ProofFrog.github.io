@@ -32,6 +32,14 @@ If the canonical forms are structurally identical, the hop is accepted; if not, 
 engine additionally asks Z3 whether the two forms differ only in logically equivalent
 branch conditions.
 
+Before any of the simplifying rewrites run, a global alpha-renaming pass gives every typed
+local binder a fresh, globally unique name. FrogLang's block scoping is position-sensitive,
+so an inner declaration can shadow an outer one; renaming up front means that a later pass
+which splices or reorders code cannot accidentally conflate a shadowed binding with the
+binding it shadows. The pass does not affect the final canonical form -- the standardization
+pipeline washes the names again at the end -- but it is what makes the passes in between
+safe.
+
 The phrase "semantics-preserving" means preserving the probability distribution that the
 game induces over adversary outputs, as defined by the FrogLang execution model in
 [Execution Model]({% link manual/language-reference/execution-model.md %}). The engine is
@@ -503,37 +511,68 @@ The user invokes a helper game as an assumption hop in the same way as any other
 assumption; the difference is that the helper game is not a hardness assumption but a
 statistical argument that the proof author vouches for.
 
-Four helper games currently in the distribution are:
+Since version 0.6.0 a helper game may also *declare* the statistical loss it costs, in an
+[`advantage <= ...;` clause]({% link manual/language-reference/games.md %}#the-advantage-clause)
+placed after its two `Game` blocks. When a proof hops through such a helper, the engine
+substitutes that expression into the [advantage bound]({% link manual/advantage-bounds.md %})
+it synthesizes for the proof, so the birthday or guessing term appears in the printed bound
+rather than as an opaque symbol. The clause is trusted, not proved: the engine checks only
+that it is well-formed. Helper games that state a *perfect* equivalence declare
+`advantage <= 0;`.
 
-### UniqueSampling
+The helper games currently in the distribution are:
 
-**File:** [`examples/Games/Helpers/Probability/UniqueSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/UniqueSampling.game)
+### DistinctSampling
+
+**File:** [`examples/Games/Helpers/Probability/DistinctSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/DistinctSampling.game)
 
 **What it states:** Sampling uniformly with replacement from a set `S` is
-indistinguishable from sampling without replacement (exclusion sampling, `<-uniq`).
-The `Replacement` game draws `val <- S`; the `NoReplacement` game draws
-`val <-uniq[bookkeeping] S`. The statistical distinguishing advantage is bounded by
-the guessing probability `|bookkeeping| / |S|`.
+indistinguishable from sampling so that every returned value is distinct.
+The `Replacement` game draws `val <- S`; the `NoReplacement` game keeps its own
+set field `seen` and draws `val <-uniq[seen] S`. The two differ only when a uniform draw
+collides with an earlier one, so the declared bound is the birthday bound
+`count_Samp * (count_Samp - 1) / (2 * |S|)`.
 
 **When to reach for it:** Whenever your proof needs to switch from plain uniform sampling
 to `<-uniq` sampling (or back) so that the `UniqueRFSimplification` or
 `FreshInputRFToUniform` transform can fire. The switch to `<-uniq` is the forward hop
 (Replacement -> NoReplacement); after the random-function simplifications fire, the
-switch back is the reverse hop. In reductions that compose with `UniqueSampling`, the
-bookkeeping set is typically the random function's implicit `.domain` set -- for example,
-the reduction calls `challenger.Samp(RF.domain)` to delegate sampling to the
-`UniqueSampling` challenger while using `RF`'s query history as the exclusion set.
+switch back is the reverse hop.
 
 ```prooffrog
-// Four-step pattern using UniqueSampling
-G_before against Adversary;                              // interchangeability
-UniqueSampling.Replacement compose R_Uniq against Adversary;  // interchangeability
-UniqueSampling.NoReplacement compose R_Uniq against Adversary; // by UniqueSampling
-G_after against Adversary;                               // interchangeability
+// Four-step pattern using DistinctSampling
+G_before against Adversary;                                      // interchangeability
+DistinctSampling.Replacement compose R_Sample against Adversary;   // interchangeability
+DistinctSampling.NoReplacement compose R_Sample against Adversary; // by DistinctSampling
+G_after against Adversary;                                       // interchangeability
 ```
 
-Real-proof pointer: used in [`examples/Proofs/SymEnc/SymEncPRF_INDCPA$_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDCPA%24_MultiChal.proof),
-[`examples/Proofs/PubKeyEnc/HashedElGamal_INDCPA_ROM_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HashedElGamal_INDCPA_ROM_MultiChal.proof), [`examples/Proofs/Group/DDHMultiChal_implies_HashedDDHMultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHMultiChal_implies_HashedDDHMultiChal.proof).
+{: .note }
+`DistinctSampling` replaced an earlier `UniqueSampling` helper whose exclusion set was
+supplied by the *caller*. That interface was unsound under an adversarial caller: a
+reduction could pass an inflated exclusion set (`S \ {x}`) and make the two games
+trivially distinguishable. Here the exclusion set is a field of `NoReplacement` and only
+ever holds the game's own prior outputs, so it cannot be inflated. Proofs written against
+`UniqueSampling` need porting to `DistinctSampling` or `NonzeroSampling`.
+
+Real-proof pointer: used in [`examples/Proofs/SymEnc/SymEncPRF_INDCPA$_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDCPA%24_MultiChal.proof)
+and [`examples/Proofs/SymEnc/SymEncPRF_INDOT$.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/SymEnc/SymEncPRF_INDOT%24.proof).
+
+### NonzeroSampling
+
+**File:** [`examples/Games/Helpers/Probability/NonzeroSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/NonzeroSampling.game)
+
+**What it states:** A uniform scalar and a uniform *nonzero* scalar are interchangeable.
+`MaybeZero` draws `val <- ModInt<order>`; `Nonzero` draws `val <- ModInt<order> \ {0}`.
+The two distributions differ only on the single value `0`, giving the declared union bound
+`count_Samp / order`. The excluded value is fixed by the game rather than supplied by the
+caller, which is what makes the statement safe to universally quantify over reductions.
+
+**When to reach for it:** To bridge "secret key sampled uniformly" and "secret key sampled
+uniformly nonzero", which arises whenever a group-based proof needs to invert an exponent.
+
+Real-proof pointer: used in [`examples/Proofs/Group/GapCDH_implies_GapCDH_NZ.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/GapCDH_implies_GapCDH_NZ.proof)
+and [`examples/Proofs/KEM/HashedElGamalKEM_INDCCA.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/HashedElGamalKEM_INDCCA.proof).
 
 ### Regularity
 
@@ -560,14 +599,23 @@ Real-proof pointer: used in [`examples/Proofs/Group/DDH_implies_HashedDDH.proof`
 uniform value is statistically equivalent to evaluating it naturally. The `Natural` game
 returns `H(target)` directly; the `Programmed` game stores a fresh random `u` at
 initialization time and returns `u` when queried at `target` and `H(x)` otherwise.
-This equivalence is exact (perfect) when `H` is a truly random function.
+This equivalence is exact when `H` is a truly random function, so the game declares
+`advantage <= 0;`.
 
 **When to reach for it:** When the proof needs to "program" a random oracle at the
 challenge point -- replacing `H(target)` with an independently sampled value so that the
 challenge ciphertext becomes statistically independent of the adversary's hash queries.
 This is a standard technique in ROM proofs.
 
-Real-proof pointer: used in [`examples/Proofs/Group/CDH_implies_HashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/CDH_implies_HashedDDH.proof).
+{: .warning }
+`H` is sampled *inside* each game and is reachable only through the `Query` oracle. A
+reduction composed with `ROMProgramming` must therefore route every random-oracle access
+through `challenger.Query`. If the reduction holds its own copy of the random oracle and
+evaluates it directly, it can compare that value against the one `Initialize` returned and
+distinguish the two sides, which would make the assumption false as stated.
+
+Real-proof pointer: used in [`examples/Proofs/Group/CDH_implies_HashedDDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/CDH_implies_HashedDDH.proof)
+and [`examples/Proofs/KEM/HashedElGamalKEM_INDCCA.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/KEM/HashedElGamalKEM_INDCCA.proof).
 
 ### RandomTargetGuessing
 
@@ -576,14 +624,53 @@ Real-proof pointer: used in [`examples/Proofs/Group/CDH_implies_HashedDDH.proof`
 **What it states:** Comparing an adversary-supplied value against a hidden, uniformly
 sampled target is indistinguishable from always returning false. The `Real` game samples
 `target <- S` in `Initialize` and returns `c == target` on each `Eq` query; the `Ideal`
-game always returns `false`. Any adversary distinguishes the two with advantage at most
-`q / |S|`, where `q` is the number of queries.
+game always returns `false`. The declared guessing bound is `count_Eq / |S|`.
 
 **When to reach for it:** When a game checks whether the adversary has guessed a secret
 uniform value, and the proof argues that such a guess succeeds only with negligible
 probability.
 
-Real-proof pointer: used in [`examples/Proofs/Group/DDH_implies_CDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDH_implies_CDH.proof).
+Real-proof pointer: used in [`examples/Proofs/Group/DDH_implies_CDH.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDH_implies_CDH.proof),
+whose synthesized bound shows the statistical term resolved into the theorem game's own
+query count:
+
+```
+Advantage bound: Adv^CDH(G)(A) <= Adv^DDH(G)(B1) + count_Solve/|GroupElem<G>|
+```
+
+### The ROFreshSampling family
+
+**Files:** [`examples/Games/Helpers/Probability/ROFreshSampling.game`](https://github.com/ProofFrog/examples/blob/main/Games/Helpers/Probability/ROFreshSampling.game)
+and the variants `ROFreshSampling2` through `ROFreshSampling5`.
+
+**What they state:** The value of a random oracle at a hidden, freshly sampled input is
+indistinguishable from an independent uniform bitstring. The game owns the random function
+`H` and exposes it only through a `Hash` oracle; `Real.Challenge()` samples a hidden fresh
+input and returns `H` of it, while `Ideal.Challenge()` returns an independent uniform
+bitstring. The hidden input is never revealed -- revealing it would let the adversary query
+`Hash` at that point and distinguish immediately. The numbered variants cover random
+oracles over tuple domains, where freshness comes from a single slot of the tuple.
+
+**When to reach for it:** When a proof needs "the random oracle at a fresh hidden point
+looks uniform". Unlike the `<-uniq`-plus-`DistinctSampling` route, these games carry the
+entire statistical content themselves, so a proof using them needs no exclusion-set
+sampling and no random-function freshness transform. Their interface exposes no
+bookkeeping set at all, so a caller cannot misuse them.
+
+Real-proof pointer: used in [`examples/Proofs/PubKeyEnc/HashedElGamal_INDCPA_ROM_MultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/PubKeyEnc/HashedElGamal_INDCPA_ROM_MultiChal.proof)
+and [`examples/Proofs/Group/DDHMultiChal_implies_HashedDDHMultiChal.proof`](https://github.com/ProofFrog/examples/blob/main/Proofs/Group/DDHMultiChal_implies_HashedDDHMultiChal.proof).
+
+### Case-study helpers
+
+Beyond the general-purpose helpers above, the
+[CFRG hybrid KEM case study](https://github.com/ProofFrog/examples/tree/main/applications/cfrg-hybrid-kems)
+defines six random-oracle helper games of its own, in
+[`applications/cfrg-hybrid-kems/games/ROM/`](https://github.com/ProofFrog/examples/tree/main/applications/cfrg-hybrid-kems/games/ROM).
+Each declares its own `advantage <= ...;` clause -- four of them perfect (`<= 0`), two of
+them `1 / (2 ^ lambda)` -- and each ships alongside a hand-written EasyCrypt proof of the
+bound it declares (the `.ec` file next to the `.game` file). Those six numbers are
+therefore checked by a second tool rather than taken on trust; the hybrid KEM theorems
+that use them are not.
 
 {: .important }
 Using a helper game adds to the trust base -- see the [Soundness]({% link researchers/soundness.md %}) page in the For Researchers area.
@@ -595,9 +682,14 @@ Using a helper game adds to the trust base -- see the [Soundness]({% link resear
 The following things are outside the scope of automated canonicalization. Each item
 links to [Limitations]({% link manual/limitations.md %}) for details and workarounds.
 
-- **No quantitative probability reasoning.** The engine does not compute or bound
-  advantage, security loss, or collision probabilities. Those quantities are the proof
-  author's responsibility and are stated as external arguments. See
+- **No derivation of probabilities from game code.** Canonicalization itself is
+  qualitative: it decides whether two games are interchangeable, never how far apart they
+  are. Advantage bookkeeping happens *outside* the pipeline -- after a proof verifies, the
+  engine sums the losses of the hops it took (see
+  [Advantage Bounds]({% link manual/advantage-bounds.md %})). What no part of the engine
+  does is *derive* a collision or guessing probability from a pair of games: where a hop
+  crosses a statistical gap, the number comes from a human-written `advantage <= ...;`
+  clause on a helper game, which the engine trusts. See
   [Limitations]({% link manual/limitations.md %}) for details.
 
 - **No nested induction.** The engine supports single-level hybrid arguments via the

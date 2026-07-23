@@ -25,8 +25,10 @@ After that, treat the manual as a reference and use the navigation to look up wh
 
 - **[Language Reference]({% link manual/language-reference/index.md %})**: Types, operators, sampling, statements, the four file types (primitive, scheme, game, proof), and the execution model.
 - **[Canonicalization]({% link manual/canonicalization.md %})**: How ProofFrog tries to check that two games are equivalent: what transformations it applies automatically, how to use helper games, and how to diagnose a failing hop.
+- **[Advantage Bounds]({% link manual/advantage-bounds.md %})**: The concrete bound a verified proof establishes: how it is synthesized, how a helper game declares its statistical loss, and how to state and check a claimed bound.
 - **[Limitations]({% link manual/limitations.md %})**: Capability limits of ProofFrog's language and canonicalization engine. ProofFrog's [soundness]({% link researchers/soundness.md %}) is discussed in the "For Researchers" section.
-- **[Command-Line Interface Reference]({% link manual/cli-reference.md %})**: `proof_frog` on the command-line: `version`, `parse`, `check`, `prove`, `describe`, `web`.
+- **[Command-Line Interface Reference]({% link manual/cli-reference.md %})**: `proof_frog` on the command-line: `version`, `parse`, `check`, `prove`, `describe`, `export-latex`, `download-examples`, `web`.
 - **[Web Editor]({% link manual/web-editor.md %})**: Using ProofFrog's web-based editor environment via `proof_frog web`.
-- **[Editor Plugins]({% link manual/editor-plugins.md %})**: How to add ProofFrog extensions to VSCode and other editors using the <abbr title="Language Server Protocol">LSP</abbr> server.
+- **[LaTeX Export]({% link manual/latex-export.md %})**: Rendering primitives, schemes, games, and proofs as typeset pseudocode via `proof_frog export-latex`.
+- **[Editor Plugins]({% link manual/editor-plugins.md %})**: How to add ProofFrog extensions to VSCode, Emacs, and other editors using the <abbr title="Language Server Protocol">LSP</abbr> server.
 - **[Troubleshooting]({% link manual/troubleshooting.md %})**: How to diagnose common errors.
