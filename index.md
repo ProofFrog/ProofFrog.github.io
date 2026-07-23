@@ -38,6 +38,7 @@ See the [installation instructions]({% link manual/installation.md %}) for detai
 
 ## Recent updates
 
+- **Jul. 22, 2026: Release of [ProofFrog version 0.6.0](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.6.0)** featuring concrete advantage bounds (the engine now synthesizes the bound a verified proof establishes, and checks a bound the proof claims), a preliminary LaTeX export backend, tuple-destructuring bindings, an Emacs mode for FrogLang, and a substantial wave of soundness fixes to the canonicalization and equivalence layers — anyone relying on a proof checked by 0.5.0 should re-run it under this release
 - **Jun. 7, 2026: Release of [ProofFrog version 0.5.0](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.5.0)** featuring a large new case study (machine-checked proofs of the [CFRG hybrid KEM combiners](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-10) and a Hashed ElGamal KEM), new FrogLang features for random-oracle and group-based proofs (lazy-map random oracles, collection iteration, sampling with exclusions, and a `requires:` block), expanded canonicalization power, and several engine correctness fixes
 - Jun. 7, 2026: Release of [ProofFrog VS Code Extension version 0.1.1](https://marketplace.visualstudio.com/items?itemName=ProofFrog.prooffrog) on VS Code Extension Marketplace
 - **Apr. 16, 2026: Release of [ProofFrog version 0.4.1](https://github.com/ProofFrog/ProofFrog/releases/tag/v0.4.1)** featuring proof engine improvements
